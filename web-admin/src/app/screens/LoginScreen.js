@@ -6,14 +6,32 @@ import {
 	FormControlLabel,
 	Checkbox,
 	InputLabel,
+	Backdrop,
+	CircularProgress,
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+import { submitLogin } from "../api/auth";
 
 function LoginScreen(props) {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
 	const [rememberAc, setRememberAc] = useState(false);
+	const [loading, setLoading] = React.useState(false);
+	const [token, setToken] = React.useState("");
 
 	const handleChangeRemember = () => {
 		setRememberAc(!rememberAc);
+	};
+	const handleLogin = async () => {
+		const authToken = await submitLogin(email, password);
+		if (!authToken) return;
+		setToken(authToken);
+	};
+	const handleClose = () => {
+		setLoading(false);
+	};
+	const handleToggle = () => {
+		setLoading(!loading);
 	};
 
 	return (
@@ -45,9 +63,9 @@ function LoginScreen(props) {
 					style={{
 						width: "75%",
 					}}
+					onChange={(text) => setEmail(text.target.value)}
 				/>
 			</InputLabel>
-
 			<InputLabel
 				style={{
 					width: "100%",
@@ -65,6 +83,7 @@ function LoginScreen(props) {
 					style={{
 						width: "75%",
 					}}
+					onChange={(text) => setPassword(text.target.value)}
 				/>
 			</InputLabel>
 			<FormControlLabel
@@ -84,9 +103,20 @@ function LoginScreen(props) {
 				style={{
 					width: "75%",
 				}}
+				onClick={handleLogin}
 			>
 				Log In
 			</Button>
+			<Backdrop
+				open={loading}
+				onClick={handleClose}
+				style={{
+					zIndex: 1,
+				}}
+			>
+				<CircularProgress color="inherit" />
+			</Backdrop>
+			{token}
 		</div>
 	);
 }
