@@ -8,30 +8,36 @@ import {
 	InputLabel,
 	Backdrop,
 	CircularProgress,
+	Snackbar,
 } from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 import Typography from "@material-ui/core/Typography";
+
 import { submitLogin } from "../api/auth";
 
 function LoginScreen(props) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [rememberAc, setRememberAc] = useState(false);
-	const [loading, setLoading] = React.useState(false);
-	const [token, setToken] = React.useState("");
+
+	const [loading, setLoading] = useState(false);
+	const [token, setToken] = useState("");
+	const [loginFailed, setLoginFailed] = useState(false);
 
 	const handleChangeRemember = () => {
 		setRememberAc(!rememberAc);
 	};
+
 	const handleLogin = async () => {
+		setLoading(true);
 		const authToken = await submitLogin(email, password);
-		if (!authToken) return;
+		if (!authToken) {
+			setLoginFailed(true);
+			setLoading(false);
+			return;
+		}
 		setToken(authToken);
-	};
-	const handleClose = () => {
 		setLoading(false);
-	};
-	const handleToggle = () => {
-		setLoading(!loading);
 	};
 
 	return (
@@ -45,7 +51,13 @@ function LoginScreen(props) {
 			}}
 		>
 			<Typography variant="h1">roomac</Typography>
-			<Typography variant="h4" gutterBottom>
+			<Typography
+				variant="h4"
+				style={{
+					fontWeight: "100",
+				}}
+				gutterBottom
+			>
 				Admin Panel
 			</Typography>
 			<InputLabel
@@ -98,18 +110,17 @@ function LoginScreen(props) {
 				label="Remember my account"
 			/>
 			<Button
+				onClick={handleLogin}
 				variant="contained"
 				color="primary"
 				style={{
 					width: "75%",
 				}}
-				onClick={handleLogin}
 			>
 				Log In
 			</Button>
 			<Backdrop
 				open={loading}
-				onClick={handleClose}
 				style={{
 					zIndex: 1,
 				}}
@@ -117,6 +128,20 @@ function LoginScreen(props) {
 				<CircularProgress color="inherit" />
 			</Backdrop>
 			{token}
+
+			<Snackbar
+				open={loginFailed}
+				autoHideDuration={5000}
+				anchorOrigin={{
+					vertical: "top",
+					horizontal: "right",
+				}}
+				onClose={() => setLoginFailed(false)}
+			>
+				<MuiAlert elevation={6} variant="filled" severity="error">
+					Login Failed!
+				</MuiAlert>
+			</Snackbar>
 		</div>
 	);
 }
