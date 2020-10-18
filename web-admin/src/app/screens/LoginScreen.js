@@ -13,23 +13,21 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 import Typography from "@material-ui/core/Typography";
 import { useHistory } from "react-router-dom";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 import { submitLogin } from "../api/auth";
+import LoginField from "../components/forms/LoginField";
+import LoginButton from "../components/forms/LoginButton";
+
+const validationSchema = Yup.object().shape({
+	email: Yup.string().required().min(4).label("Email"),
+	password: Yup.string().required().min(4).label("Password"),
+});
 
 function LoginScreen(props) {
 	// history hook is for navigation purposes
 	const history = useHistory();
-
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-
-	const [emailError, setEmailError] = useState(false);
-	const [passwordError, setPasswordError] = useState(false);
-
-	const [emailErrorMessage, setEmailErrorMessage] = useState("");
-	const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-
-	const [isValidated, setValidate] = useState(false);
 
 	const [rememberAc, setRememberAc] = useState(false);
 
@@ -37,59 +35,11 @@ function LoginScreen(props) {
 	const [token, setToken] = useState("");
 	const [loginFailed, setLoginFailed] = useState(false);
 
-	const handleEmailOnChange = (textInput) => {
-		setEmail(textInput.target.value);
-		if (emailError == true) {
-			handleEmailValidation();
-		}
-	};
-
-	const handlePasswordOnChange = (textInput) => {
-		setPassword(textInput.target.value);
-		if (passwordError == true) {
-			handlePasswordValidation();
-		}
-	};
-
-	const handleEmailValidation = () => {
-		if (email == "") {
-			setEmailError(true);
-			setEmailErrorMessage("Required");
-		} else if (email.length <= 4) {
-			setEmailError(true);
-			setEmailErrorMessage("Input is too short");
-		} else setEmailError(false);
-	};
-
-	const handlePasswordValidation = () => {
-		if (password == "") {
-			setPasswordError(true);
-			setPasswordErrorMessage("Required");
-		} else if (password.length <= 4) {
-			setPasswordError(true);
-			setPasswordErrorMessage("Input is too short");
-		} else setPasswordError(false);
-	};
-
 	const handleChangeRemember = () => {
 		setRememberAc(!rememberAc);
 	};
 
-	const validate = () => {
-		handleEmailValidation();
-		handlePasswordValidation();
-
-		if (emailError) {
-			setValidate(false);
-		} else if (passwordError) {
-			setValidate(false);
-		} else setValidate(true);
-	};
-
-	const handleLogin = async () => {
-		validate();
-		if (!isValidated) return;
-
+	const handleSubmit = async ({ email, password }) => {
 		setLoading(true);
 		const authToken = await submitLogin(email, password);
 		if (!authToken) {
@@ -122,57 +72,54 @@ function LoginScreen(props) {
 			>
 				Admin Panel
 			</Typography>
-			<InputLabel>
-				<TextField
-					id="Email"
-					label="Email"
-					variant="outlined"
-					error={emailError}
-					helperText={emailError ? emailErrorMessage : null}
-					style={{
-						width: 400,
-					}}
-					onChange={handleEmailOnChange}
-					onBlur={handleEmailValidation}
-				/>
-			</InputLabel>
-			<InputLabel>
-				<TextField
-					id="Passsword"
-					label="Password"
-					type="password"
-					variant="outlined"
-					autoComplete="current-password"
-					error={passwordError}
-					helperText={passwordError ? passwordErrorMessage : null}
-					style={{
-						width: 400,
-					}}
-					onChange={handlePasswordOnChange}
-					onBlur={handlePasswordValidation}
-				/>
-			</InputLabel>
-			<FormControlLabel
-				control={
-					<Checkbox
-						checked={rememberAc}
-						onChange={handleChangeRemember}
-						name="checkedB"
-						color="primary"
-					/>
-				}
-				label="Remember my account"
-			/>
-			<Button
-				onClick={handleLogin}
-				variant="contained"
-				color="primary"
-				style={{
-					width: 400,
-				}}
+			<Formik
+				initialValues={{ email: "", password: "" }}
+				onSubmit={handleSubmit}
+				validationSchema={validationSchema}
 			>
-				Log In
-			</Button>
+				<>
+					<LoginField
+						name="email"
+						placeholder="Email"
+						autoCapitalize="none"
+						autoCorrect={false}
+						autoFocus={true}
+						style={{
+							width: 400,
+						}}
+					/>
+					<LoginField
+						name="password"
+						placeholder="Password"
+						type="password"
+						autoCapitalize="none"
+						autoCorrect={false}
+						style={{
+							width: 400,
+						}}
+					/>
+					<FormControlLabel
+						control={
+							<Checkbox
+								checked={rememberAc}
+								onChange={handleChangeRemember}
+								name="checkedB"
+								color="primary"
+							/>
+						}
+						label="Remember my account"
+					/>
+					<LoginButton
+						title="Log In"
+						variant="contained"
+						color="primary"
+						style={{
+							width: 400,
+						}}
+					/>
+				</>
+			</Formik>
+			{token}
 			<Backdrop
 				open={loading}
 				style={{
