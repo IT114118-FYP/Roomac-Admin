@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-	Button,
-	TextField,
 	FormControlLabel,
 	Checkbox,
-	InputLabel,
 	Backdrop,
 	CircularProgress,
 	Snackbar,
@@ -19,10 +16,11 @@ import * as Yup from "yup";
 import { submitLogin } from "../api/auth";
 import LoginField from "../components/forms/LoginField";
 import LoginButton from "../components/forms/LoginButton";
+import { storeToken } from "../auth/storage";
 
 const validationSchema = Yup.object().shape({
-	email: Yup.string().required().min(4).label("Email"),
-	password: Yup.string().required().min(4).label("Password"),
+	Email: Yup.string().required().min(4).label("Email"),
+	Password: Yup.string().required().min(4).label("Password"),
 });
 
 function LoginScreen(props) {
@@ -33,23 +31,25 @@ function LoginScreen(props) {
 
 	const [loading, setLoading] = useState(false);
 	const [token, setToken] = useState("");
+
 	const [loginFailed, setLoginFailed] = useState(false);
 
 	const handleChangeRemember = () => {
 		setRememberAc(!rememberAc);
 	};
 
-	const handleSubmit = async ({ email, password }) => {
+	const handleSubmit = async ({ Email, Password }) => {
 		setLoading(true);
-		const authToken = await submitLogin(email, password);
+		const authToken = await submitLogin(Email, Password);
 		if (!authToken) {
 			setLoginFailed(true);
 			setLoading(false);
 			return;
 		}
+		storeToken(authToken);
 		setToken(authToken);
 		setLoading(false);
-		history.push("/temp");
+		history.push("/home");
 	};
 
 	return (
@@ -73,27 +73,27 @@ function LoginScreen(props) {
 				Admin Panel
 			</Typography>
 			<Formik
-				initialValues={{ email: "", password: "" }}
+				initialValues={{ Email: "", Password: "" }}
 				onSubmit={handleSubmit}
 				validationSchema={validationSchema}
 			>
 				<>
 					<LoginField
-						name="email"
+						name="Email"
 						placeholder="Email"
 						autoCapitalize="none"
-						autoCorrect={false}
+						// autoCorrect={false}
 						autoFocus={true}
 						style={{
 							width: 400,
 						}}
 					/>
 					<LoginField
-						name="password"
+						name="Password"
 						placeholder="Password"
 						type="password"
 						autoCapitalize="none"
-						autoCorrect={false}
+						// autoCorrect={false}
 						style={{
 							width: 400,
 						}}

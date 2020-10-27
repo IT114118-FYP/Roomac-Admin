@@ -1,17 +1,17 @@
 import * as axios from "axios";
+import { getToken } from "../auth/storage";
 
 const baseURL = "http://it114118-fyp.herokuapp.com";
 
 const instance = axios.create({
 	baseURL: baseURL,
 	timeout: 5000,
-	// headers: { Authorization: "Bearer " + authStorage.getUser() },
+	// headers: { Authorization: "Bearer " + getToken },
 });
 
 // instance.interceptors.request.use(
 // 	async (config) => {
-// 		const token = await authStorage.getUser();
-// 		console.log("token in axios interceptor: " + token);
+// 		const token = getToken;
 // 		config.headers = {
 // 			Authorization: "Bearer " + token,
 // 		};
@@ -37,8 +37,8 @@ export async function submitLogin(id, password) {
 	return response == null ? null : response.data;
 }
 
-export const fetchUser = () => {
-	instance
+export async function fetchUser() {
+	await instance
 		.get("/api/user/me")
 		.then(function (response) {
 			console.log(response.data.name);
@@ -48,4 +48,4 @@ export const fetchUser = () => {
 			console.log(error);
 			return false;
 		});
-};
+}
