@@ -1,7 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Backdrop, CircularProgress, Snackbar } from "@material-ui/core";
-import MuiAlert from "@material-ui/lab/Alert";
+import { Backdrop, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { Redirect, withRouter } from "react-router-dom";
 import { Formik } from "formik";

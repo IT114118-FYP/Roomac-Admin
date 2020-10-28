@@ -15,6 +15,7 @@ import * as axios from "axios";
 import NavDrawer from "../components/NavDrawer";
 import ProgramTable from "../components/programs/ProgramTable";
 import SnackbarAlert from "../components/SnackbarAlert";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 const baseURL = "http://it114118-fyp.herokuapp.com";
 
@@ -51,6 +52,7 @@ class ManageProgramsScreen extends React.Component {
 			newEnglishName: "",
 			newChineseName: "",
 			addNewError: false,
+			openConfirmation: false,
 		};
 	}
 	_isMounted = false;
@@ -101,6 +103,12 @@ class ManageProgramsScreen extends React.Component {
 		});
 	};
 
+	handleConfirmation = () => {
+		this.setState({
+			openConfirmation: !this.state.openConfirmation,
+		});
+	};
+
 	handleAddNewProgram = async () => {
 		await instance
 			.post("/api/programs", {
@@ -115,6 +123,7 @@ class ManageProgramsScreen extends React.Component {
 			.catch(() => {
 				this.setState({ addNewError: true });
 			});
+		this.handleConfirmation();
 		this.fetchPrograms();
 	};
 
@@ -202,7 +211,7 @@ class ManageProgramsScreen extends React.Component {
 							<Button
 								size="small"
 								color="primary"
-								onClick={this.handleAddNewProgram}
+								onClick={this.handleConfirmation}
 							>
 								Add
 							</Button>
@@ -216,6 +225,19 @@ class ManageProgramsScreen extends React.Component {
 					alertText="Add Failed! Check all input fields for incorrect values"
 					autoHideDuration={3000}
 				/>
+
+				<ConfirmDialog
+					title="Confirm Details"
+					open={this.state.openConfirmation}
+					onConfirm={this.handleAddNewProgram}
+					onClose={this.handleConfirmation}
+				>
+					{`Program Code: ${this.state.newCode}`}
+					<p />
+					{`English Title: ${this.state.newEnglishName}`}
+					<p />
+					{`Chinese Title: ${this.state.newChineseName}`}
+				</ConfirmDialog>
 			</NavDrawer>
 		);
 	}

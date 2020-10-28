@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-import "./App.css";
 import routes from "./app/navigation/routes";
 import ActivityLogScreen from "./app/screens/ActivityLogScreen";
 import HomeScreen from "./app/screens/HomeScreen";

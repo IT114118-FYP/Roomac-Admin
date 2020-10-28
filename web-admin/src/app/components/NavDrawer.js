@@ -26,6 +26,7 @@ import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import GavelIcon from "@material-ui/icons/Gavel";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import routes from "../navigation/routes";
+import ConfirmDialog from "./ConfirmDialog";
 
 const drawerWidth = 240;
 
@@ -66,6 +67,8 @@ function ResponsiveDrawer({ window, title, children }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+
+	const [openLogoutConfirm, setOpenLogoutConfirm] = React.useState(false);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -115,10 +118,7 @@ function ResponsiveDrawer({ window, title, children }) {
 				<ListItem
 					button
 					key="Log Out"
-					onClick={() => {
-						localStorage.removeItem("authToken");
-						history.push("/");
-					}}
+					onClick={() => setOpenLogoutConfirm(true)}
 				>
 					<ListItemIcon>
 						<ExitToAppIcon />
@@ -186,6 +186,18 @@ function ResponsiveDrawer({ window, title, children }) {
 				<div className={classes.toolbar} />
 				{children}
 			</main>
+
+			<ConfirmDialog
+				title="Log out"
+				open={openLogoutConfirm}
+				onConfirm={() => {
+					localStorage.removeItem("authToken");
+					history.push("/");
+				}}
+				onClose={() => setOpenLogoutConfirm(false)}
+			>
+				Are you sure you want to log out?
+			</ConfirmDialog>
 		</div>
 	);
 }
