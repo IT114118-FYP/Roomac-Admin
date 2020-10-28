@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ResponsiveDrawer({ window, title, children }) {
+	const history = useHistory();
 	const classes = useStyles();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 
@@ -111,9 +112,19 @@ function ResponsiveDrawer({ window, title, children }) {
 			</List>
 			<Divider />
 			<List>
-				<DrawerItem title="Log out" path="/home">
-					<ExitToAppIcon />
-				</DrawerItem>
+				<ListItem
+					button
+					key="Log Out"
+					onClick={() => {
+						localStorage.removeItem("authToken");
+						history.push("/");
+					}}
+				>
+					<ListItemIcon>
+						<ExitToAppIcon />
+					</ListItemIcon>
+					<ListItemText primary="Log out" />
+				</ListItem>
 			</List>
 		</div>
 	);

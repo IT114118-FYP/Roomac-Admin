@@ -19,30 +19,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 
-// const rows = [
-// 	createData(
-// 		"CE114301",
-// 		"Higher Diploma in Child Care and Education",
-// 		"幼兒教育高級文憑",
-// 		"幼儿教育高级文凭"
-// 	),
-// 	createData(
-// 		"IT114105",
-// 		"Higher Diploma in Software Engineering",
-// 		"軟件工程高級文憑",
-// 		"软件工程高级文凭"
-// 	),
-// 	createData(
-// 		"IT114118",
-// 		"Higher Diploma in AI and Mobile Applications Development",
-// 		"人工智能及手機軟件開發高級文憑",
-// 		"人工智能及手机软件开发高级文凭"
-// 	),
-// ];
-function createData(code, engName, chiName, cnName) {
-	return { code, engName, chiName, cnName };
-}
-
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;

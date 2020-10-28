@@ -1,10 +1,5 @@
 import React from "react";
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
 import "./App.css";
 import routes from "./app/navigation/routes";
@@ -18,7 +13,6 @@ import StatisticsScreen from "./app/screens/StatisticsScreen";
 import TimetableScreen from "./app/screens/TimetableScreen";
 
 import { ProtectedRoute } from "./app/components/ProtectedRoute";
-import LoginConfirmScreen from "./app/screens/LoginConfirmScreen";
 import ManageProgramsScreen from "./app/screens/ManageProgramsScreen";
 
 function App() {
