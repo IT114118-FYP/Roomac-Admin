@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
-	FormControlLabel,
-	Checkbox,
+	// FormControlLabel,
+	// Checkbox,
 	Backdrop,
 	CircularProgress,
 	Snackbar,
@@ -24,19 +24,12 @@ const validationSchema = Yup.object().shape({
 });
 
 function LoginScreen(props) {
-	// history hook is for navigation purposes
 	const history = useHistory();
-
-	const [rememberAc, setRememberAc] = useState(false);
 
 	const [loading, setLoading] = useState(false);
 	const [token, setToken] = useState("");
 
 	const [loginFailed, setLoginFailed] = useState(false);
-
-	const handleChangeRemember = () => {
-		setRememberAc(!rememberAc);
-	};
 
 	const handleSubmit = async ({ Email, Password }) => {
 		setLoading(true);
@@ -48,6 +41,7 @@ function LoginScreen(props) {
 		}
 		storeToken(authToken);
 		setToken(authToken);
+		localStorage.setItem("authToken", authToken);
 		setLoading(false);
 		history.push("/home");
 	};
@@ -97,17 +91,6 @@ function LoginScreen(props) {
 						style={{
 							width: 400,
 						}}
-					/>
-					<FormControlLabel
-						control={
-							<Checkbox
-								checked={rememberAc}
-								onChange={handleChangeRemember}
-								name="checkedB"
-								color="primary"
-							/>
-						}
-						label="Remember my account"
 					/>
 					<LoginButton
 						title="Log In"

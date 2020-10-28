@@ -1,26 +1,24 @@
 import * as axios from "axios";
-import { getToken } from "../auth/storage";
 
 const baseURL = "http://it114118-fyp.herokuapp.com";
 
 const instance = axios.create({
 	baseURL: baseURL,
 	timeout: 5000,
-	// headers: { Authorization: "Bearer " + getToken },
+	headers: { Authorization: "Bearer " + localStorage.getItem("authToken") },
 });
 
-// instance.interceptors.request.use(
-// 	async (config) => {
-// 		const token = getToken;
-// 		config.headers = {
-// 			Authorization: "Bearer " + token,
-// 		};
-// 		return config;
-// 	},
-// 	(error) => {
-// 		Promise.reject(error);
-// 	}
-// );
+instance.interceptors.request.use(
+	async (config) => {
+		config.headers = {
+			Authorization: "Bearer " + localStorage.getItem("authToken"),
+		};
+		return config;
+	},
+	(error) => {
+		Promise.reject(error);
+	}
+);
 
 export async function submitLogin(id, password) {
 	const response = await instance
@@ -35,17 +33,4 @@ export async function submitLogin(id, password) {
 
 	// will return authToken (string)
 	return response == null ? null : response.data;
-}
-
-export async function fetchUser() {
-	await instance
-		.get("/api/user/me")
-		.then(function (response) {
-			console.log(response.data.name);
-			return true;
-		})
-		.catch(function (error) {
-			console.log(error);
-			return false;
-		});
 }
