@@ -1,12 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
-import {
-	// FormControlLabel,
-	// Checkbox,
-	Backdrop,
-	CircularProgress,
-	Snackbar,
-} from "@material-ui/core";
+import { Backdrop, CircularProgress } from "@material-ui/core";
 
 import * as axios from "axios";
 

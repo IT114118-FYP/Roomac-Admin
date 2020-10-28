@@ -19,6 +19,7 @@ import TimetableScreen from "./app/screens/TimetableScreen";
 
 import * as axios from "axios";
 import { ProtectedRoute } from "./app/components/ProtectedRoute";
+import LoginConfirmScreen from "./app/screens/LoginConfirmScreen";
 
 const baseURL = "http://it114118-fyp.herokuapp.com";
 
