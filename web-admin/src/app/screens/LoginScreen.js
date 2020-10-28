@@ -14,6 +14,7 @@ import { storeToken } from "../auth/storage";
 
 import * as axios from "axios";
 import routes from "../navigation/routes";
+import SnackbarAlert from "../components/SnackbarAlert";
 
 const baseURL = "http://it114118-fyp.herokuapp.com";
 
@@ -167,24 +168,11 @@ class LoginScreen extends React.Component {
 						<CircularProgress color="inherit" />
 					</Backdrop>
 
-					<Snackbar
+					<SnackbarAlert
 						open={this.state.loginFailed}
-						autoHideDuration={5000}
-						anchorOrigin={{
-							vertical: "top",
-							horizontal: "right",
-						}}
 						onClose={() => this.setState({ loginFailed: false })}
-					>
-						<MuiAlert
-							elevation={6}
-							variant="filled"
-							severity="error"
-						>
-							Login Failed! Check if email or password is
-							incorrect
-						</MuiAlert>
-					</Snackbar>
+						alertText="Login Failed! Check if email or password is incorrect"
+					/>
 				</div>
 			);
 		}

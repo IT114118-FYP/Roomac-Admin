@@ -50,7 +50,7 @@ const headCells = [
 		id: "code",
 		numeric: false,
 		disablePadding: true,
-		label: "Programe Codes",
+		label: "Programme Codes",
 	},
 	{
 		id: "engName",
@@ -96,7 +96,7 @@ function EnhancedTableHead(props) {
 						}
 						checked={rowCount > 0 && numSelected === rowCount}
 						onChange={onSelectAllClick}
-						inputProps={{ "aria-label": "select all desserts" }}
+						inputProps={{ "aria-label": "select all programs" }}
 					/>
 				</TableCell>
 				{headCells.map((headCell) => (
@@ -252,7 +252,7 @@ export default function ProgramTable({ programs }) {
 
 	const handleSelectAllClick = (event) => {
 		if (event.target.checked) {
-			const newSelecteds = programs.map((n) => n.name);
+			const newSelecteds = programs.map((n) => n.code);
 			setSelected(newSelecteds);
 			return;
 		}
@@ -320,20 +320,22 @@ export default function ProgramTable({ programs }) {
 									page * rowsPerPage,
 									page * rowsPerPage + rowsPerPage
 								)
-								.map((row, index) => {
-									const isItemSelected = isSelected(row.code);
+								.map((program, index) => {
+									const isItemSelected = isSelected(
+										program.code
+									);
 									const labelId = `enhanced-table-checkbox-${index}`;
 
 									return (
 										<TableRow
 											hover
 											onClick={(event) =>
-												handleClick(event, row.code)
+												handleClick(event, program.code)
 											}
 											role="checkbox"
 											aria-checked={isItemSelected}
 											tabIndex={-1}
-											key={row.code}
+											key={program.code}
 											selected={isItemSelected}
 										>
 											<TableCell padding="checkbox">
@@ -350,16 +352,16 @@ export default function ProgramTable({ programs }) {
 												scope="row"
 												padding="none"
 											>
-												{row.code}
+												{program.code}
 											</TableCell>
 											<TableCell align="left">
-												{row.engName}
+												{program.engName}
 											</TableCell>
 											<TableCell align="left">
-												{row.chiName}
+												{program.chiName}
 											</TableCell>
 											<TableCell align="left">
-												{row.cnName}
+												{program.cnName}
 											</TableCell>
 										</TableRow>
 									);
