@@ -20,6 +20,8 @@ instance.interceptors.request.use(
 	}
 );
 
+export { instance };
+
 export async function submitLogin(id, password) {
 	const response = await instance
 		.post("/api/login", {

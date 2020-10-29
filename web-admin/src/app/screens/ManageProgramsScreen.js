@@ -16,26 +16,7 @@ import NavDrawer from "../components/NavDrawer";
 import ProgramTable from "../components/programs/ProgramTable";
 import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
-
-const baseURL = "http://it114118-fyp.herokuapp.com";
-
-const instance = axios.create({
-	baseURL: baseURL,
-	timeout: 5000,
-	headers: { Authorization: "Bearer " + localStorage.getItem("authToken") },
-});
-
-instance.interceptors.request.use(
-	async (config) => {
-		config.headers = {
-			Authorization: "Bearer " + localStorage.getItem("authToken"),
-		};
-		return config;
-	},
-	(error) => {
-		Promise.reject(error);
-	}
-);
+import { instance } from "../api/auth";
 
 function createData(code, engName, chiName, cnName) {
 	return { code, engName, chiName, cnName };

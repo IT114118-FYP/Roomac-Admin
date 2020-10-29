@@ -1,28 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { Backdrop, CircularProgress } from "@material-ui/core";
-
-import * as axios from "axios";
-
-const baseURL = "http://it114118-fyp.herokuapp.com";
-
-const instance = axios.create({
-	baseURL: baseURL,
-	timeout: 5000,
-	headers: { Authorization: "Bearer " + localStorage.getItem("authToken") },
-});
-
-instance.interceptors.request.use(
-	async (config) => {
-		config.headers = {
-			Authorization: "Bearer " + localStorage.getItem("authToken"),
-		};
-		return config;
-	},
-	(error) => {
-		Promise.reject(error);
-	}
-);
+import { instance } from "../api/auth";
 
 export class ProtectedRoute extends React.Component {
 	constructor(props) {
