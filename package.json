@@ -4,7 +4,7 @@
   "scripts": {
     "start": "npm start --prefix web-admin",
     "postinstall": "npm install --prefix web-admin",
-    "build": "npm build --prefix web-admin"
+    "build": "npm run build --prefix web-admin"
   },
   "engines": {
     "node": "12.x"
