@@ -1,1 +1,0 @@
-npm start --prefix web-admin
