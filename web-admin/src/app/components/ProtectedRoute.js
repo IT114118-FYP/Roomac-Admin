@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { Backdrop, CircularProgress } from "@material-ui/core";
-import { instance } from "../api/auth";
+import { axiosInstance } from "../api/config";
+import FullscreenProgress from "./FullscreenProgress";
 
 export class ProtectedRoute extends React.Component {
 	constructor(props) {
@@ -26,7 +26,7 @@ export class ProtectedRoute extends React.Component {
 			return;
 		}
 
-		instance
+		axiosInstance
 			.get("/api/users/me")
 			.then((response) => {
 				this.setState({
@@ -48,16 +48,7 @@ export class ProtectedRoute extends React.Component {
 		const { isLoading, error } = this.state;
 
 		if (isLoading) {
-			return (
-				<Backdrop
-					open={true}
-					style={{
-						zIndex: 1,
-					}}
-				>
-					<CircularProgress color="inherit" />
-				</Backdrop>
-			);
+			return <FullscreenProgress open={true} />;
 		}
 
 		if (error) {

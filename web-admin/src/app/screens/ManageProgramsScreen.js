@@ -10,13 +10,18 @@ import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 import { withRouter } from "react-router-dom";
-import * as axios from "axios";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
 
+import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
 import ProgramTable from "../components/programs/ProgramTable";
 import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { instance } from "../api/auth";
+import FullscreenProgress from "../components/FullscreenProgress";
 
 function createData(code, engName, chiName, cnName) {
 	return { code, engName, chiName, cnName };
@@ -34,6 +39,11 @@ class ManageProgramsScreen extends React.Component {
 			newChineseName: "",
 			addNewError: false,
 			openConfirmation: false,
+
+			openEditProgram: false,
+			editCode: "",
+			editEnglishTitle: "",
+			editChineseTitle: "",
 		};
 	}
 	_isMounted = false;
@@ -48,7 +58,7 @@ class ManageProgramsScreen extends React.Component {
 	}
 
 	fetchPrograms = () => {
-		instance
+		axiosInstance
 			.get("/api/programs")
 			.then((response) => {
 				this.setState({
@@ -91,40 +101,76 @@ class ManageProgramsScreen extends React.Component {
 	};
 
 	handleAddNewProgram = async () => {
-		await instance
+		this.setState({ isLoading: true, openConfirmation: false });
+		await axiosInstance
 			.post("/api/programs", {
 				id: this.state.newCode,
 				title_en: this.state.newEnglishName,
 				title_hk: this.state.newChineseName,
 				title_cn: this.state.newChineseName,
 			})
-			.then(function (response) {
-				console.log(response);
+			.then(() => {
+				this.setState({ isLoading: false });
 			})
 			.catch(() => {
-				this.setState({ addNewError: true });
+				this.setState({ addNewError: true, isLoading: false });
 			});
-		this.handleConfirmation();
+		this.handleResetNewProgram();
 		this.fetchPrograms();
 	};
+
+	handleEditProgram = async () => {
+		this.setState({ isLoading: true, openEditProgram: false });
+		await axiosInstance
+			.patch(`/api/programs/${this.state.editCode}`, {
+				title_en: this.state.editEnglishTitle,
+				title_hk: this.state.editChineseTitle,
+				title_cn: this.state.editChineseTitle,
+			})
+			.then(() => {
+				this.setState({ isLoading: false });
+			})
+			.catch(() => {
+				this.setState({ addNewError: true, isLoading: false });
+			});
+		this.fetchPrograms();
+	};
+
+	handleDeleteProgram = async () => {
+		this.setState({ isLoading: true });
+		const codes = JSON.parse(localStorage.getItem("deleteCode"));
+		await codes.forEach((code) => {
+			axiosInstance
+				.delete(`/api/programs/${code}`)
+				.then(() => {
+					this.setState({ isLoading: false });
+				})
+				.catch(() => {
+					this.setState({ isLoading: false });
+				});
+		});
+		this.fetchPrograms();
+	};
+
+	handleOpenEdit = () => {
+		const code = localStorage.getItem("editCode");
+		const selectedProgram = this.state.programs.find(
+			(program) => program.code === code
+		);
+		this.setState({
+			openEditProgram: true,
+			editCode: selectedProgram.code,
+			editEnglishTitle: selectedProgram.engName,
+			editChineseTitle: selectedProgram.chiName,
+		});
+	};
+	handleCloseEdit = () => this.setState({ openEditProgram: false });
 
 	render() {
 		return (
 			<NavDrawer title="Manage Programmes">
 				<div>
 					<Accordion defaultExpanded>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="panel1a-content"
-							id="panel1a-header"
-						>
-							<Typography>View Programmes</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<ProgramTable programs={this.state.programs} />
-						</AccordionDetails>
-					</Accordion>
-					<Accordion>
 						<AccordionSummary
 							expandIcon={<ExpandMoreIcon />}
 							aria-controls="panel2a-content"
@@ -198,6 +244,23 @@ class ManageProgramsScreen extends React.Component {
 							</Button>
 						</AccordionActions>
 					</Accordion>
+
+					<Accordion defaultExpanded>
+						<AccordionSummary
+							expandIcon={<ExpandMoreIcon />}
+							aria-controls="panel1a-content"
+							id="panel1a-header"
+						>
+							<Typography>View Programmes</Typography>
+						</AccordionSummary>
+						<AccordionDetails>
+							<ProgramTable
+								programs={this.state.programs}
+								onEditClick={this.handleOpenEdit}
+								onDeleteProgram={this.handleDeleteProgram}
+							/>
+						</AccordionDetails>
+					</Accordion>
 				</div>
 
 				<SnackbarAlert
@@ -213,12 +276,75 @@ class ManageProgramsScreen extends React.Component {
 					onConfirm={this.handleAddNewProgram}
 					onClose={this.handleConfirmation}
 				>
-					{`Program Code: ${this.state.newCode}`}
-					<p />
-					{`English Title: ${this.state.newEnglishName}`}
-					<p />
+					{`Program Code: ${this.state.newCode} \n`}
+					{`English Title: ${this.state.newEnglishName} \n`}
 					{`Chinese Title: ${this.state.newChineseName}`}
 				</ConfirmDialog>
+
+				<FullscreenProgress open={this.state.isLoading} />
+
+				<Dialog
+					open={this.state.openEditProgram}
+					onClose={this.handleCloseEdit}
+					aria-labelledby="form-dialog-title"
+				>
+					<DialogTitle id="form-dialog-title">
+						Edit Programme
+					</DialogTitle>
+					<DialogContent>
+						<DialogContentText>
+							To edit this programme, please edit programme code,
+							English and Chinese title here. Leave it be if no
+							amendments are made.
+						</DialogContentText>
+						<TextField
+							value={this.state.editCode}
+							onChange={(text) =>
+								this.setState({ editCode: text.target.value })
+							}
+							autoFocus
+							margin="dense"
+							id="code"
+							label="Programme Code"
+							fullWidth
+						/>
+						<TextField
+							value={this.state.editEnglishTitle}
+							onChange={(text) =>
+								this.setState({
+									editEnglishTitle: text.target.value,
+								})
+							}
+							margin="dense"
+							id="title_en"
+							label="English Title"
+							fullWidth
+						/>
+						<TextField
+							value={this.state.editChineseTitle}
+							onChange={(text) =>
+								this.setState({
+									editChineseTitle: text.target.value,
+								})
+							}
+							margin="dense"
+							id="title_hk"
+							label="Chinese Title"
+							fullWidth
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={this.handleCloseEdit} color="primary">
+							Cancel
+						</Button>
+						<Button
+							onClick={this.handleEditProgram}
+							color="primary"
+						>
+							Finish
+						</Button>
+					</DialogActions>
+				</Dialog>
 			</NavDrawer>
 		);
 	}

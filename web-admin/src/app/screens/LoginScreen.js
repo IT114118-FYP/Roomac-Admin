@@ -1,21 +1,19 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Backdrop, CircularProgress } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import { Redirect, withRouter } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
 import { submitLogin } from "../api/auth";
+import { axiosInstance } from "../api/config";
+import { storeToken } from "../auth/storage";
+import routes from "../navigation/routes";
 import LoginField from "../components/forms/LoginField";
 import LoginButton from "../components/forms/LoginButton";
-import { storeToken } from "../auth/storage";
-
-import * as axios from "axios";
-import routes from "../navigation/routes";
 import SnackbarAlert from "../components/SnackbarAlert";
-
-import { instance } from "../api/auth";
+import FullscreenProgress from "../components/FullscreenProgress";
+import "./LoginScreen.css";
 
 const validationSchema = Yup.object().shape({
 	Email: Yup.string().required().min(4).label("Email"),
@@ -45,7 +43,7 @@ class LoginScreen extends React.Component {
 			return;
 		}
 
-		instance
+		axiosInstance
 			.get("/api/users/me")
 			.then((response) => {
 				this.setState({
@@ -85,6 +83,7 @@ class LoginScreen extends React.Component {
 		} else {
 			return (
 				<div
+					className="container"
 					style={{
 						display: "flex",
 						flexDirection: "column",
@@ -140,14 +139,8 @@ class LoginScreen extends React.Component {
 							/>
 						</>
 					</Formik>
-					<Backdrop
-						open={this.state.loading}
-						style={{
-							zIndex: 1,
-						}}
-					>
-						<CircularProgress color="inherit" />
-					</Backdrop>
+
+					<FullscreenProgress open={this.state.loading} />
 
 					<SnackbarAlert
 						open={this.state.loginFailed}

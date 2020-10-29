@@ -16,6 +16,7 @@ import Paper from "@material-ui/core/Paper";
 import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
 
@@ -161,9 +162,23 @@ const useToolbarStyles = makeStyles((theme) => ({
 }));
 
 // Top Bar (Header)
-const EnhancedTableToolbar = (props) => {
+const EnhancedTableToolbar = ({
+	onDeleteProgram,
+	onEditClick,
+	numSelected,
+	selected,
+}) => {
 	const classes = useToolbarStyles();
-	const { numSelected } = props;
+
+	const handleEdit = () => {
+		localStorage.setItem("editCode", selected[0]);
+		onEditClick();
+	};
+
+	const handleDelete = () => {
+		localStorage.setItem("deleteCode", JSON.stringify(selected));
+		onDeleteProgram();
+	};
 
 	return (
 		<Toolbar
@@ -192,11 +207,29 @@ const EnhancedTableToolbar = (props) => {
 			)}
 
 			{numSelected > 0 ? (
-				<Tooltip title="Delete">
-					<IconButton aria-label="delete">
-						<DeleteIcon />
-					</IconButton>
-				</Tooltip>
+				numSelected === 1 ? (
+					<>
+						<Tooltip title="Edit">
+							<IconButton aria-label="edit" onClick={handleEdit}>
+								<EditIcon />
+							</IconButton>
+						</Tooltip>
+						<Tooltip title="Delete">
+							<IconButton
+								aria-label="delete"
+								onClick={handleDelete}
+							>
+								<DeleteIcon />
+							</IconButton>
+						</Tooltip>
+					</>
+				) : (
+					<Tooltip title="Delete">
+						<IconButton aria-label="delete" onClick={handleDelete}>
+							<DeleteIcon />
+						</IconButton>
+					</Tooltip>
+				)
 			) : (
 				<Tooltip title="Filter list">
 					<IconButton aria-label="filter list">
@@ -236,7 +269,11 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function ProgramTable({ programs }) {
+export default function ProgramTable({
+	programs,
+	onEditClick,
+	onDeleteProgram,
+}) {
 	const classes = useStyles();
 	const [order, setOrder] = React.useState("asc");
 	const [orderBy, setOrderBy] = React.useState("code");
@@ -297,7 +334,12 @@ export default function ProgramTable({ programs }) {
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
-				<EnhancedTableToolbar numSelected={selected.length} />
+				<EnhancedTableToolbar
+					numSelected={selected.length}
+					onEditClick={onEditClick}
+					onDeleteProgram={onDeleteProgram}
+					selected={selected}
+				/>
 				<TableContainer>
 					<Table
 						className={classes.table}
