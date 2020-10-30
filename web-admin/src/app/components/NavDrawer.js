@@ -20,6 +20,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import EventIcon from "@material-ui/icons/Event";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import HistoryIcon from "@material-ui/icons/History";
+import BusinessIcon from "@material-ui/icons/Business";
 import PeopleIcon from "@material-ui/icons/People";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
@@ -94,6 +95,12 @@ function ResponsiveDrawer({ window, title, children }) {
 			</List>
 			<Divider />
 			<List>
+				<DrawerItem
+					title="Manage Branches"
+					path={routes.MANAGE_BRANCHES}
+				>
+					<BusinessIcon />
+				</DrawerItem>
 				<DrawerItem title="Manage Rooms" path={routes.MANAGE_ROOMS}>
 					<MeetingRoomIcon />
 				</DrawerItem>

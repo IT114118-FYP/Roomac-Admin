@@ -6,5 +6,6 @@ export default {
 	MANAGE_ROOMS: "/rooms",
 	MANAGE_USERS: "/users",
 	MANAGE_PROGRAMMES: "/programs",
+	MANAGE_BRANCHES: "/branches",
 	RULES_CONFIGURATION: "/rules",
 };

@@ -16,62 +16,60 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
-// import ProgramTable from "../components/programs/ProgramTable";
+import { axiosInstance } from "../api/config";
 import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
-import { Tooltip } from "@material-ui/core";
 
-function createData(id, engName, chiName, cnName) {
-	return { id, engName, chiName, cnName };
+function createData(id, title_en, title_hk, title_cn) {
+	return { id, title_en, title_hk, title_cn };
 }
 
-const programHeadCells = [
+const branchHeadCells = [
 	{
 		id: "id",
 		numeric: false,
 		disablePadding: true,
-		label: "Programme Codes",
+		label: "Branch ID",
 	},
 	{
-		id: "engName",
+		id: "title_en",
 		numeric: false,
 		disablePadding: false,
 		label: "English Name",
 	},
 	{
-		id: "chiName",
+		id: "title_hk",
 		numeric: false,
 		disablePadding: false,
 		label: "Chinese Name (traditional)",
 	},
 	{
-		id: "cnName",
+		id: "title_cn",
 		numeric: false,
 		disablePadding: false,
 		label: "Chinese Name (simplified)",
 	},
 ];
 
-class ManageProgramsScreen extends React.Component {
+class ManageBranchesScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			isLoading: true,
-			rawPrograms: [],
-			programs: [],
+			rawBranches: [],
+			branches: [],
 
-			newCode: "",
+			newID: "",
 			newEnglishName: "",
 			newChineseName: "",
 			addNewError: false,
 			openConfirmation: false,
 
-			openEditProgram: false,
-			editCode: "",
+			openEdit: false,
+			editID: "",
 			editEnglishTitle: "",
 			editChineseTitle: "",
 		};
@@ -80,35 +78,35 @@ class ManageProgramsScreen extends React.Component {
 
 	componentDidMount() {
 		this._isMounted = true;
-		this.fetchPrograms();
+		this.fetchBranches();
 	}
 
 	componentWillUnmount() {
 		this._isMounted = false;
 	}
 
-	fetchPrograms = () => {
+	fetchBranches = () => {
 		axiosInstance
-			.get("/api/programs")
+			.get("/api/branches")
 			.then((response) => {
 				this.setState({
-					rawPrograms: response.data,
+					rawBranches: response.data,
 					isLoading: false,
 				});
 
-				var newPro = [];
-				for (let i = 0; i < this.state.rawPrograms.length; i++) {
-					newPro.push(
+				var newBranches = [];
+				for (let i = 0; i < this.state.rawBranches.length; i++) {
+					newBranches.push(
 						createData(
-							this.state.rawPrograms[i].id,
-							this.state.rawPrograms[i].title_en,
-							this.state.rawPrograms[i].title_hk,
-							this.state.rawPrograms[i].title_cn
+							this.state.rawBranches[i].id,
+							this.state.rawBranches[i].title_en,
+							this.state.rawBranches[i].title_hk,
+							this.state.rawBranches[i].title_cn
 						)
 					);
 				}
 				this.setState({
-					programs: newPro,
+					branches: newBranches,
 				});
 			})
 			.catch(() => {
@@ -116,9 +114,9 @@ class ManageProgramsScreen extends React.Component {
 			});
 	};
 
-	handleResetNewProgram = () => {
+	handleResetAdd = () => {
 		this.setState({
-			newCode: "",
+			newID: "",
 			newEnglishName: "",
 			newChineseName: "",
 		});
@@ -130,11 +128,11 @@ class ManageProgramsScreen extends React.Component {
 		});
 	};
 
-	handleAddNewProgram = async () => {
+	handleAddNewBranch = async () => {
 		this.setState({ isLoading: true, openConfirmation: false });
 		await axiosInstance
-			.post("/api/programs", {
-				id: this.state.newCode,
+			.post("/api/branches", {
+				id: this.state.newID,
 				title_en: this.state.newEnglishName,
 				title_hk: this.state.newChineseName,
 				title_cn: this.state.newChineseName,
@@ -145,32 +143,14 @@ class ManageProgramsScreen extends React.Component {
 			.catch(() => {
 				this.setState({ addNewError: true, isLoading: false });
 			});
-		this.handleResetNewProgram();
-		this.fetchPrograms();
+		this.handleResetAdd();
+		this.fetchBranches();
 	};
 
-	handleOpenEdit = () => {
-		const id = localStorage.getItem("editCode");
-		const selectedProgram = this.state.programs.find(
-			(program) => program.id === id
-		);
-		this.setState({
-			openEditProgram: true,
-			editCode: selectedProgram.id,
-			editEnglishTitle: selectedProgram.engName,
-			editChineseTitle: selectedProgram.chiName,
-		});
-	};
-
-	handleCloseEdit = () => {
-		this.setState({ openEditProgram: false });
-		localStorage.removeItem("editCode");
-	};
-
-	handleEditProgram = async () => {
-		this.setState({ isLoading: true, openEditProgram: false });
+	handleEdit = async () => {
+		this.setState({ isLoading: true, openEdit: false });
 		await axiosInstance
-			.patch(`/api/programs/${this.state.editCode}`, {
+			.patch(`/api/branches/${this.state.editID}`, {
 				title_en: this.state.editEnglishTitle,
 				title_hk: this.state.editChineseTitle,
 				title_cn: this.state.editChineseTitle,
@@ -181,30 +161,43 @@ class ManageProgramsScreen extends React.Component {
 			.catch(() => {
 				this.setState({ addNewError: true, isLoading: false });
 			});
-		localStorage.removeItem("editCode");
-		this.fetchPrograms();
+		this.fetchBranches();
 	};
 
-	handleDeleteProgram = async () => {
+	handleDelete = async () => {
 		this.setState({ isLoading: true });
-		const codes = JSON.parse(localStorage.getItem("deleteCode"));
-		codes.forEach(async (code) => {
-			await axiosInstance
-				.delete(`/api/programs/${code}`)
-				.then(() => {
-					this.setState({ isLoading: false });
-				})
-				.catch(() => {
-					this.setState({ isLoading: false });
-				});
-			localStorage.removeItem("deleteCode");
-			this.fetchPrograms();
+		const branches = JSON.parse(localStorage.getItem("deleteBranch"));
+		await axiosInstance
+			.delete("/api/branches", {
+				ids: branches,
+			})
+			.catch((error) => console.log(error));
+		localStorage.removeItem("deleteBranch");
+		this.setState({ isLoading: false });
+		this.fetchBranches();
+	};
+
+	handleOpenEdit = () => {
+		const branchID = localStorage.getItem("editBranch");
+		const selected = this.state.branches.find(
+			(branch) => branch.id === branchID
+		);
+		this.setState({
+			openEdit: true,
+			editID: selected.id,
+			editEnglishTitle: selected.title_en,
+			editChineseTitle: selected.title_hk,
 		});
+	};
+
+	handleCloseEdit = () => {
+		this.setState({ openEdit: false });
+		localStorage.removeItem("editBranch");
 	};
 
 	render() {
 		return (
-			<NavDrawer title="Manage Programmes">
+			<NavDrawer title="Manage Branches">
 				<div>
 					<Accordion defaultExpanded>
 						<AccordionSummary
@@ -212,21 +205,23 @@ class ManageProgramsScreen extends React.Component {
 							aria-controls="panel2a-content"
 							id="panel2a-header"
 						>
-							<Typography>Add New Programmes</Typography>
+							<Typography>Add New Branch</Typography>
 						</AccordionSummary>
 						<AccordionDetails>
 							<Grid container spacing={3}>
 								<Grid item xs={3}>
 									<TextField
-										value={this.state.newCode}
+										value={this.state.newID}
 										onChange={(e) =>
 											this.setState({
-												newCode: e.target.value,
+												newID: e.target.value,
 											})
 										}
-										id="code"
-										label="Code"
-										fullWidth
+										id="id"
+										label="ID"
+										style={{
+											width: "100%",
+										}}
 									/>
 								</Grid>
 								<Grid item xs={3}>
@@ -239,7 +234,9 @@ class ManageProgramsScreen extends React.Component {
 										}
 										id="engName"
 										label="English Name"
-										fullWidth
+										style={{
+											width: "100%",
+										}}
 									/>
 								</Grid>
 								<Grid item xs={3}>
@@ -252,17 +249,16 @@ class ManageProgramsScreen extends React.Component {
 										}
 										id="chiName"
 										label="Chinese Name"
-										fullWidth
+										style={{
+											width: "100%",
+										}}
 									/>
 								</Grid>
 							</Grid>
 						</AccordionDetails>
 						<Divider />
 						<AccordionActions>
-							<Button
-								size="small"
-								onClick={this.handleResetNewProgram}
-							>
+							<Button size="small" onClick={this.handleResetAdd}>
 								Clear
 							</Button>
 							<Button
@@ -281,17 +277,17 @@ class ManageProgramsScreen extends React.Component {
 							aria-controls="panel1a-content"
 							id="panel1a-header"
 						>
-							<Typography>View Programmes</Typography>
+							<Typography>View Branches</Typography>
 						</AccordionSummary>
 						<AccordionDetails>
 							<DataTable
-								title="Programes"
-								editTag="editCode"
-								deleteTag="deleteCode"
-								headCells={programHeadCells}
-								data={this.state.programs}
+								title="Branches"
+								editTag="editBranch"
+								deleteTag="deleteBranches"
+								headCells={branchHeadCells}
+								data={this.state.branches}
 								onEdit={this.handleOpenEdit}
-								onDelete={this.handleDeleteProgram}
+								onDelete={this.handleDelete}
 							/>
 						</AccordionDetails>
 					</Accordion>
@@ -307,46 +303,38 @@ class ManageProgramsScreen extends React.Component {
 				<ConfirmDialog
 					title="Confirm Details"
 					open={this.state.openConfirmation}
-					onConfirm={this.handleAddNewProgram}
+					onConfirm={this.handleAddNewBranch}
 					onClose={this.handleConfirmation}
 				>
-					{`Program Code: ${this.state.newCode}`} <p />
-					{`English Title: ${this.state.newEnglishName}`}
-					<p />
-					{`Chinese Title: ${this.state.newChineseName}`}
+					{`Branch ID: ${this.state.newID}, `}
+					{`${this.state.newEnglishName}, `}
+					{`${this.state.newChineseName}`}
 				</ConfirmDialog>
 
 				<FullscreenProgress open={this.state.isLoading} />
 
 				<Dialog
-					open={this.state.openEditProgram}
+					open={this.state.openEdit}
 					onClose={this.handleCloseEdit}
 					aria-labelledby="form-dialog-title"
 				>
 					<DialogTitle id="form-dialog-title">
-						Edit Programme
+						Edit Branch
 					</DialogTitle>
 					<DialogContent>
 						<DialogContentText>
-							To edit this programme, please edit programme code,
-							English and Chinese title here. Leave it be if no
-							amendments are made.
+							To edit this branch, please edit branch id, English
+							and Chinese title here. Leave it be if no amendments
+							are made.
 						</DialogContentText>
-
-						<Tooltip
-							title="This field cannot be edited. Instead, create a new program with the new programme code."
-							placement="right"
-							arrow
-						>
-							<TextField
-								value={this.state.editCode}
-								disabled
-								margin="dense"
-								id="code"
-								label="Programme Code"
-								fullWidth
-							/>
-						</Tooltip>
+						<TextField
+							value={this.state.editID}
+							disabled
+							margin="dense"
+							id="id"
+							label="Branch ID"
+							fullWidth
+						/>
 						<TextField
 							value={this.state.editEnglishTitle}
 							onChange={(text) =>
@@ -377,10 +365,7 @@ class ManageProgramsScreen extends React.Component {
 						<Button onClick={this.handleCloseEdit} color="primary">
 							Cancel
 						</Button>
-						<Button
-							onClick={this.handleEditProgram}
-							color="primary"
-						>
+						<Button onClick={this.handleEdit} color="primary">
 							Finish
 						</Button>
 					</DialogActions>
@@ -390,4 +375,4 @@ class ManageProgramsScreen extends React.Component {
 	}
 }
 
-export default withRouter(ManageProgramsScreen);
+export default withRouter(ManageBranchesScreen);

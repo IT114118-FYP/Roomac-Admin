@@ -13,6 +13,7 @@ import TimetableScreen from "./app/screens/TimetableScreen";
 
 import { ProtectedRoute } from "./app/components/ProtectedRoute";
 import ManageProgramsScreen from "./app/screens/ManageProgramsScreen";
+import ManageBranchesScreen from "./app/screens/ManageBranchesScreen";
 
 function App() {
 	return (
@@ -36,6 +37,10 @@ function App() {
 
 				<ProtectedRoute path={routes.ACTIVITY_LOG}>
 					<ActivityLogScreen />
+				</ProtectedRoute>
+
+				<ProtectedRoute path={routes.MANAGE_BRANCHES}>
+					<ManageBranchesScreen />
 				</ProtectedRoute>
 
 				<ProtectedRoute path={routes.MANAGE_ROOMS}>

@@ -46,33 +46,6 @@ function stableSort(array, comparator) {
 	return stabilizedThis.map((el) => el[0]);
 }
 
-const headCells = [
-	{
-		id: "code",
-		numeric: false,
-		disablePadding: true,
-		label: "Programme Codes",
-	},
-	{
-		id: "engName",
-		numeric: false,
-		disablePadding: false,
-		label: "English Name",
-	},
-	{
-		id: "chiName",
-		numeric: false,
-		disablePadding: false,
-		label: "Chinese Name (traditional)",
-	},
-	{
-		id: "cnName",
-		numeric: false,
-		disablePadding: false,
-		label: "Chinese Name (simplified)",
-	},
-];
-
 function EnhancedTableHead(props) {
 	const {
 		classes,
@@ -82,6 +55,7 @@ function EnhancedTableHead(props) {
 		numSelected,
 		rowCount,
 		onRequestSort,
+		headCells,
 	} = props;
 	const createSortHandler = (property) => (event) => {
 		onRequestSort(event, property);
@@ -97,7 +71,7 @@ function EnhancedTableHead(props) {
 						}
 						checked={rowCount > 0 && numSelected === rowCount}
 						onChange={onSelectAllClick}
-						inputProps={{ "aria-label": "select all programs" }}
+						inputProps={{ "aria-label": "select all rows" }}
 					/>
 				</TableCell>
 				{headCells.map((headCell) => (
@@ -161,23 +135,27 @@ const useToolbarStyles = makeStyles((theme) => ({
 	},
 }));
 
-// Top Bar (Header)
 const EnhancedTableToolbar = ({
-	onDeleteProgram,
-	onEditClick,
+	title,
+	onDelete,
+	onEdit,
 	numSelected,
 	selected,
+	clearSelected,
+	editTag,
+	deleteTag,
 }) => {
 	const classes = useToolbarStyles();
 
 	const handleEdit = () => {
-		localStorage.setItem("editCode", selected[0]);
-		onEditClick();
+		localStorage.setItem(editTag, selected[0]);
+		onEdit();
 	};
 
 	const handleDelete = () => {
-		localStorage.setItem("deleteCode", JSON.stringify(selected));
-		onDeleteProgram();
+		localStorage.setItem(deleteTag, JSON.stringify(selected));
+		onDelete();
+		clearSelected();
 	};
 
 	return (
@@ -202,7 +180,7 @@ const EnhancedTableToolbar = ({
 					id="tableTitle"
 					component="div"
 				>
-					Programmes
+					{title}
 				</Typography>
 			)}
 
@@ -269,14 +247,18 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function ProgramTable({
-	programs,
-	onEditClick,
-	onDeleteProgram,
+export default function DataTable({
+	title,
+	headCells,
+	data,
+	onEdit,
+	onDelete,
+	editTag,
+	deleteTag,
 }) {
 	const classes = useStyles();
 	const [order, setOrder] = React.useState("asc");
-	const [orderBy, setOrderBy] = React.useState("code");
+	const [orderBy, setOrderBy] = React.useState(headCells[0].id);
 	const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -289,12 +271,14 @@ export default function ProgramTable({
 
 	const handleSelectAllClick = (event) => {
 		if (event.target.checked) {
-			const newSelecteds = programs.map((n) => n.code);
+			const newSelecteds = data.map((n) => n.id);
 			setSelected(newSelecteds);
 			return;
 		}
 		setSelected([]);
 	};
+
+	const clearSelected = () => setSelected([]);
 
 	const handleClick = (event, name) => {
 		const selectedIndex = selected.indexOf(name);
@@ -312,13 +296,10 @@ export default function ProgramTable({
 				selected.slice(selectedIndex + 1)
 			);
 		}
-
 		setSelected(newSelected);
 	};
 
-	const handleChangePage = (event, newPage) => {
-		setPage(newPage);
-	};
+	const handleChangePage = (newPage) => setPage(newPage);
 
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(parseInt(event.target.value, 10));
@@ -328,17 +309,20 @@ export default function ProgramTable({
 	const isSelected = (name) => selected.indexOf(name) !== -1;
 
 	const emptyRows =
-		rowsPerPage -
-		Math.min(rowsPerPage, programs.length - page * rowsPerPage);
+		rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
+					title={title}
 					numSelected={selected.length}
-					onEditClick={onEditClick}
-					onDeleteProgram={onDeleteProgram}
 					selected={selected}
+					clearSelected={clearSelected}
+					editTag={editTag}
+					deleteTag={deleteTag}
+					onEdit={onEdit}
+					onDelete={onDelete}
 				/>
 				<TableContainer>
 					<Table
@@ -350,34 +334,32 @@ export default function ProgramTable({
 						<EnhancedTableHead
 							classes={classes}
 							numSelected={selected.length}
+							headCells={headCells}
 							order={order}
 							orderBy={orderBy}
 							onSelectAllClick={handleSelectAllClick}
 							onRequestSort={handleRequestSort}
-							rowCount={programs.length}
+							rowCount={data.length}
 						/>
 						<TableBody>
-							{stableSort(programs, getComparator(order, orderBy))
+							{stableSort(data, getComparator(order, orderBy))
 								.slice(
 									page * rowsPerPage,
 									page * rowsPerPage + rowsPerPage
 								)
-								.map((program, index) => {
-									const isItemSelected = isSelected(
-										program.code
-									);
+								.map((item, index) => {
+									const isItemSelected = isSelected(item.id);
 									const labelId = `enhanced-table-checkbox-${index}`;
-
 									return (
 										<TableRow
 											hover
 											onClick={(event) =>
-												handleClick(event, program.code)
+												handleClick(event, item.id)
 											}
 											role="checkbox"
 											aria-checked={isItemSelected}
 											tabIndex={-1}
-											key={program.code}
+											key={item.id}
 											selected={isItemSelected}
 										>
 											<TableCell padding="checkbox">
@@ -388,23 +370,17 @@ export default function ProgramTable({
 													}}
 												/>
 											</TableCell>
-											<TableCell
-												component="th"
-												id={labelId}
-												scope="row"
-												padding="none"
-											>
-												{program.code}
-											</TableCell>
-											<TableCell align="left">
-												{program.engName}
-											</TableCell>
-											<TableCell align="left">
-												{program.chiName}
-											</TableCell>
-											<TableCell align="left">
-												{program.cnName}
-											</TableCell>
+
+											{Object.keys(item).map((key) => {
+												return (
+													<TableCell
+														align="left"
+														key={key}
+													>
+														{item[key]}
+													</TableCell>
+												);
+											})}
 										</TableRow>
 									);
 								})}
@@ -423,7 +399,7 @@ export default function ProgramTable({
 				<TablePagination
 					rowsPerPageOptions={[5, 10, 25]}
 					component="div"
-					count={programs.length}
+					count={data.length}
 					rowsPerPage={rowsPerPage}
 					page={page}
 					onChangePage={handleChangePage}
