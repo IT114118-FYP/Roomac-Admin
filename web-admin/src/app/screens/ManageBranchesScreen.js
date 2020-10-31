@@ -164,19 +164,20 @@ class ManageBranchesScreen extends React.Component {
 		this.fetchBranches();
 	};
 
-	handleDelete = async () => {
+	handleDelete = () => {
 		this.setState({ isLoading: true });
-		const branches = JSON.parse(localStorage.getItem("deleteBranch"));
-		await axiosInstance
-			.delete("/api/branches", {
-				// use either one
-				// ids: ["CW"],
-				ids: branches,
-			})
-			.catch((error) => console.log(error));
+		let branches = JSON.parse(localStorage.getItem("deleteBranch"));
 		localStorage.removeItem("deleteBranch");
-		this.setState({ isLoading: false });
-		this.fetchBranches();
+		axiosInstance
+			.delete("/api/branches", { data: { ids: branches } })
+			.then(() => {
+				this.setState({ isLoading: false });
+				this.fetchBranches();
+			})
+			.catch((errors) => {
+				console.log(errors);
+				this.setState({ isLoading: false });
+			});
 
 		// This still Works
 		// branches.forEach(async (branch) => {
