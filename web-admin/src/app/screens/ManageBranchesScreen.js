@@ -169,12 +169,29 @@ class ManageBranchesScreen extends React.Component {
 		const branches = JSON.parse(localStorage.getItem("deleteBranch"));
 		await axiosInstance
 			.delete("/api/branches", {
+				// use either one
+				// ids: ["CW"],
 				ids: branches,
 			})
 			.catch((error) => console.log(error));
 		localStorage.removeItem("deleteBranch");
 		this.setState({ isLoading: false });
 		this.fetchBranches();
+
+		// This still Works
+		// branches.forEach(async (branch) => {
+		// 	await axiosInstance
+		// 		.delete(`/api/branches/${branch}`)
+		// 		.then(() => {
+		// 			this.setState({ isLoading: false });
+		// 		})
+		// 		.catch(() => {
+		// 			this.setState({ isLoading: false });
+		// 		});
+		// 	localStorage.removeItem("deleteBranch");
+		// 	this.setState({ isLoading: false });
+		// 	this.fetchBranches();
+		// });
 	};
 
 	handleOpenEdit = () => {
@@ -283,7 +300,7 @@ class ManageBranchesScreen extends React.Component {
 							<DataTable
 								title="Branches"
 								editTag="editBranch"
-								deleteTag="deleteBranches"
+								deleteTag="deleteBranch"
 								headCells={branchHeadCells}
 								data={this.state.branches}
 								onEdit={this.handleOpenEdit}

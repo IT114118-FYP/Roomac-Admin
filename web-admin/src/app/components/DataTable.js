@@ -299,7 +299,9 @@ export default function DataTable({
 		setSelected(newSelected);
 	};
 
-	const handleChangePage = (newPage) => setPage(newPage);
+	const handleChangePage = (event, newPage) => {
+		setPage(newPage);
+	};
 
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(parseInt(event.target.value, 10));
