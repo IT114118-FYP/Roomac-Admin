@@ -15,15 +15,15 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import download from "downloadjs";
 
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
-// import ProgramTable from "../components/programs/ProgramTable";
 import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
-import { Tooltip } from "@material-ui/core";
+import { InputLabel, MenuItem, Select, Tooltip } from "@material-ui/core";
 
 function createData(id, engName, chiName, cnName) {
 	return { id, engName, chiName, cnName };
@@ -64,6 +64,8 @@ class ManageProgramsScreen extends React.Component {
 			rawPrograms: [],
 			programs: [],
 
+			searchTag: programHeadCells[0].id,
+
 			newCode: "",
 			newEnglishName: "",
 			newChineseName: "",
@@ -74,6 +76,8 @@ class ManageProgramsScreen extends React.Component {
 			editCode: "",
 			editEnglishTitle: "",
 			editChineseTitle: "",
+
+			file: null,
 		};
 	}
 	_isMounted = false;
@@ -121,6 +125,7 @@ class ManageProgramsScreen extends React.Component {
 			newCode: "",
 			newEnglishName: "",
 			newChineseName: "",
+			file: null,
 		});
 	};
 
@@ -132,19 +137,32 @@ class ManageProgramsScreen extends React.Component {
 
 	handleAddNewProgram = async () => {
 		this.setState({ isLoading: true, openConfirmation: false });
-		await axiosInstance
-			.post("/api/programs", {
-				id: this.state.newCode,
-				title_en: this.state.newEnglishName,
-				title_hk: this.state.newChineseName,
-				title_cn: this.state.newChineseName,
-			})
-			.then(() => {
-				this.setState({ isLoading: false });
-			})
-			.catch(() => {
-				this.setState({ addNewError: true, isLoading: false });
-			});
+		if (this.state.file != null) {
+			const body = new FormData();
+			body.append("file", this.state.file);
+			await axiosInstance
+				.post("/api/programs/import", body)
+				.then(() => {
+					this.setState({ isLoading: false });
+				})
+				.catch(() => {
+					this.setState({ addNewError: true, isLoading: false });
+				});
+		} else {
+			await axiosInstance
+				.post("/api/programs", {
+					id: this.state.newCode,
+					title_en: this.state.newEnglishName,
+					title_hk: this.state.newChineseName,
+					title_cn: this.state.newChineseName,
+				})
+				.then(() => {
+					this.setState({ isLoading: false });
+				})
+				.catch(() => {
+					this.setState({ addNewError: true, isLoading: false });
+				});
+		}
 		this.handleResetNewProgram();
 		this.fetchPrograms();
 	};
@@ -202,11 +220,70 @@ class ManageProgramsScreen extends React.Component {
 		});
 	};
 
+	handleExportProgram = async () => {
+		await axiosInstance
+			.get("/api/programs/export")
+			.then((response) => {
+				download(response.data, "programmes", "text/csv");
+				this.setState({ isLoading: false });
+			})
+			.catch(() => {
+				this.setState({ isLoading: false });
+			});
+		this.fetchPrograms();
+	};
+
+	handleFileChange = (event) => this.setState({ file: event.target.value });
+
 	render() {
 		return (
 			<NavDrawer title="Manage Programmes">
 				<div>
 					<Accordion defaultExpanded>
+						<AccordionSummary
+							expandIcon={<ExpandMoreIcon />}
+							aria-controls="fieldSearch"
+							id="fieldSearch"
+						>
+							<Typography>Search</Typography>
+						</AccordionSummary>
+						<AccordionDetails>
+							<Select
+								value={this.state.searchTag}
+								onChange={(event) => {
+									this.setState({
+										searchTag: event.target.value,
+									});
+								}}
+							>
+								{programHeadCells.map(({ id, label }) => (
+									<MenuItem key={id} value={id}>
+										{label}
+									</MenuItem>
+								))}
+							</Select>
+							<TextField
+								fullWidth
+								id="searchField"
+								label="Enter Search"
+								type="search"
+							/>
+						</AccordionDetails>
+						<Divider />
+						<AccordionActions>
+							<Button size="small" onClick={this.handleResetAdd}>
+								Clear
+							</Button>
+							<Button
+								size="small"
+								color="primary"
+								onClick={this.handleConfirmation}
+							>
+								Search
+							</Button>
+						</AccordionActions>
+					</Accordion>
+					<Accordion>
 						<AccordionSummary
 							expandIcon={<ExpandMoreIcon />}
 							aria-controls="panel2a-content"
@@ -215,50 +292,71 @@ class ManageProgramsScreen extends React.Component {
 							<Typography>Add New Programmes</Typography>
 						</AccordionSummary>
 						<AccordionDetails>
-							<Grid container spacing={3}>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newCode}
-										onChange={(e) =>
-											this.setState({
-												newCode: e.target.value,
-											})
-										}
-										id="code"
-										label="Code"
-										fullWidth
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newEnglishName}
-										onChange={(e) =>
-											this.setState({
-												newEnglishName: e.target.value,
-											})
-										}
-										id="engName"
-										label="English Name"
-										fullWidth
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newChineseName}
-										onChange={(e) =>
-											this.setState({
-												newChineseName: e.target.value,
-											})
-										}
-										id="chiName"
-										label="Chinese Name"
-										fullWidth
-									/>
-								</Grid>
-							</Grid>
+							<InputLabel>
+								<TextField
+									value={this.state.newCode}
+									onChange={(e) =>
+										this.setState({
+											newCode: e.target.value,
+										})
+									}
+									id="code"
+									label="Code"
+									fullWidth
+								/>
+							</InputLabel>
+
+							<InputLabel>
+								<TextField
+									value={this.state.newEnglishName}
+									onChange={(e) =>
+										this.setState({
+											newEnglishName: e.target.value,
+										})
+									}
+									id="engName"
+									label="English Name"
+									fullWidth
+								/>
+							</InputLabel>
+							<InputLabel>
+								<TextField
+									value={this.state.newChineseName}
+									onChange={(e) =>
+										this.setState({
+											newChineseName: e.target.value,
+										})
+									}
+									id="chiName"
+									label="Chinese Name"
+									fullWidth
+								/>
+							</InputLabel>
 						</AccordionDetails>
 						<Divider />
 						<AccordionActions>
+							<label>
+								<input
+									style={{ display: "none" }}
+									id="upload-file"
+									name="upload-file"
+									type="file"
+									onChange={(e) =>
+										this.setState({
+											newCode: e.target.value,
+										})
+									}
+								/>
+
+								<Button
+									color="primary"
+									variant="contained"
+									size="small"
+									component="span"
+								>
+									Import Excel File
+								</Button>
+							</label>
 							<Button
 								size="small"
 								onClick={this.handleResetNewProgram}
@@ -294,6 +392,16 @@ class ManageProgramsScreen extends React.Component {
 								onDelete={this.handleDeleteProgram}
 							/>
 						</AccordionDetails>
+
+						<AccordionActions>
+							<Button
+								size="small"
+								color="primary"
+								onClick={this.handleExportProgram}
+							>
+								Export Programmes
+							</Button>
+						</AccordionActions>
 					</Accordion>
 				</div>
 

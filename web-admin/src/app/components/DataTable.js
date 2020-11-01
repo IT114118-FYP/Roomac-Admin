@@ -19,6 +19,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import SearchIcon from "@material-ui/icons/Search";
 
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
@@ -158,6 +159,16 @@ const EnhancedTableToolbar = ({
 		clearSelected();
 	};
 
+	const TableButton = ({ title, onClick, children }) => {
+		return (
+			<Tooltip title={title}>
+				<IconButton aria-label={title} onClick={onClick}>
+					{children}
+				</IconButton>
+			</Tooltip>
+		);
+	};
+
 	return (
 		<Toolbar
 			className={clsx(classes.root, {
@@ -187,33 +198,27 @@ const EnhancedTableToolbar = ({
 			{numSelected > 0 ? (
 				numSelected === 1 ? (
 					<>
-						<Tooltip title="Edit">
-							<IconButton aria-label="edit" onClick={handleEdit}>
-								<EditIcon />
-							</IconButton>
-						</Tooltip>
-						<Tooltip title="Delete">
-							<IconButton
-								aria-label="delete"
-								onClick={handleDelete}
-							>
-								<DeleteIcon />
-							</IconButton>
-						</Tooltip>
+						<TableButton title="Edit" onClick={handleEdit}>
+							<EditIcon />
+						</TableButton>
+						<TableButton title="Delete" onClick={handleDelete}>
+							<DeleteIcon />
+						</TableButton>
 					</>
 				) : (
-					<Tooltip title="Delete">
-						<IconButton aria-label="delete" onClick={handleDelete}>
-							<DeleteIcon />
-						</IconButton>
-					</Tooltip>
+					<TableButton title="Delete" onClick={handleDelete}>
+						<DeleteIcon />
+					</TableButton>
 				)
 			) : (
-				<Tooltip title="Filter list">
-					<IconButton aria-label="filter list">
+				<>
+					<TableButton title="Search">
+						<SearchIcon />
+					</TableButton>
+					<TableButton title="Filter list">
 						<FilterListIcon />
-					</IconButton>
-				</Tooltip>
+					</TableButton>
+				</>
 			)}
 		</Toolbar>
 	);

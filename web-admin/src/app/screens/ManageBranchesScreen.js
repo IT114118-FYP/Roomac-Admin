@@ -22,6 +22,7 @@ import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
+import { MenuItem, Select } from "@material-ui/core";
 
 function createData(id, title_en, title_hk, title_cn) {
 	return { id, title_en, title_hk, title_cn };
@@ -61,6 +62,8 @@ class ManageBranchesScreen extends React.Component {
 			isLoading: true,
 			rawBranches: [],
 			branches: [],
+
+			searchTag: branchHeadCells[0].id,
 
 			newID: "",
 			newEnglishName: "",
@@ -178,21 +181,6 @@ class ManageBranchesScreen extends React.Component {
 				console.log(errors);
 				this.setState({ isLoading: false });
 			});
-
-		// This still Works
-		// branches.forEach(async (branch) => {
-		// 	await axiosInstance
-		// 		.delete(`/api/branches/${branch}`)
-		// 		.then(() => {
-		// 			this.setState({ isLoading: false });
-		// 		})
-		// 		.catch(() => {
-		// 			this.setState({ isLoading: false });
-		// 		});
-		// 	localStorage.removeItem("deleteBranch");
-		// 	this.setState({ isLoading: false });
-		// 	this.fetchBranches();
-		// });
 	};
 
 	handleOpenEdit = () => {
@@ -218,6 +206,50 @@ class ManageBranchesScreen extends React.Component {
 			<NavDrawer title="Manage Branches">
 				<div>
 					<Accordion defaultExpanded>
+						<AccordionSummary
+							expandIcon={<ExpandMoreIcon />}
+							aria-controls="fieldSearch"
+							id="fieldSearch"
+						>
+							<Typography>Search</Typography>
+						</AccordionSummary>
+						<AccordionDetails>
+							<Select
+								value={this.state.searchTag}
+								onChange={(event) => {
+									this.setState({
+										searchTag: event.target.value,
+									});
+								}}
+							>
+								{branchHeadCells.map(({ id, label }) => (
+									<MenuItem key={id} value={id}>
+										{label}
+									</MenuItem>
+								))}
+							</Select>
+							<TextField
+								fullWidth
+								id="searchField"
+								label="Enter Search"
+								type="search"
+							/>
+						</AccordionDetails>
+						<Divider />
+						<AccordionActions>
+							<Button size="small" onClick={this.handleResetAdd}>
+								Clear
+							</Button>
+							<Button
+								size="small"
+								color="primary"
+								onClick={this.handleConfirmation}
+							>
+								Search
+							</Button>
+						</AccordionActions>
+					</Accordion>
+					<Accordion>
 						<AccordionSummary
 							expandIcon={<ExpandMoreIcon />}
 							aria-controls="panel2a-content"
@@ -289,26 +321,15 @@ class ManageBranchesScreen extends React.Component {
 						</AccordionActions>
 					</Accordion>
 
-					<Accordion defaultExpanded>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="panel1a-content"
-							id="panel1a-header"
-						>
-							<Typography>View Branches</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<DataTable
-								title="Branches"
-								editTag="editBranch"
-								deleteTag="deleteBranch"
-								headCells={branchHeadCells}
-								data={this.state.branches}
-								onEdit={this.handleOpenEdit}
-								onDelete={this.handleDelete}
-							/>
-						</AccordionDetails>
-					</Accordion>
+					<DataTable
+						title="Branches"
+						editTag="editBranch"
+						deleteTag="deleteBranch"
+						headCells={branchHeadCells}
+						data={this.state.branches}
+						onEdit={this.handleOpenEdit}
+						onDelete={this.handleDelete}
+					/>
 				</div>
 
 				<SnackbarAlert
