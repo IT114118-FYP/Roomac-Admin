@@ -220,11 +220,11 @@ class ManageProgramsScreen extends React.Component {
 		});
 	};
 
-	handleExportProgram = async () => {
-		await axiosInstance
-			.get("/api/programs/export")
+	handleExportProgram = () => {
+		axiosInstance
+			.get("/api/programs/export", { headers: 'Content-type: application/vnd.ms-excel', responseType: "blob" })
 			.then((response) => {
-				download(response.data, "programmes", "text/csv");
+				download(new Blob([response.data]), "programmes.xlsx", "application/vnd.ms-excel");
 				this.setState({ isLoading: false });
 			})
 			.catch(() => {
