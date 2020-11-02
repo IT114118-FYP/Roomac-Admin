@@ -14,7 +14,12 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { CircularProgress, MenuItem, Select } from "@material-ui/core";
+import {
+	CircularProgress,
+	LinearProgress,
+	MenuItem,
+	Select,
+} from "@material-ui/core";
 import download from "downloadjs";
 
 import NavDrawer from "../components/NavDrawer";
@@ -60,7 +65,8 @@ class ManageBranchesScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isLoading: true,
+			isLoading: false,
+			isTableLoading: false,
 			isExportLoading: false,
 			rawBranches: [],
 			branches: [],
@@ -95,12 +101,13 @@ class ManageBranchesScreen extends React.Component {
 	}
 
 	fetchBranches = () => {
+		this.setState({ isTableLoading: true });
 		axiosInstance
 			.get("/api/branches")
 			.then((response) => {
 				this.setState({
 					rawBranches: response.data,
-					isLoading: false,
+					isTableLoading: false,
 				});
 
 				var newBranches = [];
@@ -119,7 +126,7 @@ class ManageBranchesScreen extends React.Component {
 				});
 			})
 			.catch(() => {
-				this.setState({ isLoading: false });
+				this.setState({ isTableLoading: false });
 			});
 	};
 
@@ -282,6 +289,7 @@ class ManageBranchesScreen extends React.Component {
 				>
 					<Typography>View Programmes</Typography>
 				</AccordionSummary>
+				{props.isTableLoading && <LinearProgress />}
 				<AccordionDetails>
 					<DataTable
 						title="Branches"
@@ -291,6 +299,7 @@ class ManageBranchesScreen extends React.Component {
 						data={props.data}
 						onEdit={props.onEdit}
 						onDelete={props.onDelete}
+						onRefresh={props.onRefresh}
 					/>
 				</AccordionDetails>
 
@@ -371,7 +380,9 @@ class ManageBranchesScreen extends React.Component {
 						onEdit={this.handleEdit}
 						onDelete={this.handleDelete}
 						onExport={this.handleExport}
+						onRefresh={this.fetchBranches}
 						isExportLoading={this.state.isExportLoading}
+						isTableLoading={this.state.isTableLoading}
 					/>
 
 					<this.AddBranches

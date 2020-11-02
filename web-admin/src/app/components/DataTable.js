@@ -18,8 +18,8 @@ import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import SearchIcon from "@material-ui/icons/Search";
+import AutorenewIcon from "@material-ui/icons/Autorenew";
 
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
@@ -140,6 +140,7 @@ const EnhancedTableToolbar = ({
 	title,
 	onDelete,
 	onEdit,
+	onRefresh,
 	numSelected,
 	selected,
 	clearSelected,
@@ -215,8 +216,8 @@ const EnhancedTableToolbar = ({
 					<TableButton title="Search">
 						<SearchIcon />
 					</TableButton>
-					<TableButton title="Filter list">
-						<FilterListIcon />
+					<TableButton title="Refresh" onClick={onRefresh}>
+						<AutorenewIcon />
 					</TableButton>
 				</>
 			)}
@@ -258,6 +259,7 @@ export default function DataTable({
 	data,
 	onEdit,
 	onDelete,
+	onRefresh,
 	editTag,
 	deleteTag,
 }) {
@@ -330,6 +332,7 @@ export default function DataTable({
 					deleteTag={deleteTag}
 					onEdit={onEdit}
 					onDelete={onDelete}
+					onRefresh={onRefresh}
 				/>
 				<TableContainer>
 					<Table

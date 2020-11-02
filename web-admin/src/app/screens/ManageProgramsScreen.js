@@ -22,7 +22,13 @@ import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
-import { CircularProgress, MenuItem, Select, Tooltip } from "@material-ui/core";
+import {
+	CircularProgress,
+	LinearProgress,
+	MenuItem,
+	Select,
+	Tooltip,
+} from "@material-ui/core";
 import InputField from "../components/InputField";
 
 function createData(id, engName, chiName, cnName) {
@@ -60,7 +66,8 @@ class ManageProgramsScreen extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isLoading: true,
+			isLoading: false,
+			isTableLoading: false,
 			isExportLoading: false,
 			rawPrograms: [],
 			programs: [],
@@ -98,12 +105,13 @@ class ManageProgramsScreen extends React.Component {
 	}
 
 	fetchPrograms = () => {
+		this.setState({ isTableLoading: true });
 		axiosInstance
 			.get("/api/programs")
 			.then((response) => {
 				this.setState({
 					rawPrograms: response.data,
-					isLoading: false,
+					isTableLoading: false,
 				});
 
 				var newPro = [];
@@ -120,7 +128,7 @@ class ManageProgramsScreen extends React.Component {
 				this.setState({ programs: newPro });
 			})
 			.catch(() => {
-				this.setState({ isLoading: false });
+				this.setState({ isTableLoading: false });
 			});
 	};
 
@@ -300,6 +308,7 @@ class ManageProgramsScreen extends React.Component {
 				>
 					<Typography>View Programmes</Typography>
 				</AccordionSummary>
+				{props.isTableLoading && <LinearProgress />}
 				<AccordionDetails>
 					<DataTable
 						title="Programes"
@@ -405,8 +414,10 @@ class ManageProgramsScreen extends React.Component {
 						data={this.state.programs}
 						onEdit={this.handleOpenEdit}
 						onDelete={this.handleDeleteProgram}
+						onRefresh={this.fetchPrograms}
 						onExport={this.handleExportProgram}
 						isExportLoading={this.state.isExportLoading}
+						isTableLoading={this.state.isTableLoading}
 					/>
 
 					<this.AddPrograms
