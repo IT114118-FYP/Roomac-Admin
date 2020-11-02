@@ -8,7 +8,6 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-import Grid from "@material-ui/core/Grid";
 import { withRouter } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
@@ -23,7 +22,8 @@ import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
-import { InputLabel, MenuItem, Select, Tooltip } from "@material-ui/core";
+import { CircularProgress, MenuItem, Select, Tooltip } from "@material-ui/core";
+import InputField from "../components/InputField";
 
 function createData(id, engName, chiName, cnName) {
 	return { id, engName, chiName, cnName };
@@ -61,16 +61,22 @@ class ManageProgramsScreen extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: true,
+			isExportLoading: false,
 			rawPrograms: [],
 			programs: [],
 
 			searchTag: programHeadCells[0].id,
 
+			clearNewCode: false,
 			newCode: "",
 			newEnglishName: "",
 			newChineseName: "",
-			addNewError: false,
 			openConfirmation: false,
+
+			addNewError: false,
+			addNewSuccess: false,
+			deleteSuccess: false,
+			deleteFailed: false,
 
 			openEditProgram: false,
 			editCode: "",
@@ -111,9 +117,7 @@ class ManageProgramsScreen extends React.Component {
 						)
 					);
 				}
-				this.setState({
-					programs: newPro,
-				});
+				this.setState({ programs: newPro });
 			})
 			.catch(() => {
 				this.setState({ isLoading: false });
@@ -157,7 +161,7 @@ class ManageProgramsScreen extends React.Component {
 					title_cn: this.state.newChineseName,
 				})
 				.then(() => {
-					this.setState({ isLoading: false });
+					this.setState({ addNewSuccess: true, isLoading: false });
 				})
 				.catch(() => {
 					this.setState({ addNewError: true, isLoading: false });
@@ -203,212 +207,255 @@ class ManageProgramsScreen extends React.Component {
 		this.fetchPrograms();
 	};
 
-	handleDeleteProgram = async () => {
+	handleDeleteProgram = () => {
 		this.setState({ isLoading: true });
-		const codes = JSON.parse(localStorage.getItem("deleteCode"));
-		codes.forEach(async (code) => {
-			await axiosInstance
-				.delete(`/api/programs/${code}`)
-				.then(() => {
-					this.setState({ isLoading: false });
-				})
-				.catch(() => {
-					this.setState({ isLoading: false });
-				});
-			localStorage.removeItem("deleteCode");
-			this.fetchPrograms();
-		});
+		let programCodes = JSON.parse(localStorage.getItem("deleteCode"));
+		localStorage.removeItem("deleteBranch");
+		axiosInstance
+			.delete("/api/programs", { data: { ids: programCodes } })
+			.then(() => {
+				this.setState({ deleteSuccess: true, isLoading: false });
+				this.fetchPrograms();
+			})
+			.catch(() => {
+				this.setState({ deleteFailed: true, isLoading: false });
+			});
 	};
 
 	handleExportProgram = () => {
+		this.setState({ isExportLoading: true });
 		axiosInstance
-			.get("/api/programs/export", { headers: 'Content-type: application/vnd.ms-excel', responseType: "blob" })
+			.get("/api/programs/export", {
+				headers: "Content-type: application/vnd.ms-excel",
+				responseType: "blob",
+			})
 			.then((response) => {
-				download(new Blob([response.data]), "programmes.xlsx", "application/vnd.ms-excel");
-				this.setState({ isLoading: false });
+				download(
+					new Blob([response.data]),
+					"programmes.xlsx",
+					"application/vnd.ms-excel"
+				);
+				this.setState({ isExportLoading: false });
 			})
 			.catch(() => {
-				this.setState({ isLoading: false });
+				this.setState({ isExportLoading: false });
 			});
 		this.fetchPrograms();
 	};
 
 	handleFileChange = (event) => this.setState({ file: event.target.value });
 
+	SearchProgram(props) {
+		return (
+			<Accordion>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="search-program"
+					id="search-program"
+				>
+					<Typography>Search</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<Select
+						value={props.searchValue}
+						onChange={props.onSearchChange}
+					>
+						{programHeadCells.map(({ id, label }) => (
+							<MenuItem key={id} value={id}>
+								{label}
+							</MenuItem>
+						))}
+					</Select>
+					<TextField
+						fullWidth
+						id="searchField"
+						label="Enter Search"
+						type="search"
+					/>
+				</AccordionDetails>
+				<Divider />
+				<AccordionActions>
+					<Button size="small" onClick={props.onReset}>
+						Clear
+					</Button>
+					<Button
+						size="small"
+						color="primary"
+						onClick={props.onSearch}
+					>
+						Search
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
+	ViewPrograms(props) {
+		return (
+			<Accordion defaultExpanded>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="view-program"
+					id="view-program"
+				>
+					<Typography>View Programmes</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<DataTable
+						title="Programes"
+						editTag="editCode"
+						deleteTag="deleteCode"
+						headCells={programHeadCells}
+						data={props.data}
+						onEdit={props.onEdit}
+						onDelete={props.onDelete}
+					/>
+				</AccordionDetails>
+
+				<AccordionActions>
+					{props.isExportLoading && <CircularProgress size={24} />}
+					<Button
+						size="small"
+						color="primary"
+						onClick={props.onExport}
+					>
+						Export Programmes
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
+	AddPrograms(props) {
+		return (
+			<Accordion>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="new-program"
+					id="new-program"
+				>
+					<Typography>Add New Programmes</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<InputField
+						onBlur={props.onBlurCode}
+						id="code"
+						label="Code"
+						fullWidth
+					/>
+					<InputField
+						onBlur={props.onBlurEnglish}
+						id="engName"
+						label="English Name"
+						fullWidth
+					/>
+					<InputField
+						onBlur={props.onBlurChinese}
+						id="chiName"
+						label="Chinese Name"
+						fullWidth
+					/>
+				</AccordionDetails>
+				<Divider />
+				<AccordionActions>
+					<label>
+						<input
+							style={{ display: "none" }}
+							id="upload-file"
+							name="upload-file"
+							type="file"
+							onChange={props.onUpload}
+						/>
+						<Button
+							color="primary"
+							variant="contained"
+							size="small"
+							component="span"
+						>
+							Import Excel File
+						</Button>
+					</label>
+					<Button size="small" onClick={props.onRest}>
+						Clear
+					</Button>
+					<Button size="small" color="primary" onClick={props.onAdd}>
+						Add
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
 	render() {
 		return (
 			<NavDrawer title="Manage Programmes">
 				<div>
-					<Accordion defaultExpanded>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="fieldSearch"
-							id="fieldSearch"
-						>
-							<Typography>Search</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<Select
-								value={this.state.searchTag}
-								onChange={(event) => {
-									this.setState({
-										searchTag: event.target.value,
-									});
-								}}
-							>
-								{programHeadCells.map(({ id, label }) => (
-									<MenuItem key={id} value={id}>
-										{label}
-									</MenuItem>
-								))}
-							</Select>
-							<TextField
-								fullWidth
-								id="searchField"
-								label="Enter Search"
-								type="search"
-							/>
-						</AccordionDetails>
-						<Divider />
-						<AccordionActions>
-							<Button size="small" onClick={this.handleResetAdd}>
-								Clear
-							</Button>
-							<Button
-								size="small"
-								color="primary"
-								onClick={this.handleConfirmation}
-							>
-								Search
-							</Button>
-						</AccordionActions>
-					</Accordion>
-					<Accordion>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="panel2a-content"
-							id="panel2a-header"
-						>
-							<Typography>Add New Programmes</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<InputLabel>
-								<TextField
-									value={this.state.newCode}
-									onChange={(e) =>
-										this.setState({
-											newCode: e.target.value,
-										})
-									}
-									id="code"
-									label="Code"
-									fullWidth
-								/>
-							</InputLabel>
+					<this.SearchProgram
+						searchValue={this.state.searchTag}
+						onSearchChange={(e) => {
+							this.setState({
+								searchTag: e.target.value,
+							});
+						}}
+						onSearch={this.handleConfirmation}
+						onReset={this.handleResetAdd}
+					/>
 
-							<InputLabel>
-								<TextField
-									value={this.state.newEnglishName}
-									onChange={(e) =>
-										this.setState({
-											newEnglishName: e.target.value,
-										})
-									}
-									id="engName"
-									label="English Name"
-									fullWidth
-								/>
-							</InputLabel>
-							<InputLabel>
-								<TextField
-									value={this.state.newChineseName}
-									onChange={(e) =>
-										this.setState({
-											newChineseName: e.target.value,
-										})
-									}
-									id="chiName"
-									label="Chinese Name"
-									fullWidth
-								/>
-							</InputLabel>
-						</AccordionDetails>
-						<Divider />
-						<AccordionActions>
-							<label>
-								<input
-									style={{ display: "none" }}
-									id="upload-file"
-									name="upload-file"
-									type="file"
-									onChange={(e) =>
-										this.setState({
-											newCode: e.target.value,
-										})
-									}
-								/>
+					<this.ViewPrograms
+						data={this.state.programs}
+						onEdit={this.handleOpenEdit}
+						onDelete={this.handleDeleteProgram}
+						onExport={this.handleExportProgram}
+						isExportLoading={this.state.isExportLoading}
+					/>
 
-								<Button
-									color="primary"
-									variant="contained"
-									size="small"
-									component="span"
-								>
-									Import Excel File
-								</Button>
-							</label>
-							<Button
-								size="small"
-								onClick={this.handleResetNewProgram}
-							>
-								Clear
-							</Button>
-							<Button
-								size="small"
-								color="primary"
-								onClick={this.handleConfirmation}
-							>
-								Add
-							</Button>
-						</AccordionActions>
-					</Accordion>
-
-					<Accordion defaultExpanded>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="panel1a-content"
-							id="panel1a-header"
-						>
-							<Typography>View Programmes</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<DataTable
-								title="Programes"
-								editTag="editCode"
-								deleteTag="deleteCode"
-								headCells={programHeadCells}
-								data={this.state.programs}
-								onEdit={this.handleOpenEdit}
-								onDelete={this.handleDeleteProgram}
-							/>
-						</AccordionDetails>
-
-						<AccordionActions>
-							<Button
-								size="small"
-								color="primary"
-								onClick={this.handleExportProgram}
-							>
-								Export Programmes
-							</Button>
-						</AccordionActions>
-					</Accordion>
+					<this.AddPrograms
+						onBlurCode={(e) =>
+							this.setState({ newCode: e.target.value })
+						}
+						onBlurEnglish={(e) =>
+							this.setState({ newEnglishName: e.target.value })
+						}
+						onBlurChinese={(e) =>
+							this.setState({ newChineseName: e.target.value })
+						}
+						onUpload={(e) =>
+							this.setState({ newCode: e.target.value })
+						}
+						onReset={this.handleResetNewProgram}
+						onAdd={this.handleConfirmation}
+					/>
 				</div>
 
 				<SnackbarAlert
 					open={this.state.addNewError}
 					onClose={() => this.setState({ addNewError: false })}
 					alertText="Add Failed! Check all input fields for incorrect values"
+					severity="error"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.addNewSuccess}
+					onClose={() => this.setState({ addNewSuccess: false })}
+					alertText="Add Success"
+					severity="success"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.deleteSuccess}
+					onClose={() => this.setState({ deleteSuccess: false })}
+					alertText="Delete Success"
+					severity="success"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.deleteFailed}
+					onClose={() => this.setState({ deleteFailed: false })}
+					alertText="Delete Failed"
+					severity="error"
 					autoHideDuration={3000}
 				/>
 

@@ -8,13 +8,14 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
-import Grid from "@material-ui/core/Grid";
 import { withRouter } from "react-router-dom";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import { CircularProgress, MenuItem, Select } from "@material-ui/core";
+import download from "downloadjs";
 
 import NavDrawer from "../components/NavDrawer";
 import { axiosInstance } from "../api/config";
@@ -22,7 +23,7 @@ import SnackbarAlert from "../components/SnackbarAlert";
 import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
-import { MenuItem, Select } from "@material-ui/core";
+import InputField from "../components/InputField";
 
 function createData(id, title_en, title_hk, title_cn) {
 	return { id, title_en, title_hk, title_cn };
@@ -60,6 +61,7 @@ class ManageBranchesScreen extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: true,
+			isExportLoading: false,
 			rawBranches: [],
 			branches: [],
 
@@ -68,8 +70,12 @@ class ManageBranchesScreen extends React.Component {
 			newID: "",
 			newEnglishName: "",
 			newChineseName: "",
-			addNewError: false,
 			openConfirmation: false,
+
+			addNewError: false,
+			addNewSuccess: false,
+			deleteSuccess: false,
+			deleteFailed: false,
 
 			openEdit: false,
 			editID: "",
@@ -141,7 +147,7 @@ class ManageBranchesScreen extends React.Component {
 				title_cn: this.state.newChineseName,
 			})
 			.then(() => {
-				this.setState({ isLoading: false });
+				this.setState({ addNewSuccess: true, isLoading: false });
 			})
 			.catch(() => {
 				this.setState({ addNewError: true, isLoading: false });
@@ -174,12 +180,11 @@ class ManageBranchesScreen extends React.Component {
 		axiosInstance
 			.delete("/api/branches", { data: { ids: branches } })
 			.then(() => {
-				this.setState({ isLoading: false });
+				this.setState({ deleteSuccess: true, isLoading: false });
 				this.fetchBranches();
 			})
 			.catch((errors) => {
-				console.log(errors);
-				this.setState({ isLoading: false });
+				this.setState({ deleteFailed: true, isLoading: false });
 			});
 	};
 
@@ -201,134 +206,189 @@ class ManageBranchesScreen extends React.Component {
 		localStorage.removeItem("editBranch");
 	};
 
-	render() {
-		return (
-			<NavDrawer title="Manage Branches">
-				<div>
-					<Accordion defaultExpanded>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="fieldSearch"
-							id="fieldSearch"
-						>
-							<Typography>Search</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<Select
-								value={this.state.searchTag}
-								onChange={(event) => {
-									this.setState({
-										searchTag: event.target.value,
-									});
-								}}
-							>
-								{branchHeadCells.map(({ id, label }) => (
-									<MenuItem key={id} value={id}>
-										{label}
-									</MenuItem>
-								))}
-							</Select>
-							<TextField
-								fullWidth
-								id="searchField"
-								label="Enter Search"
-								type="search"
-							/>
-						</AccordionDetails>
-						<Divider />
-						<AccordionActions>
-							<Button size="small" onClick={this.handleResetAdd}>
-								Clear
-							</Button>
-							<Button
-								size="small"
-								color="primary"
-								onClick={this.handleConfirmation}
-							>
-								Search
-							</Button>
-						</AccordionActions>
-					</Accordion>
-					<Accordion>
-						<AccordionSummary
-							expandIcon={<ExpandMoreIcon />}
-							aria-controls="panel2a-content"
-							id="panel2a-header"
-						>
-							<Typography>Add New Branch</Typography>
-						</AccordionSummary>
-						<AccordionDetails>
-							<Grid container spacing={3}>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newID}
-										onChange={(e) =>
-											this.setState({
-												newID: e.target.value,
-											})
-										}
-										id="id"
-										label="ID"
-										style={{
-											width: "100%",
-										}}
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newEnglishName}
-										onChange={(e) =>
-											this.setState({
-												newEnglishName: e.target.value,
-											})
-										}
-										id="engName"
-										label="English Name"
-										style={{
-											width: "100%",
-										}}
-									/>
-								</Grid>
-								<Grid item xs={3}>
-									<TextField
-										value={this.state.newChineseName}
-										onChange={(e) =>
-											this.setState({
-												newChineseName: e.target.value,
-											})
-										}
-										id="chiName"
-										label="Chinese Name"
-										style={{
-											width: "100%",
-										}}
-									/>
-								</Grid>
-							</Grid>
-						</AccordionDetails>
-						<Divider />
-						<AccordionActions>
-							<Button size="small" onClick={this.handleResetAdd}>
-								Clear
-							</Button>
-							<Button
-								size="small"
-								color="primary"
-								onClick={this.handleConfirmation}
-							>
-								Add
-							</Button>
-						</AccordionActions>
-					</Accordion>
+	handleExport = () => {
+		this.setState({ isExportLoading: true });
+		axiosInstance
+			.get("/api/branches/export", {
+				headers: "Content-type: application/vnd.ms-excel",
+				responseType: "blob",
+			})
+			.then((response) => {
+				download(
+					new Blob([response.data]),
+					"branches.xlsx",
+					"application/vnd.ms-excel"
+				);
+				this.setState({ isExportLoading: false });
+			})
+			.catch(() => {
+				this.setState({ isExportLoading: false });
+			});
+		this.fetchBranches();
+	};
 
+	SearchBranch(props) {
+		return (
+			<Accordion>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="search-branch"
+					id="search-branch"
+				>
+					<Typography>Search</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<Select
+						value={props.searchValue}
+						onChange={props.onSearchChange}
+					>
+						{branchHeadCells.map(({ id, label }) => (
+							<MenuItem key={id} value={id}>
+								{label}
+							</MenuItem>
+						))}
+					</Select>
+					<TextField
+						fullWidth
+						id="searchField"
+						label="Enter Search"
+						type="search"
+					/>
+				</AccordionDetails>
+				<Divider />
+				<AccordionActions>
+					<Button size="small" onClick={props.onSearch}>
+						Clear
+					</Button>
+					<Button
+						size="small"
+						color="primary"
+						onClick={props.onReset}
+					>
+						Search
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
+	ViewBranches(props) {
+		return (
+			<Accordion defaultExpanded>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="view-branches"
+					id="view-branches"
+				>
+					<Typography>View Programmes</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
 					<DataTable
 						title="Branches"
 						editTag="editBranch"
 						deleteTag="deleteBranch"
 						headCells={branchHeadCells}
+						data={props.data}
+						onEdit={props.onEdit}
+						onDelete={props.onDelete}
+					/>
+				</AccordionDetails>
+
+				<AccordionActions>
+					{props.isExportLoading && <CircularProgress size={24} />}
+					<Button
+						size="small"
+						color="primary"
+						onClick={props.onExport}
+					>
+						Export Branches
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
+	AddBranches(props) {
+		return (
+			<Accordion>
+				<AccordionSummary
+					expandIcon={<ExpandMoreIcon />}
+					aria-controls="add-branches"
+					id="add-branches"
+				>
+					<Typography>Add New Branch</Typography>
+				</AccordionSummary>
+				<AccordionDetails>
+					<InputField
+						onBlur={props.onBlurID}
+						id="id"
+						label="ID"
+						fullWidth
+					/>
+					<InputField
+						onBlur={props.onBlurEnglish}
+						id="engName"
+						label="English Name"
+						fullWidth
+					/>
+					<InputField
+						onBlur={props.onBlurChinese}
+						id="chiName"
+						label="Chinese Name"
+						fullWidth
+					/>
+				</AccordionDetails>
+				<Divider />
+				<AccordionActions>
+					<Button size="small" onClick={props.onClear}>
+						Clear
+					</Button>
+					<Button size="small" color="primary" onClick={props.onAdd}>
+						Add
+					</Button>
+				</AccordionActions>
+			</Accordion>
+		);
+	}
+
+	render() {
+		return (
+			<NavDrawer title="Manage Branches">
+				<div>
+					<this.SearchBranch
+						searchValue={this.state.searchTag}
+						onSearchChange={(e) => {
+							this.setState({
+								searchTag: e.target.value,
+							});
+						}}
+						onSearch={this.handleConfirmation}
+						onReset={this.handleResetAdd}
+					/>
+
+					<this.ViewBranches
 						data={this.state.branches}
-						onEdit={this.handleOpenEdit}
+						onEdit={this.handleEdit}
 						onDelete={this.handleDelete}
+						onExport={this.handleExport}
+						isExportLoading={this.state.isExportLoading}
+					/>
+
+					<this.AddBranches
+						onBlurID={(e) =>
+							this.setState({ newID: e.target.value })
+						}
+						onBlurEnglish={(e) =>
+							this.setState({ newEnglishName: e.target.value })
+						}
+						onBlurChinese={(e) =>
+							this.setState({ newChineseName: e.target.value })
+						}
+						// onUpload={(e) =>
+						// 	this.setState({ newCode: e.target.value })
+						// }
+						onAdd={this.handleConfirmation}
+						onReset={this.handleResetAdd}
 					/>
 				</div>
 
@@ -336,6 +396,30 @@ class ManageBranchesScreen extends React.Component {
 					open={this.state.addNewError}
 					onClose={() => this.setState({ addNewError: false })}
 					alertText="Add Failed! Check all input fields for incorrect values"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.addNewSuccess}
+					onClose={() => this.setState({ addNewSuccess: false })}
+					alertText="Add Success"
+					severity="success"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.deleteSuccess}
+					onClose={() => this.setState({ deleteSuccess: false })}
+					alertText="Delete Success"
+					severity="success"
+					autoHideDuration={3000}
+				/>
+
+				<SnackbarAlert
+					open={this.state.deleteFailed}
+					onClose={() => this.setState({ deleteFailed: false })}
+					alertText="Delete Failed"
+					severity="error"
 					autoHideDuration={3000}
 				/>
 
