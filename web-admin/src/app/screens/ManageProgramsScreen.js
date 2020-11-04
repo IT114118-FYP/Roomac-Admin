@@ -1,66 +1,20 @@
 import React from "react";
-import Accordion from "@material-ui/core/Accordion";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
-import AccordionActions from "@material-ui/core/AccordionActions";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Divider from "@material-ui/core/Divider";
 import { withRouter } from "react-router-dom";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
-import DialogTitle from "@material-ui/core/DialogTitle";
 import download from "downloadjs";
 
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
 import SnackbarAlert from "../components/SnackbarAlert";
-import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
-import DataTable from "../components/DataTable";
-import {
-	CircularProgress,
-	LinearProgress,
-	MenuItem,
-	Select,
-	Tooltip,
-} from "@material-ui/core";
-import InputField from "../components/InputField";
+import ViewPrograms from "../components/programs/ViewPrograms";
+import { programHeadCells } from "../components/programs/config";
+import AddPrograms from "../components/programs/AddPrograms";
+import SearchPrograms from "../components/programs/SearchPrograms";
+import EditProgramDialog from "../components/programs/EditProgramDialog";
 
 function createData(id, engName, chiName, cnName) {
 	return { id, engName, chiName, cnName };
 }
-
-const programHeadCells = [
-	{
-		id: "id",
-		numeric: false,
-		disablePadding: true,
-		label: "Programme Codes",
-	},
-	{
-		id: "engName",
-		numeric: false,
-		disablePadding: false,
-		label: "English Name",
-	},
-	{
-		id: "chiName",
-		numeric: false,
-		disablePadding: false,
-		label: "Chinese Name (traditional)",
-	},
-	{
-		id: "cnName",
-		numeric: false,
-		disablePadding: false,
-		label: "Chinese Name (simplified)",
-	},
-];
 
 class ManageProgramsScreen extends React.Component {
 	constructor(props) {
@@ -73,12 +27,6 @@ class ManageProgramsScreen extends React.Component {
 			programs: [],
 
 			searchTag: programHeadCells[0].id,
-
-			clearNewCode: false,
-			newCode: "",
-			newEnglishName: "",
-			newChineseName: "",
-			openConfirmation: false,
 
 			addNewError: false,
 			addNewSuccess: false,
@@ -132,22 +80,7 @@ class ManageProgramsScreen extends React.Component {
 			});
 	};
 
-	handleResetNewProgram = () => {
-		this.setState({
-			newCode: "",
-			newEnglishName: "",
-			newChineseName: "",
-			file: null,
-		});
-	};
-
-	handleConfirmation = () => {
-		this.setState({
-			openConfirmation: !this.state.openConfirmation,
-		});
-	};
-
-	handleAddNewProgram = async () => {
+	handleAddNewProgram = async (code, eng, chi) => {
 		this.setState({ isLoading: true, openConfirmation: false });
 		if (this.state.file != null) {
 			const body = new FormData();
@@ -163,10 +96,10 @@ class ManageProgramsScreen extends React.Component {
 		} else {
 			await axiosInstance
 				.post("/api/programs", {
-					id: this.state.newCode,
-					title_en: this.state.newEnglishName,
-					title_hk: this.state.newChineseName,
-					title_cn: this.state.newChineseName,
+					id: code,
+					title_en: eng,
+					title_hk: chi,
+					title_cn: chi,
 				})
 				.then(() => {
 					this.setState({ addNewSuccess: true, isLoading: false });
@@ -175,7 +108,6 @@ class ManageProgramsScreen extends React.Component {
 					this.setState({ addNewError: true, isLoading: false });
 				});
 		}
-		this.handleResetNewProgram();
 		this.fetchPrograms();
 	};
 
@@ -253,164 +185,21 @@ class ManageProgramsScreen extends React.Component {
 
 	handleFileChange = (event) => this.setState({ file: event.target.value });
 
-	SearchProgram(props) {
-		return (
-			<Accordion>
-				<AccordionSummary
-					expandIcon={<ExpandMoreIcon />}
-					aria-controls="search-program"
-					id="search-program"
-				>
-					<Typography>Search</Typography>
-				</AccordionSummary>
-				<AccordionDetails>
-					<Select
-						value={props.searchValue}
-						onChange={props.onSearchChange}
-					>
-						{programHeadCells.map(({ id, label }) => (
-							<MenuItem key={id} value={id}>
-								{label}
-							</MenuItem>
-						))}
-					</Select>
-					<TextField
-						fullWidth
-						id="searchField"
-						label="Enter Search"
-						type="search"
-					/>
-				</AccordionDetails>
-				<Divider />
-				<AccordionActions>
-					<Button size="small" onClick={props.onReset}>
-						Clear
-					</Button>
-					<Button
-						size="small"
-						color="primary"
-						onClick={props.onSearch}
-					>
-						Search
-					</Button>
-				</AccordionActions>
-			</Accordion>
-		);
-	}
-
-	ViewPrograms(props) {
-		return (
-			<Accordion defaultExpanded>
-				<AccordionSummary
-					expandIcon={<ExpandMoreIcon />}
-					aria-controls="view-program"
-					id="view-program"
-				>
-					<Typography>View Programmes</Typography>
-				</AccordionSummary>
-				{props.isTableLoading && <LinearProgress />}
-				<AccordionDetails>
-					<DataTable
-						title="Programes"
-						editTag="editCode"
-						deleteTag="deleteCode"
-						headCells={programHeadCells}
-						data={props.data}
-						onEdit={props.onEdit}
-						onDelete={props.onDelete}
-					/>
-				</AccordionDetails>
-
-				<AccordionActions>
-					{props.isExportLoading && <CircularProgress size={24} />}
-					<Button
-						size="small"
-						color="primary"
-						onClick={props.onExport}
-					>
-						Export Programmes
-					</Button>
-				</AccordionActions>
-			</Accordion>
-		);
-	}
-
-	AddPrograms(props) {
-		return (
-			<Accordion>
-				<AccordionSummary
-					expandIcon={<ExpandMoreIcon />}
-					aria-controls="new-program"
-					id="new-program"
-				>
-					<Typography>Add New Programmes</Typography>
-				</AccordionSummary>
-				<AccordionDetails>
-					<InputField
-						onBlur={props.onBlurCode}
-						id="code"
-						label="Code"
-						fullWidth
-					/>
-					<InputField
-						onBlur={props.onBlurEnglish}
-						id="engName"
-						label="English Name"
-						fullWidth
-					/>
-					<InputField
-						onBlur={props.onBlurChinese}
-						id="chiName"
-						label="Chinese Name"
-						fullWidth
-					/>
-				</AccordionDetails>
-				<Divider />
-				<AccordionActions>
-					<label>
-						<input
-							style={{ display: "none" }}
-							id="upload-file"
-							name="upload-file"
-							type="file"
-							onChange={props.onUpload}
-						/>
-						<Button
-							color="primary"
-							variant="contained"
-							size="small"
-							component="span"
-						>
-							Import Excel File
-						</Button>
-					</label>
-					<Button size="small" onClick={props.onRest}>
-						Clear
-					</Button>
-					<Button size="small" color="primary" onClick={props.onAdd}>
-						Add
-					</Button>
-				</AccordionActions>
-			</Accordion>
-		);
-	}
-
 	render() {
 		return (
 			<NavDrawer title="Manage Programmes">
 				<div>
-					<this.SearchProgram
+					<SearchPrograms
 						searchValue={this.state.searchTag}
 						onSearchChange={(e) => {
 							this.setState({
 								searchTag: e.target.value,
 							});
 						}}
-						onSearch={this.handleConfirmation}
 						onReset={this.handleResetAdd}
 					/>
 
-					<this.ViewPrograms
+					<ViewPrograms
 						data={this.state.programs}
 						onEdit={this.handleOpenEdit}
 						onDelete={this.handleDeleteProgram}
@@ -420,21 +209,11 @@ class ManageProgramsScreen extends React.Component {
 						isTableLoading={this.state.isTableLoading}
 					/>
 
-					<this.AddPrograms
-						onBlurCode={(e) =>
-							this.setState({ newCode: e.target.value })
-						}
-						onBlurEnglish={(e) =>
-							this.setState({ newEnglishName: e.target.value })
-						}
-						onBlurChinese={(e) =>
-							this.setState({ newChineseName: e.target.value })
-						}
-						onUpload={(e) =>
-							this.setState({ newCode: e.target.value })
-						}
+					<AddPrograms
 						onReset={this.handleResetNewProgram}
-						onAdd={this.handleConfirmation}
+						onAdd={(code, eng, chi) => {
+							this.handleAddNewProgram(code, eng, chi);
+						}}
 					/>
 				</div>
 
@@ -470,87 +249,26 @@ class ManageProgramsScreen extends React.Component {
 					autoHideDuration={3000}
 				/>
 
-				<ConfirmDialog
-					title="Confirm Details"
-					open={this.state.openConfirmation}
-					onConfirm={this.handleAddNewProgram}
-					onClose={this.handleConfirmation}
-				>
-					{`Program Code: ${this.state.newCode}`} <p />
-					{`English Title: ${this.state.newEnglishName}`}
-					<p />
-					{`Chinese Title: ${this.state.newChineseName}`}
-				</ConfirmDialog>
-
 				<FullscreenProgress open={this.state.isLoading} />
 
-				<Dialog
+				<EditProgramDialog
 					open={this.state.openEditProgram}
+					onFinish={this.handleEditProgram}
 					onClose={this.handleCloseEdit}
-					aria-labelledby="form-dialog-title"
-				>
-					<DialogTitle id="form-dialog-title">
-						Edit Programme
-					</DialogTitle>
-					<DialogContent>
-						<DialogContentText>
-							To edit this programme, please edit programme code,
-							English and Chinese title here. Leave it be if no
-							amendments are made.
-						</DialogContentText>
-
-						<Tooltip
-							title="This field cannot be edited. Instead, create a new program with the new programme code."
-							placement="right"
-							arrow
-						>
-							<TextField
-								value={this.state.editCode}
-								disabled
-								margin="dense"
-								id="code"
-								label="Programme Code"
-								fullWidth
-							/>
-						</Tooltip>
-						<TextField
-							value={this.state.editEnglishTitle}
-							onChange={(text) =>
-								this.setState({
-									editEnglishTitle: text.target.value,
-								})
-							}
-							autoFocus
-							margin="dense"
-							id="title_en"
-							label="English Title"
-							fullWidth
-						/>
-						<TextField
-							value={this.state.editChineseTitle}
-							onChange={(text) =>
-								this.setState({
-									editChineseTitle: text.target.value,
-								})
-							}
-							margin="dense"
-							id="title_hk"
-							label="Chinese Title"
-							fullWidth
-						/>
-					</DialogContent>
-					<DialogActions>
-						<Button onClick={this.handleCloseEdit} color="primary">
-							Cancel
-						</Button>
-						<Button
-							onClick={this.handleEditProgram}
-							color="primary"
-						>
-							Finish
-						</Button>
-					</DialogActions>
-				</Dialog>
+					code={this.state.editCode}
+					englishTitle={this.state.editEnglishTitle}
+					setEnglishTitle={(text) =>
+						this.setState({
+							editEnglishTitle: text.target.value,
+						})
+					}
+					chineseTitle={this.state.editChineseTitle}
+					setChineseTitle={(text) =>
+						this.setState({
+							editChineseTitle: text.target.value,
+						})
+					}
+				/>
 			</NavDrawer>
 		);
 	}
