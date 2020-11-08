@@ -101,7 +101,7 @@ function ResponsiveDrawer({ window, title, children }) {
 				>
 					<BusinessIcon />
 				</DrawerItem>
-				<DrawerItem title="Manage Rooms" path={routes.MANAGE_ROOMS}>
+				<DrawerItem title="Manage Venues" path={routes.MANAGE_VENUES}>
 					<MeetingRoomIcon />
 				</DrawerItem>
 				<DrawerItem title="Manage Users" path={routes.MANAGE_USERS}>

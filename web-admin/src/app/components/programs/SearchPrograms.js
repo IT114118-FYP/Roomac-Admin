@@ -11,7 +11,6 @@ import Divider from "@material-ui/core/Divider";
 import { MenuItem, Select } from "@material-ui/core";
 
 import { programHeadCells } from "./config";
-import SearchBar from "../SearchBar";
 
 export default function SearchPrograms(props) {
 	return (

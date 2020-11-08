@@ -47,20 +47,52 @@ function stableSort(array, comparator) {
 	return stabilizedThis.map((el) => el[0]);
 }
 
-function EnhancedTableHead(props) {
-	const {
-		classes,
-		onSelectAllClick,
-		order,
-		orderBy,
-		numSelected,
-		rowCount,
-		onRequestSort,
-		headCells,
-	} = props;
+const getLabel = (id, labels) => {
+	const instance = labels.find((item, index) => {
+		if (item.id === id) {
+			return item;
+		} else return null;
+	});
+	if (instance) return instance.label;
+};
+
+const createHeadCells = (items, labels, ignoreKeys) => {
+	var temp = [];
+	for (let index = 0; index < Object.keys(items[0]).length; index++) {
+		if (!ignoreKeys.includes(Object.keys(items[0])[index])) {
+			const headCell = {
+				id: Object.keys(items[0])[index],
+				label: getLabel(Object.keys(items[0])[index], labels),
+				// label: Object.keys(items[0])[index],
+				numeric: false,
+				disablePadding: false,
+			};
+			temp.push(headCell);
+		}
+	}
+	return temp;
+};
+
+function EnhancedTableHead({
+	classes,
+	onSelectAllClick,
+	order,
+	orderBy,
+	numSelected,
+	rowCount,
+	onRequestSort,
+	headCells,
+}) {
 	const createSortHandler = (property) => (event) => {
 		onRequestSort(event, property);
 	};
+
+	// var filteredHeadCells = {};
+	// Object.assign(filteredHeadCells, headCells);
+	// ignoreKeys.forEach((property) => {
+	// 	delete filteredHeadCells[property];
+	// });
+	// console.log(filteredHeadCells);
 
 	return (
 		<TableHead>
@@ -255,20 +287,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DataTable({
 	title,
-	headCells,
 	data,
+	labels,
+	ignoreKeys,
+	editTag,
+	deleteTag,
 	onEdit,
 	onDelete,
 	onRefresh,
-	editTag,
-	deleteTag,
 }) {
 	const classes = useStyles();
+	const [headCellData, setHeadCellData] = React.useState(
+		createHeadCells(data, labels, ignoreKeys)
+	);
 	const [order, setOrder] = React.useState("asc");
-	const [orderBy, setOrderBy] = React.useState(headCells[0].id);
+	const [orderBy, setOrderBy] = React.useState(headCellData[0].id);
 	const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+	React.useEffect(() => {
+		console.log(headCellData);
+	}, []);
 
 	const handleRequestSort = (event, property) => {
 		const isAsc = orderBy === property && order === "asc";
@@ -278,7 +318,7 @@ export default function DataTable({
 
 	const handleSelectAllClick = (event) => {
 		if (event.target.checked) {
-			const newSelecteds = data.map((n) => n.id);
+			const newSelecteds = data.map((n) => n[headCellData[0].id]);
 			setSelected(newSelecteds);
 			return;
 		}
@@ -328,6 +368,7 @@ export default function DataTable({
 					numSelected={selected.length}
 					selected={selected}
 					clearSelected={clearSelected}
+					// ignoreKeys={ignoreKeys}
 					editTag={editTag}
 					deleteTag={deleteTag}
 					onEdit={onEdit}
@@ -344,7 +385,8 @@ export default function DataTable({
 						<EnhancedTableHead
 							classes={classes}
 							numSelected={selected.length}
-							headCells={headCells}
+							headCells={headCellData}
+							// ignoreKeys={ignoreKeys}
 							order={order}
 							orderBy={orderBy}
 							onSelectAllClick={handleSelectAllClick}
@@ -360,6 +402,12 @@ export default function DataTable({
 								.map((item, index) => {
 									const isItemSelected = isSelected(item.id);
 									const labelId = `enhanced-table-checkbox-${index}`;
+									// TODO
+									var filteredItem = {};
+									Object.assign(filteredItem, item);
+									ignoreKeys.forEach((property) => {
+										delete filteredItem[property];
+									});
 									return (
 										<TableRow
 											hover
@@ -381,16 +429,18 @@ export default function DataTable({
 												/>
 											</TableCell>
 
-											{Object.keys(item).map((key) => {
-												return (
-													<TableCell
-														align="left"
-														key={key}
-													>
-														{item[key]}
-													</TableCell>
-												);
-											})}
+											{Object.keys(filteredItem).map(
+												(key) => {
+													return (
+														<TableCell
+															align="left"
+															key={key}
+														>
+															{filteredItem[key]}
+														</TableCell>
+													);
+												}
+											)}
 										</TableRow>
 									);
 								})}
