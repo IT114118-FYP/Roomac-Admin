@@ -29,6 +29,7 @@ import ConfirmDialog from "../components/ConfirmDialog";
 import FullscreenProgress from "../components/FullscreenProgress";
 import DataTable from "../components/DataTable";
 import InputField from "../components/InputField";
+import ViewBranches from "../components/branches/ViewBranches";
 
 function createData(id, title_en, title_hk, title_cn) {
 	return { id, title_en, title_hk, title_cn };
@@ -364,7 +365,7 @@ class ManageBranchesScreen extends React.Component {
 		return (
 			<NavDrawer title="Manage Branches">
 				<div>
-					<this.SearchBranch
+					{/* <this.SearchBranch
 						searchValue={this.state.searchTag}
 						onSearchChange={(e) => {
 							this.setState({
@@ -373,9 +374,9 @@ class ManageBranchesScreen extends React.Component {
 						}}
 						onSearch={this.handleConfirmation}
 						onReset={this.handleResetAdd}
-					/>
+					/> */}
 
-					<this.ViewBranches
+					{/* <this.ViewBranches
 						data={this.state.branches}
 						onEdit={this.handleEdit}
 						onDelete={this.handleDelete}
@@ -383,7 +384,9 @@ class ManageBranchesScreen extends React.Component {
 						onRefresh={this.fetchBranches}
 						isExportLoading={this.state.isExportLoading}
 						isTableLoading={this.state.isTableLoading}
-					/>
+					/> */}
+
+					<ViewBranches />
 
 					<this.AddBranches
 						onBlurID={(e) =>

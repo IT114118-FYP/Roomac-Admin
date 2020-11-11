@@ -57,6 +57,7 @@ const getLabel = (id, labels) => {
 };
 
 const createHeadCells = (items, labels, ignoreKeys) => {
+	if (!items) return;
 	var temp = [];
 	for (let index = 0; index < Object.keys(items[0]).length; index++) {
 		if (!ignoreKeys.includes(Object.keys(items[0])[index])) {
@@ -297,7 +298,7 @@ export default function DataTable({
 	onRefresh,
 }) {
 	const classes = useStyles();
-	const [headCellData, setHeadCellData] = React.useState(
+	const [headCellData] = React.useState(
 		createHeadCells(data, labels, ignoreKeys)
 	);
 	const [order, setOrder] = React.useState("asc");
@@ -305,10 +306,6 @@ export default function DataTable({
 	const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-	React.useEffect(() => {
-		console.log(headCellData);
-	}, []);
 
 	const handleRequestSort = (event, property) => {
 		const isAsc = orderBy === property && order === "asc";

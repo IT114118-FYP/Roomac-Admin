@@ -13,8 +13,8 @@ import { deleteTag, editTag, title, ignoreKeys, labels } from "./config";
 import { axiosInstance } from "../../api/config";
 import download from "downloadjs";
 
-function ViewVenues(props) {
-	const [venues, setVenues] = useState([]);
+function ViewBranches(props) {
+	const [branches, setBranches] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
 
@@ -24,18 +24,18 @@ function ViewVenues(props) {
 
 	const fetchData = () => {
 		setLoading(true);
-		axiosInstance.get("api/venues").then(({ data }) => {
-			setVenues(data);
+		axiosInstance.get("api/branches").then(({ data }) => {
+			setBranches(data);
 			setLoading(false);
 		});
 	};
 
 	const handleDelete = () => {
 		setLoading(true);
-		let venues = JSON.parse(localStorage.getItem(deleteTag));
+		let branch = JSON.parse(localStorage.getItem(deleteTag));
 		localStorage.removeItem(deleteTag);
 		axiosInstance
-			.delete("/api/venues", { data: { ids: venues } })
+			.delete("/api/branches", { data: { ids: branch } })
 			.then(() => {
 				// this.setState({ deleteSuccess: true, isLoading: false });
 				// this.fetchPrograms();
@@ -50,14 +50,14 @@ function ViewVenues(props) {
 	const handleExport = () => {
 		setExporting(true);
 		axiosInstance
-			.get("/api/venues/export", {
+			.get("/api/branches/export", {
 				headers: "Content-type: application/vnd.ms-excel",
 				responseType: "blob",
 			})
 			.then((response) => {
 				download(
 					new Blob([response.data]),
-					"venues.xlsx",
+					"branches.xlsx",
 					"application/vnd.ms-excel"
 				);
 				setExporting(false);
@@ -71,17 +71,17 @@ function ViewVenues(props) {
 		<Accordion defaultExpanded>
 			<AccordionSummary
 				expandIcon={<ExpandMoreIcon />}
-				aria-controls="view-venue"
-				id="view-venue"
+				aria-controls="view-branch"
+				id="view-branch"
 			>
-				<Typography>View Venues</Typography>
+				<Typography>View Branches</Typography>
 			</AccordionSummary>
 			{isLoading && <LinearProgress />}
 			<AccordionDetails>
 				{!isLoading && (
 					<DataTable
 						title={title}
-						data={venues}
+						data={branches}
 						labels={labels}
 						ignoreKeys={ignoreKeys}
 						editTag={editTag}
@@ -103,4 +103,4 @@ function ViewVenues(props) {
 	);
 }
 
-export default ViewVenues;
+export default ViewBranches;

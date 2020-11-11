@@ -1,11 +1,11 @@
-const title = "Programms";
-const editTag = "editCode";
-const deleteTag = "deleteCode";
+const title = "Branches";
+const editTag = "editBranch";
+const deleteTag = "deleteBranch";
 
 const labels = [
 	{
 		id: "id",
-		label: "Programme Code",
+		label: "Branch ID",
 	},
 	{
 		id: "title_en",

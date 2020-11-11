@@ -7,10 +7,10 @@ import NavDrawer from "../components/NavDrawer";
 import SnackbarAlert from "../components/SnackbarAlert";
 import FullscreenProgress from "../components/FullscreenProgress";
 import ViewPrograms from "../components/programs/ViewPrograms";
-import { programHeadCells } from "../components/programs/config";
 import AddPrograms from "../components/programs/AddPrograms";
 import SearchPrograms from "../components/programs/SearchPrograms";
 import EditProgramDialog from "../components/programs/EditProgramDialog";
+import { Button } from "@material-ui/core";
 
 function createData(id, engName, chiName, cnName) {
 	return { id, engName, chiName, cnName };
@@ -21,12 +21,6 @@ class ManageProgramsScreen extends React.Component {
 		super(props);
 		this.state = {
 			isLoading: false,
-			isTableLoading: false,
-			isExportLoading: false,
-			rawPrograms: [],
-			programs: [],
-
-			searchTag: programHeadCells[0].id,
 
 			addNewError: false,
 			addNewSuccess: false,
@@ -46,6 +40,8 @@ class ManageProgramsScreen extends React.Component {
 	componentDidMount() {
 		this._isMounted = true;
 		this.fetchPrograms();
+
+		console.log(this.state.rawPrograms);
 	}
 
 	componentWillUnmount() {
@@ -61,19 +57,18 @@ class ManageProgramsScreen extends React.Component {
 					rawPrograms: response.data,
 					isTableLoading: false,
 				});
-
-				var newPro = [];
-				for (let i = 0; i < this.state.rawPrograms.length; i++) {
-					newPro.push(
-						createData(
-							this.state.rawPrograms[i].id,
-							this.state.rawPrograms[i].title_en,
-							this.state.rawPrograms[i].title_hk,
-							this.state.rawPrograms[i].title_cn
-						)
-					);
-				}
-				this.setState({ programs: newPro });
+				// var newPro = [];
+				// for (let i = 0; i < this.state.rawPrograms.length; i++) {
+				// 	newPro.push(
+				// 		createData(
+				// 			this.state.rawPrograms[i].id,
+				// 			this.state.rawPrograms[i].title_en,
+				// 			this.state.rawPrograms[i].title_hk,
+				// 			this.state.rawPrograms[i].title_cn
+				// 		)
+				// 	);
+				// }
+				// this.setState({ programs: newPro });
 			})
 			.catch(() => {
 				this.setState({ isTableLoading: false });
@@ -189,7 +184,7 @@ class ManageProgramsScreen extends React.Component {
 		return (
 			<NavDrawer title="Manage Programmes">
 				<div>
-					<SearchPrograms
+					{/* <SearchPrograms
 						searchValue={this.state.searchTag}
 						onSearchChange={(e) => {
 							this.setState({
@@ -197,18 +192,8 @@ class ManageProgramsScreen extends React.Component {
 							});
 						}}
 						onReset={this.handleResetAdd}
-					/>
-
-					<ViewPrograms
-						data={this.state.programs}
-						onEdit={this.handleOpenEdit}
-						onDelete={this.handleDeleteProgram}
-						onRefresh={this.fetchPrograms}
-						onExport={this.handleExportProgram}
-						isExportLoading={this.state.isExportLoading}
-						isTableLoading={this.state.isTableLoading}
-					/>
-
+					/> */}
+					<ViewPrograms />
 					<AddPrograms
 						onReset={this.handleResetNewProgram}
 						onAdd={(code, eng, chi) => {
