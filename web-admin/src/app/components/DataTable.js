@@ -13,7 +13,6 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import EditIcon from "@material-ui/icons/Edit";
@@ -76,11 +75,8 @@ const createHeadCells = (items, labels, ignoreKeys) => {
 
 function EnhancedTableHead({
 	classes,
-	onSelectAllClick,
 	order,
 	orderBy,
-	numSelected,
-	rowCount,
 	onRequestSort,
 	headCells,
 }) {
@@ -88,26 +84,9 @@ function EnhancedTableHead({
 		onRequestSort(event, property);
 	};
 
-	// var filteredHeadCells = {};
-	// Object.assign(filteredHeadCells, headCells);
-	// ignoreKeys.forEach((property) => {
-	// 	delete filteredHeadCells[property];
-	// });
-	// console.log(filteredHeadCells);
-
 	return (
 		<TableHead>
 			<TableRow>
-				<TableCell padding="checkbox">
-					<Checkbox
-						indeterminate={
-							numSelected > 0 && numSelected < rowCount
-						}
-						checked={rowCount > 0 && numSelected === rowCount}
-						onChange={onSelectAllClick}
-						inputProps={{ "aria-label": "select all rows" }}
-					/>
-				</TableCell>
 				{headCells.map((headCell) => (
 					<TableCell
 						key={headCell.id}
@@ -174,24 +153,21 @@ const EnhancedTableToolbar = ({
 	onDelete,
 	onEdit,
 	onRefresh,
-	numSelected,
-	selected,
-	clearSelected,
 	editTag,
 	deleteTag,
 }) => {
 	const classes = useToolbarStyles();
 
-	const handleEdit = () => {
-		localStorage.setItem(editTag, selected[0]);
-		onEdit();
-	};
+	// const handleEdit = () => {
+	// 	localStorage.setItem(editTag, selected[0]);
+	// 	onEdit();
+	// };
 
-	const handleDelete = () => {
-		localStorage.setItem(deleteTag, JSON.stringify(selected));
-		onDelete();
-		clearSelected();
-	};
+	// const handleDelete = () => {
+	// 	localStorage.setItem(deleteTag, JSON.stringify(selected));
+	// 	onDelete();
+	// 	clearSelected();
+	// };
 
 	const TableButton = ({ title, onClick, children }) => {
 		return (
@@ -204,63 +180,20 @@ const EnhancedTableToolbar = ({
 	};
 
 	return (
-		<Toolbar
-			className={clsx(classes.root, {
-				[classes.highlight]: numSelected > 0,
-			})}
-		>
-			{numSelected > 0 ? (
-				<Typography
-					className={classes.title}
-					color="inherit"
-					variant="subtitle1"
-					component="div"
-				>
-					{numSelected} selected
-				</Typography>
-			) : (
-				<Typography
-					className={classes.title}
-					variant="h6"
-					id="tableTitle"
-					component="div"
-				>
-					{title}
-				</Typography>
-			)}
-
-			{numSelected > 0 ? (
-				numSelected === 1 ? (
-					<>
-						<TableButton title="Edit" onClick={handleEdit}>
-							<EditIcon />
-						</TableButton>
-						<TableButton title="Delete" onClick={handleDelete}>
-							<DeleteIcon />
-						</TableButton>
-					</>
-				) : (
-					<TableButton title="Delete" onClick={handleDelete}>
-						<DeleteIcon />
-					</TableButton>
-				)
-			) : (
-				<>
-					<TableButton title="Search">
-						<SearchIcon />
-					</TableButton>
-					<TableButton title="Refresh" onClick={onRefresh}>
-						<AutorenewIcon />
-					</TableButton>
-				</>
-			)}
+		<Toolbar className={clsx(classes.root)}>
+			<TableButton title="Search">
+				<SearchIcon />
+			</TableButton>
+			<TableButton title="Refresh" onClick={onRefresh}>
+				<AutorenewIcon />
+			</TableButton>
 		</Toolbar>
 	);
 };
 
-EnhancedTableToolbar.propTypes = {
-	numSelected: PropTypes.number.isRequired,
-};
+// EnhancedTableToolbar.propTypes = {
+// 	numSelected: PropTypes.number.isRequired,
+// };
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -293,9 +226,11 @@ export default function DataTable({
 	ignoreKeys,
 	editTag,
 	deleteTag,
+	onClick,
 	onEdit,
 	onDelete,
 	onRefresh,
+	onExport,
 }) {
 	const classes = useStyles();
 	const [headCellData] = React.useState(
@@ -303,7 +238,7 @@ export default function DataTable({
 	);
 	const [order, setOrder] = React.useState("asc");
 	const [orderBy, setOrderBy] = React.useState(headCellData[0].id);
-	const [selected, setSelected] = React.useState([]);
+	// const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -313,35 +248,35 @@ export default function DataTable({
 		setOrderBy(property);
 	};
 
-	const handleSelectAllClick = (event) => {
-		if (event.target.checked) {
-			const newSelecteds = data.map((n) => n[headCellData[0].id]);
-			setSelected(newSelecteds);
-			return;
-		}
-		setSelected([]);
-	};
+	// const handleSelectAllClick = (event) => {
+	// 	if (event.target.checked) {
+	// 		const newSelecteds = data.map((n) => n[headCellData[0].id]);
+	// 		setSelected(newSelecteds);
+	// 		return;
+	// 	}
+	// 	setSelected([]);
+	// };
 
-	const clearSelected = () => setSelected([]);
+	// const clearSelected = () => setSelected([]);
 
-	const handleClick = (event, name) => {
-		const selectedIndex = selected.indexOf(name);
-		let newSelected = [];
+	// const handleClick = (event, name) => {
+	// 	const selectedIndex = selected.indexOf(name);
+	// 	let newSelected = [];
 
-		if (selectedIndex === -1) {
-			newSelected = newSelected.concat(selected, name);
-		} else if (selectedIndex === 0) {
-			newSelected = newSelected.concat(selected.slice(1));
-		} else if (selectedIndex === selected.length - 1) {
-			newSelected = newSelected.concat(selected.slice(0, -1));
-		} else if (selectedIndex > 0) {
-			newSelected = newSelected.concat(
-				selected.slice(0, selectedIndex),
-				selected.slice(selectedIndex + 1)
-			);
-		}
-		setSelected(newSelected);
-	};
+	// 	if (selectedIndex === -1) {
+	// 		newSelected = newSelected.concat(selected, name);
+	// 	} else if (selectedIndex === 0) {
+	// 		newSelected = newSelected.concat(selected.slice(1));
+	// 	} else if (selectedIndex === selected.length - 1) {
+	// 		newSelected = newSelected.concat(selected.slice(0, -1));
+	// 	} else if (selectedIndex > 0) {
+	// 		newSelected = newSelected.concat(
+	// 			selected.slice(0, selectedIndex),
+	// 			selected.slice(selectedIndex + 1)
+	// 		);
+	// 	}
+	// 	setSelected(newSelected);
+	// };
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -352,7 +287,7 @@ export default function DataTable({
 		setPage(0);
 	};
 
-	const isSelected = (name) => selected.indexOf(name) !== -1;
+	// const isSelected = (name) => selected.indexOf(name) !== -1;
 
 	const emptyRows =
 		rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
@@ -362,9 +297,9 @@ export default function DataTable({
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
 					title={title}
-					numSelected={selected.length}
-					selected={selected}
-					clearSelected={clearSelected}
+					// numSelected={selected.length}
+					// selected={selected}
+					// clearSelected={clearSelected}
 					// ignoreKeys={ignoreKeys}
 					editTag={editTag}
 					deleteTag={deleteTag}
@@ -381,12 +316,12 @@ export default function DataTable({
 					>
 						<EnhancedTableHead
 							classes={classes}
-							numSelected={selected.length}
+							// numSelected={selected.length}
 							headCells={headCellData}
 							// ignoreKeys={ignoreKeys}
 							order={order}
 							orderBy={orderBy}
-							onSelectAllClick={handleSelectAllClick}
+							// onSelectAllClick={handleSelectAllClick}
 							onRequestSort={handleRequestSort}
 							rowCount={data.length}
 						/>
@@ -397,7 +332,7 @@ export default function DataTable({
 									page * rowsPerPage + rowsPerPage
 								)
 								.map((item, index) => {
-									const isItemSelected = isSelected(item.id);
+									// const isItemSelected = isSelected(item.id);
 									const labelId = `enhanced-table-checkbox-${index}`;
 									// TODO
 									var filteredItem = {};
@@ -408,23 +343,26 @@ export default function DataTable({
 									return (
 										<TableRow
 											hover
+											// onClick={(event) =>
+											// 	handleClick(event, item.id)
+											// }
 											onClick={(event) =>
-												handleClick(event, item.id)
+												onClick(event, item.id)
 											}
 											role="checkbox"
-											aria-checked={isItemSelected}
+											// aria-checked={isItemSelected}
 											tabIndex={-1}
 											key={item.id}
-											selected={isItemSelected}
+											// selected={isItemSelected}
 										>
-											<TableCell padding="checkbox">
+											{/* <TableCell padding="checkbox">
 												<Checkbox
 													checked={isItemSelected}
 													inputProps={{
 														"aria-labelledby": labelId,
 													}}
 												/>
-											</TableCell>
+											</TableCell> */}
 
 											{Object.keys(filteredItem).map(
 												(key) => {

@@ -12,11 +12,13 @@ import DataTable from "../DataTable";
 import { deleteTag, editTag, title, ignoreKeys, labels } from "./config";
 import { axiosInstance } from "../../api/config";
 import download from "downloadjs";
+import { useHistory } from "react-router-dom";
 
 function ViewVenues(props) {
 	const [venues, setVenues] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
+	const history = useHistory();
 
 	useEffect(() => {
 		fetchData();
@@ -45,6 +47,11 @@ function ViewVenues(props) {
 			.catch(() => {
 				// this.setState({ deleteFailed: true, isLoading: false });
 			});
+	};
+
+	const handleClick = (event, itemID) => {
+		console.log(itemID);
+		history.push(`/venues/${itemID}`);
 	};
 
 	const handleExport = () => {
@@ -86,6 +93,7 @@ function ViewVenues(props) {
 						ignoreKeys={ignoreKeys}
 						editTag={editTag}
 						deleteTag={deleteTag}
+						onClick={handleClick}
 						onEdit={props.onEdit}
 						onDelete={handleDelete}
 						onRefresh={props.onRefresh}
