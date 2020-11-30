@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import {
 	Box,
 	Breadcrumbs,
@@ -9,13 +10,12 @@ import {
 	Tooltip,
 	Typography,
 } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import EditIcon from "@material-ui/icons/Edit";
+
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
-import DateTimePicker from "../components/DateTimePicker";
 import routes from "../navigation/routes";
-import EditIcon from "@material-ui/icons/Edit";
 
 function DetailedVenueScreen({ match }) {
 	const [isLoading, setLoading] = useState(true);

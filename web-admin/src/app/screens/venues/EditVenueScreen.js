@@ -1,15 +1,14 @@
 import {
 	Breadcrumbs,
-	Button,
 	LinearProgress,
 	TextField,
 	Typography,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { axiosInstance } from "../api/config";
-import NavDrawer from "../components/NavDrawer";
-import routes from "../navigation/routes";
+import { axiosInstance } from "../../api/config";
+import NavDrawer from "../../components/NavDrawer";
+import routes from "../../navigation/routes";
 
 function EditVenueScreen({ match }) {
 	const [venue, setVenue] = useState({});

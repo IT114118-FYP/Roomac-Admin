@@ -11,14 +11,13 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
 import SearchIcon from "@material-ui/icons/Search";
 import AutorenewIcon from "@material-ui/icons/Autorenew";
+import AddIcon from "@material-ui/icons/Add";
+import { Typography } from "@material-ui/core";
 
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
@@ -63,7 +62,6 @@ const createHeadCells = (items, labels, ignoreKeys) => {
 			const headCell = {
 				id: Object.keys(items[0])[index],
 				label: getLabel(Object.keys(items[0])[index], labels),
-				// label: Object.keys(items[0])[index],
 				numeric: false,
 				disablePadding: false,
 			};
@@ -117,9 +115,7 @@ function EnhancedTableHead({
 
 EnhancedTableHead.propTypes = {
 	classes: PropTypes.object.isRequired,
-	numSelected: PropTypes.number.isRequired,
 	onRequestSort: PropTypes.func.isRequired,
-	onSelectAllClick: PropTypes.func.isRequired,
 	order: PropTypes.oneOf(["asc", "desc"]).isRequired,
 	orderBy: PropTypes.string.isRequired,
 	rowCount: PropTypes.number.isRequired,
@@ -148,26 +144,8 @@ const useToolbarStyles = makeStyles((theme) => ({
 	},
 }));
 
-const EnhancedTableToolbar = ({
-	title,
-	onDelete,
-	onEdit,
-	onRefresh,
-	editTag,
-	deleteTag,
-}) => {
+const EnhancedTableToolbar = ({ title, onRefresh, onAdd }) => {
 	const classes = useToolbarStyles();
-
-	// const handleEdit = () => {
-	// 	localStorage.setItem(editTag, selected[0]);
-	// 	onEdit();
-	// };
-
-	// const handleDelete = () => {
-	// 	localStorage.setItem(deleteTag, JSON.stringify(selected));
-	// 	onDelete();
-	// 	clearSelected();
-	// };
 
 	const TableButton = ({ title, onClick, children }) => {
 		return (
@@ -181,8 +159,19 @@ const EnhancedTableToolbar = ({
 
 	return (
 		<Toolbar className={clsx(classes.root)}>
+			<Typography
+				className={classes.title}
+				variant="h6"
+				id="tableTitle"
+				component="div"
+			>
+				{title}
+			</Typography>
 			<TableButton title="Search">
 				<SearchIcon />
+			</TableButton>
+			<TableButton title="Add new" onClick={onAdd}>
+				<AddIcon />
 			</TableButton>
 			<TableButton title="Refresh" onClick={onRefresh}>
 				<AutorenewIcon />
@@ -190,10 +179,6 @@ const EnhancedTableToolbar = ({
 		</Toolbar>
 	);
 };
-
-// EnhancedTableToolbar.propTypes = {
-// 	numSelected: PropTypes.number.isRequired,
-// };
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -224,13 +209,9 @@ export default function DataTable({
 	data,
 	labels,
 	ignoreKeys,
-	editTag,
-	deleteTag,
 	onClick,
-	onEdit,
-	onDelete,
+	onAdd,
 	onRefresh,
-	onExport,
 }) {
 	const classes = useStyles();
 	const [headCellData] = React.useState(
@@ -238,7 +219,6 @@ export default function DataTable({
 	);
 	const [order, setOrder] = React.useState("asc");
 	const [orderBy, setOrderBy] = React.useState(headCellData[0].id);
-	// const [selected, setSelected] = React.useState([]);
 	const [page, setPage] = React.useState(0);
 	const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -247,36 +227,6 @@ export default function DataTable({
 		setOrder(isAsc ? "desc" : "asc");
 		setOrderBy(property);
 	};
-
-	// const handleSelectAllClick = (event) => {
-	// 	if (event.target.checked) {
-	// 		const newSelecteds = data.map((n) => n[headCellData[0].id]);
-	// 		setSelected(newSelecteds);
-	// 		return;
-	// 	}
-	// 	setSelected([]);
-	// };
-
-	// const clearSelected = () => setSelected([]);
-
-	// const handleClick = (event, name) => {
-	// 	const selectedIndex = selected.indexOf(name);
-	// 	let newSelected = [];
-
-	// 	if (selectedIndex === -1) {
-	// 		newSelected = newSelected.concat(selected, name);
-	// 	} else if (selectedIndex === 0) {
-	// 		newSelected = newSelected.concat(selected.slice(1));
-	// 	} else if (selectedIndex === selected.length - 1) {
-	// 		newSelected = newSelected.concat(selected.slice(0, -1));
-	// 	} else if (selectedIndex > 0) {
-	// 		newSelected = newSelected.concat(
-	// 			selected.slice(0, selectedIndex),
-	// 			selected.slice(selectedIndex + 1)
-	// 		);
-	// 	}
-	// 	setSelected(newSelected);
-	// };
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -287,8 +237,6 @@ export default function DataTable({
 		setPage(0);
 	};
 
-	// const isSelected = (name) => selected.indexOf(name) !== -1;
-
 	const emptyRows =
 		rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
@@ -297,15 +245,8 @@ export default function DataTable({
 			<Paper className={classes.paper}>
 				<EnhancedTableToolbar
 					title={title}
-					// numSelected={selected.length}
-					// selected={selected}
-					// clearSelected={clearSelected}
-					// ignoreKeys={ignoreKeys}
-					editTag={editTag}
-					deleteTag={deleteTag}
-					onEdit={onEdit}
-					onDelete={onDelete}
 					onRefresh={onRefresh}
+					onAdd={onAdd}
 				/>
 				<TableContainer>
 					<Table
@@ -316,12 +257,9 @@ export default function DataTable({
 					>
 						<EnhancedTableHead
 							classes={classes}
-							// numSelected={selected.length}
 							headCells={headCellData}
-							// ignoreKeys={ignoreKeys}
 							order={order}
 							orderBy={orderBy}
-							// onSelectAllClick={handleSelectAllClick}
 							onRequestSort={handleRequestSort}
 							rowCount={data.length}
 						/>
@@ -332,9 +270,6 @@ export default function DataTable({
 									page * rowsPerPage + rowsPerPage
 								)
 								.map((item, index) => {
-									// const isItemSelected = isSelected(item.id);
-									const labelId = `enhanced-table-checkbox-${index}`;
-									// TODO
 									var filteredItem = {};
 									Object.assign(filteredItem, item);
 									ignoreKeys.forEach((property) => {
@@ -343,27 +278,12 @@ export default function DataTable({
 									return (
 										<TableRow
 											hover
-											// onClick={(event) =>
-											// 	handleClick(event, item.id)
-											// }
 											onClick={(event) =>
 												onClick(event, item.id)
 											}
-											role="checkbox"
-											// aria-checked={isItemSelected}
 											tabIndex={-1}
 											key={item.id}
-											// selected={isItemSelected}
 										>
-											{/* <TableCell padding="checkbox">
-												<Checkbox
-													checked={isItemSelected}
-													inputProps={{
-														"aria-labelledby": labelId,
-													}}
-												/>
-											</TableCell> */}
-
 											{Object.keys(filteredItem).map(
 												(key) => {
 													return (

@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress } from "@material-ui/core";
+import { Backdrop, CircularProgress, LinearProgress } from "@material-ui/core";
 import React from "react";
 
 function FullscreenProgress({ open }) {

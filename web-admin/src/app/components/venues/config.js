@@ -1,6 +1,4 @@
 const title = "Venues";
-const editTag = "editVenue";
-const deleteTag = "deleteVenue";
 
 const labels = [
 	{
@@ -47,4 +45,4 @@ const labels = [
 
 const ignoreKeys = ["created_at", "updated_at", "id"];
 
-export { labels, title, editTag, deleteTag, ignoreKeys };
+export { labels, title, ignoreKeys };

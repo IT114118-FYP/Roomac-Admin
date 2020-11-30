@@ -8,4 +8,8 @@ export default {
 	MANAGE_PROGRAMMES: "/programs",
 	MANAGE_BRANCHES: "/branches",
 	RULES_CONFIGURATION: "/rules",
+	venues: {
+		new: "/venues/new",
+		detailed: "/venues/:id",
+	},
 };

@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import { CircularProgress, LinearProgress } from "@material-ui/core";
 
 import DataTable from "../DataTable";
-import { deleteTag, editTag, title, ignoreKeys, labels } from "./config";
+import { title, ignoreKeys, labels } from "./config";
 import { axiosInstance } from "../../api/config";
 import download from "downloadjs";
 import { useHistory } from "react-router-dom";
@@ -32,26 +32,13 @@ function ViewVenues(props) {
 		});
 	};
 
-	const handleDelete = () => {
-		setLoading(true);
-		let venues = JSON.parse(localStorage.getItem(deleteTag));
-		localStorage.removeItem(deleteTag);
-		axiosInstance
-			.delete("/api/venues", { data: { ids: venues } })
-			.then(() => {
-				// this.setState({ deleteSuccess: true, isLoading: false });
-				// this.fetchPrograms();
-				setLoading(false);
-				fetchData();
-			})
-			.catch(() => {
-				// this.setState({ deleteFailed: true, isLoading: false });
-			});
-	};
-
 	const handleClick = (event, itemID) => {
 		console.log(itemID);
 		history.push(`/venues/${itemID}`);
+	};
+
+	const handleAdd = () => {
+		history.push(`/venues/new`);
 	};
 
 	const handleExport = () => {
@@ -91,12 +78,9 @@ function ViewVenues(props) {
 						data={venues}
 						labels={labels}
 						ignoreKeys={ignoreKeys}
-						editTag={editTag}
-						deleteTag={deleteTag}
 						onClick={handleClick}
-						onEdit={props.onEdit}
-						onDelete={handleDelete}
-						onRefresh={props.onRefresh}
+						onAdd={handleAdd}
+						onRefresh={fetchData}
 					/>
 				)}
 			</AccordionDetails>
