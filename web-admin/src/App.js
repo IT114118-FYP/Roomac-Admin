@@ -12,9 +12,15 @@ const ManageUsersPage = lazy(() => import("./app/pages/ManageUsersPage"));
 const RulesConfigPage = lazy(() => import("./app/pages/RulesConfigPage"));
 const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
 const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
-const ManageProgramsPage = lazy(() => import("./app/pages/ManageProgramsPage"));
-const ManageBranchesPage = lazy(() => import("./app/pages/ManageBranchesPage"));
-const ManageVenuesPage = lazy(() => import("./app/pages/ManageVenuesPage"));
+const ManageProgramsPage = lazy(() =>
+	import("./app/pages/programs/ManageProgramsPage")
+);
+const ManageBranchesPage = lazy(() =>
+	import("./app/pages/branches/ManageBranchesPage")
+);
+const ManageVenuesPage = lazy(() =>
+	import("./app/pages/venues/ManageVenuesPage")
+);
 const DetailedVenuePage = lazy(() => import("./app/pages/DetailedVenuePage"));
 const NewVenuePage = lazy(() => import("./app/pages/venues/NewVenuePage"));
 

@@ -1,6 +1,6 @@
 import React from "react";
-import NavDrawer from "../components/NavDrawer";
-import ViewVenues from "../components/venues/ViewVenues";
+import NavDrawer from "../../components/NavDrawer";
+import ViewVenues from "../../components/venues/ViewVenues";
 
 function ManageVenuesPage(props) {
 	return (

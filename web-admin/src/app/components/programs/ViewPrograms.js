@@ -9,16 +9,17 @@ import Button from "@material-ui/core/Button";
 import { CircularProgress, LinearProgress } from "@material-ui/core";
 
 import DataTable from "../DataTable";
-import { labels, title, editTag, deleteTag, ignoreKeys } from "./config";
+import { labels, title, ignoreKeys } from "./config";
 import { axiosInstance } from "../../api/config";
 import download from "downloadjs";
+import { useHistory } from "react-router-dom";
 
 export default function ViewPrograms(props) {
 	const [programs, setPrograms] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
+	const history = useHistory();
 
-	//TODO useContext to get data
 	useEffect(() => {
 		fetchData();
 	}, []);
@@ -26,10 +27,17 @@ export default function ViewPrograms(props) {
 	const fetchData = () => {
 		setLoading(true);
 		axiosInstance.get("api/programs").then(({ data }) => {
-			console.log(data);
 			setPrograms(data);
 			setLoading(false);
 		});
+	};
+
+	const handleClick = (event, itemID) => {
+		history.push(`/venues/${itemID}`);
+	};
+
+	const handleAdd = () => {
+		history.push(`/venues/new`);
 	};
 
 	const handleExport = () => {
@@ -69,10 +77,8 @@ export default function ViewPrograms(props) {
 						data={programs}
 						labels={labels}
 						ignoreKeys={ignoreKeys}
-						editTag={editTag}
-						deleteTag={deleteTag}
-						onEdit={props.onEdit}
-						onDelete={props.onDelete}
+						onClick={handleClick}
+						onAdd={handleAdd}
 						onRefresh={fetchData}
 					/>
 				)}

@@ -9,14 +9,16 @@ import Button from "@material-ui/core/Button";
 import { CircularProgress, LinearProgress } from "@material-ui/core";
 
 import DataTable from "../DataTable";
-import { deleteTag, editTag, title, ignoreKeys, labels } from "./config";
+import { title, ignoreKeys, labels } from "./config";
 import { axiosInstance } from "../../api/config";
 import download from "downloadjs";
+import { useHistory } from "react-router-dom";
 
 function ViewBranches(props) {
 	const [branches, setBranches] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
+	const history = useHistory();
 
 	useEffect(() => {
 		fetchData();
@@ -30,21 +32,12 @@ function ViewBranches(props) {
 		});
 	};
 
-	const handleDelete = () => {
-		setLoading(true);
-		let branch = JSON.parse(localStorage.getItem(deleteTag));
-		localStorage.removeItem(deleteTag);
-		axiosInstance
-			.delete("/api/branches", { data: { ids: branch } })
-			.then(() => {
-				// this.setState({ deleteSuccess: true, isLoading: false });
-				// this.fetchPrograms();
-				setLoading(false);
-				fetchData();
-			})
-			.catch(() => {
-				// this.setState({ deleteFailed: true, isLoading: false });
-			});
+	const handleClick = (event, itemID) => {
+		history.push(`/venues/${itemID}`);
+	};
+
+	const handleAdd = () => {
+		history.push(`/venues/new`);
 	};
 
 	const handleExport = () => {
@@ -84,10 +77,8 @@ function ViewBranches(props) {
 						data={branches}
 						labels={labels}
 						ignoreKeys={ignoreKeys}
-						editTag={editTag}
-						deleteTag={deleteTag}
-						onEdit={props.onEdit}
-						onDelete={handleDelete}
+						onClick={handleClick}
+						onAdd={handleAdd}
 						onRefresh={props.onRefresh}
 					/>
 				)}

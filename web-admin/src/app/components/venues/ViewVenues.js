@@ -33,7 +33,6 @@ function ViewVenues(props) {
 	};
 
 	const handleClick = (event, itemID) => {
-		console.log(itemID);
 		history.push(`/venues/${itemID}`);
 	};
 

@@ -1,6 +1,4 @@
 const title = "Programms";
-const editTag = "editCode";
-const deleteTag = "deleteCode";
 
 const labels = [
 	{
@@ -31,4 +29,4 @@ const labels = [
 
 const ignoreKeys = ["created_at", "updated_at"];
 
-export { labels, title, editTag, deleteTag, ignoreKeys };
+export { labels, title, ignoreKeys };
