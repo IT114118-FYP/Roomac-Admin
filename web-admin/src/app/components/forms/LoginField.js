@@ -9,6 +9,7 @@ function LoginField({ name, ...otherProps }) {
 		errors,
 		touched,
 		values,
+		handleSubmit,
 	} = useFormikContext();
 
 	return (
@@ -22,6 +23,11 @@ function LoginField({ name, ...otherProps }) {
 				value={values[name]}
 				error={touched[name] && errors[name]}
 				helperText={touched[name] ? errors[name] : null}
+				onKeyDown={(event) => {
+					if (event.key === "Enter") {
+						handleSubmit();
+					}
+				}}
 				{...otherProps}
 			/>
 		</InputLabel>

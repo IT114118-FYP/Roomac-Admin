@@ -13,7 +13,6 @@ import LoginField from "../components/forms/LoginField";
 import LoginButton from "../components/forms/LoginButton";
 import SnackbarAlert from "../components/SnackbarAlert";
 import FullscreenProgress from "../components/FullscreenProgress";
-import "./LoginScreen.css";
 
 const validationSchema = Yup.object().shape({
 	Email: Yup.string().required().min(4).label("Email"),
@@ -83,7 +82,6 @@ class LoginScreen extends React.Component {
 		} else {
 			return (
 				<div
-					className="container"
 					style={{
 						display: "flex",
 						flexDirection: "column",
