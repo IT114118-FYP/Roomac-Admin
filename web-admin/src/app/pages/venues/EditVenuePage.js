@@ -10,7 +10,7 @@ import { axiosInstance } from "../../api/config";
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 
-function EditVenueScreen({ match }) {
+function EditVenuePage({ match }) {
 	const [venue, setVenue] = useState({});
 	const [isLoading, setLoading] = useState(true);
 	const [branch_id, setBranch_id] = useState("");
@@ -102,4 +102,4 @@ function EditVenueScreen({ match }) {
 	);
 }
 
-export default EditVenueScreen;
+export default EditVenuePage;

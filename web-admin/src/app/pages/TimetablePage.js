@@ -3,7 +3,7 @@ import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
 // import "./TimetableScreen.css";
 
-function TimetableScreen(props) {
+function TimetablePage(props) {
 	const handleClick = () => {
 		axiosInstance
 			.get("api/venues")
@@ -17,4 +17,4 @@ function TimetableScreen(props) {
 	);
 }
 
-export default TimetableScreen;
+export default TimetablePage;

@@ -2,8 +2,8 @@ import React from "react";
 import NavDrawer from "../components/NavDrawer";
 // import "./StatisticScreen.css";
 
-function StatisticsScreen(props) {
+function StatisticsPage(props) {
 	return <NavDrawer title="Statistic">This is content</NavDrawer>;
 }
 
-export default StatisticsScreen;
+export default StatisticsPage;

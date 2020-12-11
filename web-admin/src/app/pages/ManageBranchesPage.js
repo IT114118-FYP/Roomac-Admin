@@ -62,7 +62,7 @@ const branchHeadCells = [
 	},
 ];
 
-class ManageBranchesScreen extends React.Component {
+class ManageBranchesPage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -512,4 +512,4 @@ class ManageBranchesScreen extends React.Component {
 	}
 }
 
-export default withRouter(ManageBranchesScreen);
+export default withRouter(ManageBranchesPage);

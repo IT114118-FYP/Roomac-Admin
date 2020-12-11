@@ -19,7 +19,7 @@ const validationSchema = Yup.object().shape({
 	Password: Yup.string().required().min(4).label("Password"),
 });
 
-class LoginScreen extends React.Component {
+class LoginPage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -151,4 +151,4 @@ class LoginScreen extends React.Component {
 	}
 }
 
-export default withRouter(LoginScreen);
+export default withRouter(LoginPage);

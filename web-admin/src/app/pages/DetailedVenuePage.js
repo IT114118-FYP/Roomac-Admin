@@ -17,7 +17,7 @@ import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
 import routes from "../navigation/routes";
 
-function DetailedVenueScreen({ match }) {
+function DetailedVenuePage({ match }) {
 	const [isLoading, setLoading] = useState(true);
 	const [isEditable, setEditable] = useState(false);
 	const [data, setData] = useState({});
@@ -189,4 +189,4 @@ function DetailedVenueScreen({ match }) {
 	);
 }
 
-export default DetailedVenueScreen;
+export default DetailedVenuePage;

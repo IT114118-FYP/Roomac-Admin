@@ -10,7 +10,7 @@ import ViewPrograms from "../components/programs/ViewPrograms";
 import AddPrograms from "../components/programs/AddPrograms";
 import EditProgramDialog from "../components/programs/EditProgramDialog";
 
-class ManageProgramsScreen extends React.Component {
+class ManageProgramsPage extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -253,4 +253,4 @@ class ManageProgramsScreen extends React.Component {
 	}
 }
 
-export default withRouter(ManageProgramsScreen);
+export default withRouter(ManageProgramsPage);

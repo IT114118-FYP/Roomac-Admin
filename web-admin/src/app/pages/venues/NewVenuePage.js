@@ -6,7 +6,7 @@ import { axiosInstance } from "../../api/config";
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 
-function NewVenueScreen(props) {
+function NewVenuePage(props) {
 	const [isAdding, setAdding] = useState(false);
 	const [branch_id, setBranch_id] = useState("");
 	const [number, setNumber] = useState("");
@@ -83,4 +83,4 @@ function NewVenueScreen(props) {
 	);
 }
 
-export default NewVenueScreen;
+export default NewVenuePage;

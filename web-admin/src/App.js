@@ -5,29 +5,18 @@ import routes from "./app/navigation/routes";
 import ProtectedRoute from "./app/navigation/ProtectedRoute";
 import { LinearProgress } from "@material-ui/core";
 
-const ActivityLogScreen = lazy(() => import("./app/screens/ActivityLogScreen"));
-const HomeScreen = lazy(() => import("./app/screens/HomeScreen"));
-const LoginScreen = lazy(() => import("./app/screens/LoginScreen"));
-const ManageUsersScreen = lazy(() => import("./app/screens/ManageUsersScreen"));
-const RulesConfigScreen = lazy(() => import("./app/screens/RulesConfigScreen"));
-const StatisticsScreen = lazy(() => import("./app/screens/StatisticsScreen"));
-const TimetableScreen = lazy(() => import("./app/screens/TimetableScreen"));
-
-const ManageProgramsScreen = lazy(() =>
-	import("./app/screens/ManageProgramsScreen")
-);
-const ManageBranchesScreen = lazy(() =>
-	import("./app/screens/ManageBranchesScreen")
-);
-const ManageVenuesScreen = lazy(() =>
-	import("./app/screens/ManageVenuesScreen")
-);
-const DetailedVenueScreen = lazy(() =>
-	import("./app/screens/DetailedVenueScreen")
-);
-const NewVenueScreen = lazy(() =>
-	import("./app/screens/venues/NewVenueScreen")
-);
+const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
+const HomePage = lazy(() => import("./app/pages/HomePage"));
+const LoginPage = lazy(() => import("./app/pages/LoginPage"));
+const ManageUsersPage = lazy(() => import("./app/pages/ManageUsersPage"));
+const RulesConfigPage = lazy(() => import("./app/pages/RulesConfigPage"));
+const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
+const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
+const ManageProgramsPage = lazy(() => import("./app/pages/ManageProgramsPage"));
+const ManageBranchesPage = lazy(() => import("./app/pages/ManageBranchesPage"));
+const ManageVenuesPage = lazy(() => import("./app/pages/ManageVenuesPage"));
+const DetailedVenuePage = lazy(() => import("./app/pages/DetailedVenuePage"));
+const NewVenuePage = lazy(() => import("./app/pages/venues/NewVenuePage"));
 
 function App() {
 	return (
@@ -35,51 +24,51 @@ function App() {
 			<Suspense fallback={<LinearProgress />}>
 				<Switch>
 					<Route path="/" exact>
-						<LoginScreen />
+						<LoginPage />
 					</Route>
 
-					<ProtectedRoute path={routes.HOME} component={HomeScreen} />
+					<ProtectedRoute path={routes.HOME} component={HomePage} />
 					<ProtectedRoute
 						path={routes.TIMETABLE}
-						component={TimetableScreen}
+						component={TimetablePage}
 					/>
 					<ProtectedRoute
 						path={routes.STATISTICS}
-						component={StatisticsScreen}
+						component={StatisticsPage}
 					/>
 					<ProtectedRoute
 						path={routes.ACTIVITY_LOG}
-						component={ActivityLogScreen}
+						component={ActivityLogPage}
 					/>
 					<ProtectedRoute
 						path={routes.MANAGE_BRANCHES}
-						component={ManageBranchesScreen}
+						component={ManageBranchesPage}
 					/>
 					<ProtectedRoute
 						path={routes.MANAGE_VENUES}
 						exact
-						component={ManageVenuesScreen}
+						component={ManageVenuesPage}
 					/>
 					<ProtectedRoute
 						path={routes.venues.new}
 						exact
-						component={NewVenueScreen}
+						component={NewVenuePage}
 					/>
 					<ProtectedRoute
 						path={routes.venues.detailed}
-						component={DetailedVenueScreen}
+						component={DetailedVenuePage}
 					/>
 					<ProtectedRoute
 						path={routes.MANAGE_USERS}
-						component={ManageUsersScreen}
+						component={ManageUsersPage}
 					/>
 					<ProtectedRoute
 						path={routes.MANAGE_PROGRAMMES}
-						component={ManageProgramsScreen}
+						component={ManageProgramsPage}
 					/>
 					<ProtectedRoute
 						path={routes.RULES_CONFIGURATION}
-						component={RulesConfigScreen}
+						component={RulesConfigPage}
 					/>
 				</Switch>
 			</Suspense>

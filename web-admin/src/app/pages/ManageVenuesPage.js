@@ -2,7 +2,7 @@ import React from "react";
 import NavDrawer from "../components/NavDrawer";
 import ViewVenues from "../components/venues/ViewVenues";
 
-function ManageVenuesScreen(props) {
+function ManageVenuesPage(props) {
 	return (
 		<NavDrawer title="Manage Venues">
 			<ViewVenues />
@@ -10,4 +10,4 @@ function ManageVenuesScreen(props) {
 	);
 }
 
-export default ManageVenuesScreen;
+export default ManageVenuesPage;

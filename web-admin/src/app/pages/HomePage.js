@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function HomeScreen(props) {
+function HomePage(props) {
 	const classes = useStyles();
 	return (
 		<NavDrawer title="Home">
@@ -45,4 +45,4 @@ function HomeScreen(props) {
 	);
 }
 
-export default HomeScreen;
+export default HomePage;
