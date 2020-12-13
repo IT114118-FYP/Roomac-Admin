@@ -8,7 +8,7 @@ import { LinearProgress } from "@material-ui/core";
 const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
-const ManageUsersPage = lazy(() => import("./app/pages/ManageUsersPage"));
+const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
 const RulesConfigPage = lazy(() => import("./app/pages/RulesConfigPage"));
 const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
 const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
@@ -56,12 +56,12 @@ function App() {
 						component={ManageVenuesPage}
 					/>
 					<ProtectedRoute
-						path={routes.venues.new}
+						path={routes.venues.NEW}
 						exact
 						component={NewVenuePage}
 					/>
 					<ProtectedRoute
-						path={routes.venues.detailed}
+						path={routes.venues.DETAILED}
 						component={DetailedVenuePage}
 					/>
 					<ProtectedRoute

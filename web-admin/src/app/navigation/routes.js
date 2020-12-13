@@ -9,7 +9,7 @@ export default {
 	MANAGE_BRANCHES: "/branches",
 	RULES_CONFIGURATION: "/rules",
 	venues: {
-		new: "/venues/new",
-		detailed: "/venues/:id",
+		NEW: "/venues/new",
+		DETAILED: "/venues/:id",
 	},
 };
