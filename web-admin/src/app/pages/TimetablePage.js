@@ -29,14 +29,9 @@ const createData = (start, end) => ({
 function TimetablePage(props) {
 	const [isloading, setLoading] = useState(true);
 	const [interval, setInterval] = useState(30);
-	const [data, setData] = useState([
-		{
-			Id: 2,
-			Subject: "Event",
-			StartTime: new Date(2020, 12, 14, 10, 0),
-			EndTime: new Date(2020, 12, 14, 12, 30),
-		},
-	]);
+	const [data, setData] = useState([]);
+	const [startHour, setStartHour] = useState("8:00");
+	const [endHour, setEndHour] = useState("18:00");
 
 	useEffect(() => {
 		fetchData();
@@ -61,10 +56,15 @@ function TimetablePage(props) {
 			{isloading && <LinearProgress />}
 			{!isloading && (
 				<ScheduleComponent
-					// selectedDate={new Date(2020, 12, 14)}
+					readonly
 					height="750px"
 					eventSettings={{ dataSource: data }}
 					timeScale={{ enable: true, interval: interval }}
+					workHours={{
+						highlight: true,
+						start: startHour,
+						end: endHour,
+					}}
 				>
 					<ViewsDirective>
 						<ViewDirective option="Week" />
@@ -73,7 +73,6 @@ function TimetablePage(props) {
 						<ViewDirective option="Month" />
 						<ViewDirective option="Agenda" />
 						<ViewDirective option="MonthAgenda" isSelected={true} />
-
 						<ViewDirective option="TimelineDay" />
 						<ViewDirective option="TimelineWeek" />
 						<ViewDirective option="TimelineMonth" />

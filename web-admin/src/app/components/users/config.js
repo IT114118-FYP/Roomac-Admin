@@ -14,8 +14,20 @@ const labels = [
 		label: "Email",
 	},
 	{
-		id: "",
-		label: "Chinese Title (simplified)",
+		id: "program_id",
+		label: "Program",
+	},
+	{
+		id: "last_name",
+		label: "Last Name",
+	},
+	{
+		id: "first_name",
+		label: "First Name",
+	},
+	{
+		id: "chinese_name",
+		label: "Chinese Name",
 	},
 	{
 		id: "created_at",
@@ -27,6 +39,6 @@ const labels = [
 	},
 ];
 
-const ignoreKeys = ["created_at", "updated_at"];
+const ignoreKeys = ["id", "created_at", "updated_at"];
 
 export { labels, title, ignoreKeys };
