@@ -12,14 +12,16 @@ import {
 	ViewsDirective,
 	ViewDirective,
 	TimelineMonth,
+	setTime,
 } from "@syncfusion/ej2-react-schedule";
 import { LinearProgress } from "@material-ui/core";
 
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
 import "../styles/Timetable.css";
+import moment from "moment";
 
-const createData = (start, end) => ({
+const createData = (id, start, end) => ({
 	Id: 2,
 	Subject: "Event",
 	StartTime: new Date(start),
@@ -28,10 +30,10 @@ const createData = (start, end) => ({
 
 function TimetablePage(props) {
 	const [isloading, setLoading] = useState(true);
-	const [interval, setInterval] = useState(30);
-	const [data, setData] = useState([]);
+	const [data, setData] = useState({});
 	const [startHour, setStartHour] = useState("8:00");
 	const [endHour, setEndHour] = useState("18:00");
+	const [interval, setInterval] = useState("10");
 
 	useEffect(() => {
 		fetchData();
@@ -43,8 +45,11 @@ function TimetablePage(props) {
 			console.log(data);
 			setData(data);
 			setInterval(data.interval);
-			const processedData = data.bookings.reserved.map((booking) =>
-				createData(booking.start_time, booking.end_time)
+			setStartHour(moment(data.opening_time, "hh:mm:ss").format("H:mm"));
+			setEndHour(moment(data.closing_time, "hh:mm:ss").format("H:mm"));
+			const processedData = data.bookings.unavailable.booked.map(
+				(booking) =>
+					createData(booking.id, booking.start_time, booking.end_time)
 			);
 			setData(processedData);
 			setLoading(false);
@@ -58,37 +63,26 @@ function TimetablePage(props) {
 				<ScheduleComponent
 					readonly
 					height="750px"
-					eventSettings={{ dataSource: data }}
-					timeScale={{ enable: true, interval: interval }}
-					workHours={{
-						highlight: true,
-						start: startHour,
-						end: endHour,
+					eventSettings={{
+						dataSource: data,
+						enableIndicator: true,
+						enableTooltip: true,
+						// enableMaxHeight: true,
+						// ignoreWhitespace: true,
 					}}
+					timeScale={{ enable: true, interval: interval }}
+					timezone={data.timezone}
 				>
 					<ViewsDirective>
-						<ViewDirective option="Week" />
-						<ViewDirective option="Month" />
-						<ViewDirective option="WorkWeek" />
-						<ViewDirective option="Month" />
+						<ViewDirective
+							option="Week"
+							startHour={startHour}
+							endHour={endHour}
+						/>
 						<ViewDirective option="Agenda" />
 						<ViewDirective option="MonthAgenda" isSelected={true} />
-						<ViewDirective option="TimelineDay" />
-						<ViewDirective option="TimelineWeek" />
-						<ViewDirective option="TimelineMonth" />
 					</ViewsDirective>
-					<Inject
-						services={[
-							Day,
-							Week,
-							WorkWeek,
-							Month,
-							Agenda,
-							MonthAgenda,
-							TimelineViews,
-							TimelineMonth,
-						]}
-					/>
+					<Inject services={[Week, Agenda, MonthAgenda]} />
 				</ScheduleComponent>
 			)}
 		</NavDrawer>
