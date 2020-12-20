@@ -21,7 +21,9 @@ const ManageBranchesPage = lazy(() =>
 const ManageVenuesPage = lazy(() =>
 	import("./app/pages/venues/ManageVenuesPage")
 );
-const DetailedVenuePage = lazy(() => import("./app/pages/DetailedVenuePage"));
+const DetailedVenuePage = lazy(() =>
+	import("./app/pages/venues/DetailedVenuePage")
+);
 const NewVenuePage = lazy(() => import("./app/pages/venues/NewVenuePage"));
 
 function App() {

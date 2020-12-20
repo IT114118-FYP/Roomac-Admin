@@ -4,6 +4,7 @@ import {
 	TextField,
 	Typography,
 } from "@material-ui/core";
+import { Skeleton } from "@material-ui/lab";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { axiosInstance } from "../../api/config";
@@ -43,16 +44,17 @@ function EditVenuePage({ match }) {
 	return (
 		<NavDrawer title="Edit Venues">
 			<Breadcrumbs aria-label="breadcrumb">
-				<Link to={routes.MANAGE_VENUES}>venues</Link>
+				<Link to={routes.MANAGE_VENUES}>veyvuynues</Link>
 				<Typography color="textPrimary">details</Typography>
 			</Breadcrumbs>
-			{isLoading ? (
+			{/* {isLoading ? (
 				<LinearProgress />
-			) : (
-				<>
-					<Typography variant="h4" gutterBottom>
+			) : ( */}
+			<>
+				{/* <Typography variant="h4" gutterBottom>
 						{venue.number}
-					</Typography>
+					</Typography> */}
+				{isLoading ? (
 					<TextField
 						value={branch_id}
 						onChange={(event) => setBranch_id(event.target.value)}
@@ -62,7 +64,10 @@ function EditVenuePage({ match }) {
 						label="Branch ID"
 						fullWidth
 					/>
-					<TextField
+				) : (
+					<Skeleton width="100%" />
+				)}
+				{/* <TextField
 						value={number}
 						onChange={(event) => setNumber(event.target.value)}
 						autoFocus
@@ -95,9 +100,9 @@ function EditVenuePage({ match }) {
 						id="title_cn"
 						label="Chinese Title(simplified)"
 						fullWidth
-					/>
-				</>
-			)}
+					/> */}
+			</>
+			{/* )} */}
 		</NavDrawer>
 	);
 }

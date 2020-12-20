@@ -1,84 +1,67 @@
-import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Route, Redirect, useLocation, useHistory } from "react-router-dom";
 import { axiosInstance } from "../api/config";
 import FullscreenProgress from "../components/FullscreenProgress";
 
-class ProtectedRoute extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isLoading: true,
-			valid: false,
-			result: [],
-			error: null,
-		};
-	}
-	_isMounted = false;
+const CACHE_PATH = "cache-path";
 
-	componentDidMount() {
-		this._isMounted = true;
+function ProtectedRoute(props) {
+	const history = useHistory();
+	const location = useLocation();
 
+	const [isLoading, setLoading] = useState(true);
+	const [valid, setValid] = useState(false);
+	const [error, setError] = useState(null);
+
+	useEffect(() => {
 		if (localStorage.getItem("authToken") == null) {
-			this.setState({
-				valid: false,
-				isLoading: false,
-			});
+			localStorage.setItem(CACHE_PATH, location.pathname);
+			setValid(false);
+			setLoading(false);
 			return;
 		}
-		this.fetchUser();
-	}
+		if (localStorage.getItem(CACHE_PATH)) {
+			history.push(localStorage.getItem(CACHE_PATH));
+			localStorage.removeItem(CACHE_PATH);
+		}
+		fetchUser();
+	}, []);
 
-	fetchUser = () => {
+	const fetchUser = () => {
 		axiosInstance
 			.get("/api/users/me")
-			.then((response) => {
-				this.setState({
-					valid: true,
-					result: response.data,
-					isLoading: false,
-				});
+			.then(() => {
+				setValid(true);
+				setLoading(false);
 			})
 			.catch((error) => {
-				this.setState({ error: error, isLoading: false });
+				setLoading(false);
+				setError(error);
 			});
 	};
 
-	componentWillUnmount() {
-		this._isMounted = false;
+	if (isLoading) {
+		return <FullscreenProgress open={true} />;
 	}
 
-	render() {
-		if (this.state.isLoading) {
-			return <FullscreenProgress open={true} />;
-		}
-
-		if (this.state.error) {
-			return <Redirect to="/" />;
-		}
-
-		return (
-			<>
-				{this.state.valid ? (
-					<Route
-						path={this.props.path}
-						exact
-						component={() => this.props.children}
-						{...this.props}
-					/>
-				) : (
-					<Redirect to="/" />
-				)}
-			</>
-		);
+	if (error) {
+		return <Redirect to="/" />;
 	}
+
+	return (
+		<>
+			{valid ? (
+				<Route
+					path={props.path}
+					exact
+					component={props.children}
+					{...props}
+				/>
+			) : (
+				<Redirect to="/" />
+			)}
+		</>
+	);
 }
-
-// function ProtectedRoute({ authenticated, path, component }) {
-// 	if (!authenticated) {
-// 		return <Redirect to="/" />;
-// 	}
-
-// 	return <Route path={path} exact component={component} />;
-// }
 
 export default ProtectedRoute;

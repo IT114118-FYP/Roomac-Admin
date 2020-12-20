@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import clsx from "clsx";
-import { lighten, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -10,14 +9,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
-import Toolbar from "@material-ui/core/Toolbar";
 import Paper from "@material-ui/core/Paper";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
-import SearchIcon from "@material-ui/icons/Search";
-import AutorenewIcon from "@material-ui/icons/Autorenew";
-import AddIcon from "@material-ui/icons/Add";
-import { Typography } from "@material-ui/core";
+import { Box, CircularProgress } from "@material-ui/core";
 
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
@@ -121,65 +114,6 @@ EnhancedTableHead.propTypes = {
 	rowCount: PropTypes.number.isRequired,
 };
 
-const useToolbarStyles = makeStyles((theme) => ({
-	root: {
-		paddingLeft: theme.spacing(2),
-		paddingRight: theme.spacing(1),
-	},
-	highlight:
-		theme.palette.type === "light"
-			? {
-					color: theme.palette.secondary.main,
-					backgroundColor: lighten(
-						theme.palette.secondary.light,
-						0.85
-					),
-			  }
-			: {
-					color: theme.palette.text.primary,
-					backgroundColor: theme.palette.secondary.dark,
-			  },
-	title: {
-		flex: "1 1 100%",
-	},
-}));
-
-const EnhancedTableToolbar = ({ title, onRefresh, onAdd }) => {
-	const classes = useToolbarStyles();
-
-	const TableButton = ({ title, onClick, children }) => {
-		return (
-			<Tooltip title={title}>
-				<IconButton aria-label={title} onClick={onClick}>
-					{children}
-				</IconButton>
-			</Tooltip>
-		);
-	};
-
-	return (
-		<Toolbar className={clsx(classes.root)}>
-			<Typography
-				className={classes.title}
-				variant="h6"
-				id="tableTitle"
-				component="div"
-			>
-				{title}
-			</Typography>
-			<TableButton title="Search">
-				<SearchIcon />
-			</TableButton>
-			<TableButton title="Add new" onClick={onAdd}>
-				<AddIcon />
-			</TableButton>
-			<TableButton title="Refresh" onClick={onRefresh}>
-				<AutorenewIcon />
-			</TableButton>
-		</Toolbar>
-	);
-};
-
 const useStyles = makeStyles((theme) => ({
 	root: {
 		width: "100%",
@@ -204,23 +138,13 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function DataTable({
-	title,
-	data,
-	labels,
-	ignoreKeys,
-	onClick,
-	onAdd,
-	onRefresh,
-}) {
+function DataTableWithData({ data, labels, ignoreKeys, onClick }) {
 	const classes = useStyles();
-	const [headCellData] = React.useState(
-		createHeadCells(data, labels, ignoreKeys)
-	);
-	const [order, setOrder] = React.useState("asc");
-	const [orderBy, setOrderBy] = React.useState(headCellData[0].id);
-	const [page, setPage] = React.useState(0);
-	const [rowsPerPage, setRowsPerPage] = React.useState(5);
+	const [headCellData] = useState(createHeadCells(data, labels, ignoreKeys));
+	const [order, setOrder] = useState("asc");
+	const [orderBy, setOrderBy] = useState(headCellData[0].id);
+	const [page, setPage] = useState(0);
+	const [rowsPerPage, setRowsPerPage] = useState(5);
 
 	const handleRequestSort = (event, property) => {
 		const isAsc = orderBy === property && order === "asc";
@@ -243,11 +167,6 @@ export default function DataTable({
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.paper}>
-				<EnhancedTableToolbar
-					title={title}
-					onRefresh={onRefresh}
-					onAdd={onAdd}
-				/>
 				<TableContainer>
 					<Table
 						className={classes.table}
@@ -321,6 +240,36 @@ export default function DataTable({
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>
+		</div>
+	);
+}
+
+export default function DataTable({
+	loading,
+	data,
+	labels,
+	ignoreKeys,
+	onClick,
+}) {
+	return (
+		<div>
+			{loading ? (
+				<Box
+					width="100%"
+					display="flex"
+					justifyContent="center"
+					alignItems="center"
+				>
+					<CircularProgress />
+				</Box>
+			) : (
+				<DataTableWithData
+					data={data}
+					labels={labels}
+					ignoreKeys={ignoreKeys}
+					onClick={onClick}
+				/>
+			)}
 		</div>
 	);
 }

@@ -1,5 +1,4 @@
 import * as axios from "axios";
-import algoliasearch from "algoliasearch/lite";
 
 const baseURL = "https://it114118-fyp.herokuapp.com";
 
@@ -20,17 +19,4 @@ axiosInstance.interceptors.request.use(
 		Promise.reject(error);
 	}
 );
-
-const searchClient = algoliasearch(
-	"HHSMHILUC5",
-	"eb44f910d1d0b165dc5a8fadfdd59523"
-);
-
-const searchIndexName = {
-	PROGRAM: "programs",
-	USER: "users",
-	BRANCH: "branches",
-	VENUE: "venues",
-};
-
-export { axiosInstance, searchClient, searchIndexName };
+export { axiosInstance };

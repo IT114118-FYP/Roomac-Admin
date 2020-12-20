@@ -14,7 +14,7 @@ import {
 	TimelineMonth,
 	setTime,
 } from "@syncfusion/ej2-react-schedule";
-import { LinearProgress } from "@material-ui/core";
+import { CircularProgress, LinearProgress } from "@material-ui/core";
 
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";

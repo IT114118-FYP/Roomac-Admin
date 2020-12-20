@@ -14,6 +14,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
@@ -28,6 +29,9 @@ import GavelIcon from "@material-ui/icons/Gavel";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import routes from "../navigation/routes";
 import ConfirmDialog from "./ConfirmDialog";
+import { Box } from "@material-ui/core";
+import Logo from "./Logo";
+import { AccountCircle } from "@material-ui/icons";
 
 const drawerWidth = 240;
 
@@ -77,7 +81,9 @@ function ResponsiveDrawer({ window, title, children }) {
 
 	const drawer = (
 		<div>
-			<div className={classes.toolbar} />
+			<div className={classes.toolbar}>
+				<Logo />
+			</div>
 			<Divider />
 			<List>
 				<DrawerItem title="Home" path={routes.HOME}>
@@ -101,7 +107,7 @@ function ResponsiveDrawer({ window, title, children }) {
 				>
 					<BusinessIcon />
 				</DrawerItem>
-				<DrawerItem title="Manage Venues" path={routes.MANAGE_VENUES}>
+				<DrawerItem title="Venues" path={routes.venues.MANAGE}>
 					<MeetingRoomIcon />
 				</DrawerItem>
 				<DrawerItem title="Manage Users" path={routes.MANAGE_USERS}>
@@ -153,9 +159,26 @@ function ResponsiveDrawer({ window, title, children }) {
 					>
 						<MenuIcon />
 					</IconButton>
-					<Typography variant="h6" noWrap>
+					<Typography
+						variant="h6"
+						noWrap
+						style={{
+							flexGrow: 1,
+						}}
+					>
 						{title}
 					</Typography>
+					<div>
+						<IconButton
+							aria-label="account of current user"
+							aria-controls="menu-appbar"
+							aria-haspopup="true"
+							//   onClick={handleMenu}
+							color="inherit"
+						>
+							<AccountCircle />
+						</IconButton>
+					</div>
 				</Toolbar>
 			</AppBar>
 			<nav className={classes.drawer} aria-label="mailbox folders">
@@ -193,7 +216,6 @@ function ResponsiveDrawer({ window, title, children }) {
 				<div className={classes.toolbar} />
 				{children}
 			</main>
-
 			<ConfirmDialog
 				title="Log out"
 				open={openLogoutConfirm}

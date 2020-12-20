@@ -1,5 +1,3 @@
-const title = "Venues";
-
 const labels = [
 	{
 		id: "id",
@@ -43,6 +41,6 @@ const labels = [
 	},
 ];
 
-const ignoreKeys = ["created_at", "updated_at", "id"];
+const ignoreKeys = ["created_at", "updated_at", "id", "image_url"];
 
-export { labels, title, ignoreKeys };
+export { labels, ignoreKeys };

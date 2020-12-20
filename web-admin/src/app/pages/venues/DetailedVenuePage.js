@@ -13,9 +13,11 @@ import {
 import { Link } from "react-router-dom";
 import EditIcon from "@material-ui/icons/Edit";
 
-import { axiosInstance } from "../api/config";
-import NavDrawer from "../components/NavDrawer";
-import routes from "../navigation/routes";
+import { axiosInstance } from "../../api/config";
+import NavDrawer from "../../components/NavDrawer";
+import routes from "../../navigation/routes";
+import { Skeleton } from "@material-ui/lab";
+import InputField from "../../components/InputField";
 
 function DetailedVenuePage({ match }) {
 	const [isLoading, setLoading] = useState(true);
@@ -83,15 +85,18 @@ function DetailedVenuePage({ match }) {
 				<Link to={routes.MANAGE_VENUES}>venues</Link>
 				<Typography color="textPrimary">details</Typography>
 			</Breadcrumbs>
-			{isLoading ? (
-				<LinearProgress />
-			) : (
-				<>
+			<div
+				style={{
+					marginTop: 20,
+				}}
+			>
+				{isLoading ? (
+					<Skeleton variant="text" animation="wave" height={56} />
+				) : (
 					<div
 						style={{
 							display: "flex",
 							flexDirection: "row",
-							marginTop: 20,
 						}}
 					>
 						<Typography variant="h3">
@@ -104,6 +109,10 @@ function DetailedVenuePage({ match }) {
 							</IconButton>
 						</Tooltip>
 					</div>
+				)}
+				{isLoading ? (
+					<Skeleton variant="text" height={18} />
+				) : (
 					<Typography component="div">
 						<Box
 							fontWeight="fontWeightLight"
@@ -113,78 +122,83 @@ function DetailedVenuePage({ match }) {
 							Last updated: {data.updated_at}
 						</Box>
 					</Typography>
-					<TextField
-						value={branch_id}
-						onChange={(event) => setBranch_id(event.target.value)}
-						autoFocus
-						margin="dense"
-						id="branch_id"
-						label="Branch ID"
-						fullWidth
-						disabled={!isEditable}
-					/>
-					<TextField
-						value={number}
-						onChange={(event) => setNumber(event.target.value)}
-						margin="dense"
-						id="number"
-						label="Room Number"
-						fullWidth
-						disabled={!isEditable}
-					/>
-					<TextField
-						value={title_en}
-						onChange={(event) => setTitle_en(event.target.value)}
-						margin="dense"
-						id="title_en"
-						label="English Title"
-						fullWidth
-						disabled={!isEditable}
-					/>
-					<TextField
-						value={title_hk}
-						onChange={(event) => setTitle_hk(event.target.value)}
-						margin="dense"
-						id="title_hk"
-						label="Chinese Title(traditinal)"
-						fullWidth
-						disabled={!isEditable}
-					/>
-					<TextField
-						value={title_cn}
-						onChange={(event) => setTitle_cn(event.target.value)}
-						margin="dense"
-						id="title_cn"
-						label="Chinese Title(simplified)"
-						fullWidth
-						disabled={!isEditable}
-					/>
-					{isEditable && (
-						<ButtonGroup
+				)}
+				<InputField
+					loading={isLoading}
+					value={branch_id}
+					onChange={(event) => setBranch_id(event.target.value)}
+					autoFocus
+					// margin="dense"
+					id="branch_id"
+					label="Branch ID"
+					fullWidth
+					disabled={!isEditable}
+				/>
+				<InputField
+					loading={isLoading}
+					value={number}
+					onChange={(event) => setNumber(event.target.value)}
+					// margin="dense"
+					id="number"
+					label="Room Number"
+					fullWidth
+					disabled={!isEditable}
+				/>
+				<InputField
+					loading={isLoading}
+					value={title_en}
+					onChange={(event) => setTitle_en(event.target.value)}
+					// margin="dense"
+					id="title_en"
+					label="English Title"
+					fullWidth
+					disabled={!isEditable}
+				/>
+				<InputField
+					loading={isLoading}
+					value={title_hk}
+					onChange={(event) => setTitle_hk(event.target.value)}
+					// margin="dense"
+					id="title_hk"
+					label="Chinese Title(traditinal)"
+					fullWidth
+					disabled={!isEditable}
+				/>
+				<InputField
+					loading={isLoading}
+					value={title_cn}
+					onChange={(event) => setTitle_cn(event.target.value)}
+					// margin="dense"
+					id="title_cn"
+					label="Chinese Title(simplified)"
+					fullWidth
+					disabled={!isEditable}
+				/>
+				{isEditable && (
+					<ButtonGroup
+						color="primary"
+						aria-label="outlined primary button group"
+						style={{
+							marginTop: 15,
+						}}
+					>
+						<Button
+							variant="outlined"
 							color="primary"
-							aria-label="outlined primary button group"
-							style={{
-								marginTop: 15,
-							}}
+							onClick={handleCancelEdit}
 						>
-							<Button
-								variant="outlined"
-								color="primary"
-								onClick={handleCancelEdit}
-							>
-								Cancel
-							</Button>
-							<Button
-								variant="contained"
-								color="primary"
-								onClick={handleUpdate}
-							>
-								Update
-							</Button>
-						</ButtonGroup>
-					)}
-				</>
-			)}
+							Cancel
+						</Button>
+						<Button
+							variant="contained"
+							color="primary"
+							onClick={handleUpdate}
+						>
+							Update
+						</Button>
+					</ButtonGroup>
+				)}
+			</div>
 		</NavDrawer>
 	);
 }
