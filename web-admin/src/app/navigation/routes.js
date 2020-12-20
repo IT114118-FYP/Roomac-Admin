@@ -3,7 +3,6 @@ export default {
 	TIMETABLE: "/timetable",
 	STATISTICS: "/statistics",
 	ACTIVITY_LOG: "/log",
-	RULES_CONFIGURATION: "/rules",
 	venues: {
 		MANAGE: "/venues",
 		NEW: "/venues/new",
@@ -17,5 +16,8 @@ export default {
 	},
 	branches: {
 		MANAGE: "/branches",
+	},
+	rules: {
+		MANAGE: "/rules",
 	},
 };

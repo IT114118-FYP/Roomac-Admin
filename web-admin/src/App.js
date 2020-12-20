@@ -9,7 +9,9 @@ const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
-const RulesConfigPage = lazy(() => import("./app/pages/RulesConfigPage"));
+const RulesConfigPage = lazy(() =>
+	import("./app/pages/rules config/ManageRulesPage")
+);
 const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
 const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
 const ManageProgramsPage = lazy(() =>
@@ -75,7 +77,7 @@ function App() {
 						component={ManageProgramsPage}
 					/>
 					<ProtectedRoute
-						path={routes.RULES_CONFIGURATION}
+						path={routes.rules.MANAGE}
 						component={RulesConfigPage}
 					/>
 				</Switch>

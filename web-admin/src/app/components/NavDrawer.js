@@ -133,7 +133,7 @@ function ResponsiveDrawer({ window, title, children }) {
 				</DrawerItem>
 				<DrawerItem
 					title="Rules Configuration"
-					path={routes.RULES_CONFIGURATION}
+					path={routes.rules.MANAGE}
 				>
 					<GavelIcon />
 				</DrawerItem>
