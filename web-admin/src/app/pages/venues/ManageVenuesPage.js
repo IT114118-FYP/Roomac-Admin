@@ -57,7 +57,7 @@ function ManageVenuesPage(props) {
 	const classes = useStyles();
 	const [anchorEl, setAnchorEl] = React.useState(null);
 	const [searchFilters, setSeacrhFilters] = React.useState([]);
-	const [venues, setVenues] = useState([]);
+	const [data, setData] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
 	const history = useHistory();
@@ -69,7 +69,7 @@ function ManageVenuesPage(props) {
 	const fetchData = () => {
 		setLoading(true);
 		axiosInstance.get("api/venues").then(({ data }) => {
-			setVenues(data);
+			setData(data);
 			setLoading(false);
 		});
 	};
@@ -166,7 +166,7 @@ function ManageVenuesPage(props) {
 						color="primary"
 						startIcon={<FilterListIcon />}
 					>
-						add filters
+						Add filters
 					</Button>
 					<Menu
 						id="fliters"
@@ -197,7 +197,7 @@ function ManageVenuesPage(props) {
 			</div>
 			<DataTable
 				loading={isLoading}
-				data={venues}
+				data={data}
 				labels={labels}
 				ignoreKeys={ignoreKeys}
 				onClick={handleClick}

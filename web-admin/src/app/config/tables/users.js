@@ -1,5 +1,3 @@
-const title = "Users";
-
 const labels = [
 	{
 		id: "id",
@@ -41,4 +39,4 @@ const labels = [
 
 const ignoreKeys = ["id", "created_at", "updated_at"];
 
-export { labels, title, ignoreKeys };
+export { labels, ignoreKeys };

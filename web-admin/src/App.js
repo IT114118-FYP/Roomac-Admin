@@ -49,11 +49,11 @@ function App() {
 						component={ActivityLogPage}
 					/>
 					<ProtectedRoute
-						path={routes.MANAGE_BRANCHES}
+						path={routes.branches.MANAGE}
 						component={ManageBranchesPage}
 					/>
 					<ProtectedRoute
-						path={routes.MANAGE_VENUES}
+						path={routes.venues.MANAGE}
 						exact
 						component={ManageVenuesPage}
 					/>
@@ -67,11 +67,11 @@ function App() {
 						component={DetailedVenuePage}
 					/>
 					<ProtectedRoute
-						path={routes.MANAGE_USERS}
+						path={routes.users.MANAGE}
 						component={ManageUsersPage}
 					/>
 					<ProtectedRoute
-						path={routes.MANAGE_PROGRAMMES}
+						path={routes.programs.MANAGE}
 						component={ManageProgramsPage}
 					/>
 					<ProtectedRoute

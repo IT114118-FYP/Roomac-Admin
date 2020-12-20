@@ -13,7 +13,7 @@ function Logo({ title = "admin", large }) {
 			<img
 				src={require("../resources/icon.png")}
 				alt="admin"
-				height={large ? 100 : 40}
+				height={large ? 100 : 30}
 				style={{
 					marginRight: large ? 15 : 5,
 				}}

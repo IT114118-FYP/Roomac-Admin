@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import AppBar from "@material-ui/core/AppBar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -15,7 +15,6 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
 import EventIcon from "@material-ui/icons/Event";
@@ -27,11 +26,11 @@ import MenuBookIcon from "@material-ui/icons/MenuBook";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
 import GavelIcon from "@material-ui/icons/Gavel";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+
 import routes from "../navigation/routes";
 import ConfirmDialog from "./ConfirmDialog";
-import { Box } from "@material-ui/core";
 import Logo from "./Logo";
-import { AccountCircle } from "@material-ui/icons";
+import { axiosInstance } from "../api/config";
 
 const drawerWidth = 240;
 
@@ -72,6 +71,8 @@ function ResponsiveDrawer({ window, title, children }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+	const [username, setUsername] = React.useState("");
+	const [isUsernameReady, setUsernameReady] = React.useState(false);
 
 	const [openLogoutConfirm, setOpenLogoutConfirm] = React.useState(false);
 
@@ -79,10 +80,27 @@ function ResponsiveDrawer({ window, title, children }) {
 		setMobileOpen(!mobileOpen);
 	};
 
+	useEffect(() => {
+		fetchUser();
+	}, []);
+
+	const fetchUser = () => {
+		axiosInstance
+			.get("/api/users/me")
+			.then(({ data }) => {
+				// setUsername(data)
+				setUsername(data.last_name);
+				setUsernameReady(true);
+			})
+			.catch((error) => {
+				setUsernameReady(false);
+			});
+	};
+
 	const drawer = (
 		<div>
 			<div className={classes.toolbar}>
-				<Logo />
+				<Logo title="roomac admin" />
 			</div>
 			<Divider />
 			<List>
@@ -101,22 +119,16 @@ function ResponsiveDrawer({ window, title, children }) {
 			</List>
 			<Divider />
 			<List>
-				<DrawerItem
-					title="Manage Branches"
-					path={routes.MANAGE_BRANCHES}
-				>
+				<DrawerItem title="Branches" path={routes.branches.MANAGE}>
 					<BusinessIcon />
 				</DrawerItem>
 				<DrawerItem title="Venues" path={routes.venues.MANAGE}>
 					<MeetingRoomIcon />
 				</DrawerItem>
-				<DrawerItem title="Manage Users" path={routes.MANAGE_USERS}>
+				<DrawerItem title="Users" path={routes.users.MANAGE}>
 					<PeopleIcon />
 				</DrawerItem>
-				<DrawerItem
-					title="Manage Programmes"
-					path={routes.MANAGE_PROGRAMMES}
-				>
+				<DrawerItem title="Programmes" path={routes.programs.MANAGE}>
 					<MenuBookIcon />
 				</DrawerItem>
 				<DrawerItem
@@ -169,15 +181,9 @@ function ResponsiveDrawer({ window, title, children }) {
 						{title}
 					</Typography>
 					<div>
-						<IconButton
-							aria-label="account of current user"
-							aria-controls="menu-appbar"
-							aria-haspopup="true"
-							//   onClick={handleMenu}
-							color="inherit"
-						>
-							<AccountCircle />
-						</IconButton>
+						{isUsernameReady && (
+							<Typography>Welcome, {username}!</Typography>
+						)}
 					</div>
 				</Toolbar>
 			</AppBar>

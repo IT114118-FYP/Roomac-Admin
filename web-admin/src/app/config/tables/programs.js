@@ -1,5 +1,3 @@
-const title = "Programms";
-
 const labels = [
 	{
 		id: "id",
@@ -29,4 +27,4 @@ const labels = [
 
 const ignoreKeys = ["created_at", "updated_at"];
 
-export { labels, title, ignoreKeys };
+export { labels, ignoreKeys };
