@@ -1,0 +1,40 @@
+.container {
+	height: 100vh;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.logo {
+	height: 50%;
+	width: 50%;
+}
+
+.title {
+	font-size: 92px;
+	font-weight: bolder;
+	color: rgb(82, 82, 82);
+}
+
+.description {
+	font-size: 34px;
+	font-weight: bolder;
+	color: rgb(146, 146, 146);
+}
+
+@media screen and (max-width: 992px) {
+	.container {
+		flex-direction: column;
+	}
+	.logo {
+		height: 70%;
+		width: 70%;
+	}
+	.title {
+		font-size: 65px;
+	}
+
+	.description {
+		font-size: 24px;
+	}
+}

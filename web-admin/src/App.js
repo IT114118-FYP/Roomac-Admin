@@ -27,6 +27,7 @@ const DetailedVenuePage = lazy(() =>
 	import("./app/pages/venues/DetailedVenuePage")
 );
 const NewVenuePage = lazy(() => import("./app/pages/venues/NewVenuePage"));
+const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
 	return (
@@ -80,6 +81,7 @@ function App() {
 						path={routes.rules.MANAGE}
 						component={RulesConfigPage}
 					/>
+					<Route path="*" component={NotFoundPage} />
 				</Switch>
 			</Suspense>
 		</Router>
