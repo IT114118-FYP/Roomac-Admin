@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
 	ScheduleComponent,
-	Day,
 	Week,
-	WorkWeek,
-	Month,
 	Agenda,
 	MonthAgenda,
-	TimelineViews,
 	Inject,
 	ViewsDirective,
 	ViewDirective,
-	TimelineMonth,
-	setTime,
 } from "@syncfusion/ej2-react-schedule";
-import { CircularProgress, LinearProgress } from "@material-ui/core";
+import { Box, CircularProgress } from "@material-ui/core";
 
 import { axiosInstance } from "../api/config";
 import NavDrawer from "../components/NavDrawer";
@@ -58,8 +52,16 @@ function TimetablePage(props) {
 
 	return (
 		<NavDrawer title="Timetable">
-			{isloading && <LinearProgress />}
-			{!isloading && (
+			{isloading ? (
+				<Box
+					width="100%"
+					display="flex"
+					justifyContent="center"
+					alignItems="center"
+				>
+					<CircularProgress />
+				</Box>
+			) : (
 				<ScheduleComponent
 					readonly
 					height="750px"

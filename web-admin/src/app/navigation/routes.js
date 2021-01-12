@@ -10,6 +10,7 @@ export default {
 	},
 	users: {
 		MANAGE: "/users",
+		DETAILED: "/users/:id",
 	},
 	programs: {
 		MANAGE: "/programs",

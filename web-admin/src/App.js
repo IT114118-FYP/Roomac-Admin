@@ -9,6 +9,9 @@ const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
+const DetailedUserPage = lazy(() =>
+	import("./app/pages/users/DetailedUserPage")
+);
 const RulesConfigPage = lazy(() =>
 	import("./app/pages/rules config/ManageRulesPage")
 );
@@ -68,6 +71,10 @@ function App() {
 					<ProtectedRoute
 						path={routes.venues.DETAILED}
 						component={DetailedVenuePage}
+					/>
+					<ProtectedRoute
+						path={routes.users.DETAILED}
+						component={DetailedUserPage}
 					/>
 					<ProtectedRoute
 						path={routes.users.MANAGE}
