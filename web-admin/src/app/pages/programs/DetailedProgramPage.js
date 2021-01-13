@@ -2,10 +2,10 @@ import { Box, Breadcrumbs, Divider, Typography } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import { axiosInstance } from "../../api/config";
 import EditField from "../../components/forms/EditField";
 import EditForm from "../../components/forms/EditForm";
-
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 
@@ -68,7 +68,13 @@ function DetailedProgramPage({ match }) {
 			) : (
 				<div>
 					<Box marginBottom={2} marginTop={3}>
-						<Typography variant="h5" component="div">
+						<Typography
+							variant="h5"
+							component="div"
+							style={{
+								fontWeight: "bold",
+							}}
+						>
 							{isLoading ? <Skeleton /> : `${program.title_en}`}
 						</Typography>
 						<Typography
@@ -76,7 +82,11 @@ function DetailedProgramPage({ match }) {
 							component="div"
 							color="textSecondary"
 						>
-							{isLoading ? <Skeleton /> : `${program.id}`}
+							{isLoading ? (
+								<Skeleton />
+							) : (
+								`Programme Code ${program.id}`
+							)}
 						</Typography>
 					</Box>
 					<EditForm title="Prgramme info">

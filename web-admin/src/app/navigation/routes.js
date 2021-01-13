@@ -5,7 +5,6 @@ export default {
 	ACTIVITY_LOG: "/log",
 	venues: {
 		MANAGE: "/venues",
-		NEW: "/venues/new",
 		DETAILED: "/venues/:id",
 	},
 	users: {

@@ -4,25 +4,27 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import routes from "./app/navigation/routes";
 import ProtectedRoute from "./app/navigation/ProtectedRoute";
 import { LinearProgress } from "@material-ui/core";
-import DetailedProgramPage from "./app/pages/programs/DetailedProgramPage";
 
 const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
+const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
+const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
 const DetailedUserPage = lazy(() =>
 	import("./app/pages/users/DetailedUserPage")
 );
-const RulesConfigPage = lazy(() =>
-	import("./app/pages/rules config/ManageRulesPage")
-);
-const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
-const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
 const ManageProgramsPage = lazy(() =>
 	import("./app/pages/programs/ManageProgramsPage")
 );
+const DetailedProgramPage = lazy(() =>
+	import("./app/pages/programs/DetailedProgramPage")
+);
 const ManageBranchesPage = lazy(() =>
 	import("./app/pages/branches/ManageBranchesPage")
+);
+const DetailedBranchPage = lazy(() =>
+	import("./app/pages/branches/DetailedBranchPage")
 );
 const ManageVenuesPage = lazy(() =>
 	import("./app/pages/venues/ManageVenuesPage")
@@ -30,7 +32,9 @@ const ManageVenuesPage = lazy(() =>
 const DetailedVenuePage = lazy(() =>
 	import("./app/pages/venues/DetailedVenuePage")
 );
-const NewVenuePage = lazy(() => import("./app/pages/venues/NewVenuePage"));
+const RulesConfigPage = lazy(() =>
+	import("./app/pages/rules config/ManageRulesPage")
+);
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
@@ -56,6 +60,10 @@ function App() {
 						component={ActivityLogPage}
 					/>
 					<ProtectedRoute
+						path={routes.branches.DETAILED}
+						component={DetailedBranchPage}
+					/>
+					<ProtectedRoute
 						path={routes.branches.MANAGE}
 						component={ManageBranchesPage}
 					/>
@@ -63,11 +71,6 @@ function App() {
 						path={routes.venues.MANAGE}
 						exact
 						component={ManageVenuesPage}
-					/>
-					<ProtectedRoute
-						path={routes.venues.NEW}
-						exact
-						component={NewVenuePage}
 					/>
 					<ProtectedRoute
 						path={routes.venues.DETAILED}

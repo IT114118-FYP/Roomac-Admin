@@ -75,7 +75,7 @@ function ManageBranchesPage(props) {
 	};
 
 	const handleClick = (event, itemID) => {
-		history.push(`/venues/${itemID}`);
+		history.push(`/branches/${itemID}`);
 	};
 
 	const handleAddNew = () => {
