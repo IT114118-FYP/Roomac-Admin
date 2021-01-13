@@ -24,7 +24,6 @@ import BusinessIcon from "@material-ui/icons/Business";
 import PeopleIcon from "@material-ui/icons/People";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
 import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
-import GavelIcon from "@material-ui/icons/Gavel";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import routes from "../navigation/routes";
@@ -130,12 +129,6 @@ function ResponsiveDrawer({ window, title, children }) {
 				</DrawerItem>
 				<DrawerItem title="Programmes" path={routes.programs.MANAGE}>
 					<MenuBookIcon />
-				</DrawerItem>
-				<DrawerItem
-					title="Rules Configuration"
-					path={routes.rules.MANAGE}
-				>
-					<GavelIcon />
 				</DrawerItem>
 			</List>
 			<Divider />

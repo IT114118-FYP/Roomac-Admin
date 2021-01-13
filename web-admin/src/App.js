@@ -32,9 +32,6 @@ const ManageVenuesPage = lazy(() =>
 const DetailedVenuePage = lazy(() =>
 	import("./app/pages/venues/DetailedVenuePage")
 );
-const RulesConfigPage = lazy(() =>
-	import("./app/pages/rules config/ManageRulesPage")
-);
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
@@ -91,10 +88,6 @@ function App() {
 					<ProtectedRoute
 						path={routes.programs.MANAGE}
 						component={ManageProgramsPage}
-					/>
-					<ProtectedRoute
-						path={routes.rules.MANAGE}
-						component={RulesConfigPage}
 					/>
 					<Route path="*" component={NotFoundPage} />
 				</Switch>

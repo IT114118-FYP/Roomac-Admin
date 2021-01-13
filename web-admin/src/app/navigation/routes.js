@@ -19,8 +19,4 @@ export default {
 		MANAGE: "/branches",
 		DETAILED: "/branches/:id",
 	},
-	rules: {
-		MANAGE: "/rules",
-		DETAILED: "/rules/:id",
-	},
 };
