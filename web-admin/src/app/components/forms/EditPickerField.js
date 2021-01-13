@@ -13,45 +13,41 @@ import EditIcon from "@material-ui/icons/Edit";
 import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 
-function EditField({
-	name,
-	value,
-	loading,
-	onSave,
-	picker = false,
-	pickerItem,
-}) {
-	const [textValue, setTextValue] = useState(value);
+// pickerItem format must be in the following: [{
+//      id: ...,
+//      value: ...
+// }]
+
+export const createPickerValue = (id, value) => {
+	return { id: id, value, value };
+};
+
+function EditPickerField({ name, value, loading, onSave, pickerItem }) {
 	const [pickerValue, setPickerValue] = useState(value);
 	const [edit, setEdit] = useState(false);
 	const [changed, setChanged] = useState(false);
 
 	const onEdit = () => {
 		setEdit(true);
-		setTextValue(value);
+		setPickerValue(value);
 	};
 
 	const onClose = () => {
-		setTextValue(value);
+		setPickerValue(value);
 		setEdit(false);
 	};
 
 	const onFinish = () => {
-		// onSva("asd");
 		setEdit(false);
-		onSave(textValue);
+		onSave(pickerValue);
 		onClose();
 	};
 
-	const handleChange = (event) => {
-		setTextValue(event.target.value);
+	const handlePickerChange = (event) => {
 		if (event.target.value != value) {
+			setPickerValue(event.target.value);
 			setChanged(true);
 		}
-	};
-
-	const handlePickerChange = (event) => {
-		setPickerValue(event.target.value);
 	};
 
 	return (
@@ -70,34 +66,25 @@ function EditField({
 				</Grid>
 				<Grid item xs={7}>
 					{edit ? (
-						picker ? (
-							<Select
-								fullWidth
-								value={pickerValue}
-								onChange={handlePickerChange}
-							>
-								{pickerItem.map((item) => (
-									<MenuItem value={item.id}>
-										{item.title_en}
-									</MenuItem>
-								))}
-							</Select>
-						) : (
-							<TextField
-								value={textValue}
-								autoFocus
-								fullWidth
-								onChange={handleChange}
-								onKeyDown={(event) => {
-									if (event.key === "Enter") {
-										onFinish();
-									}
-								}}
-							/>
-						)
+						<Select
+							fullWidth
+							value={pickerValue}
+							onChange={handlePickerChange}
+						>
+							{pickerItem.map((item) => (
+								<MenuItem value={item.id} key={item.id}>
+									{item.value}
+								</MenuItem>
+							))}
+						</Select>
 					) : (
 						<Typography>
-							{loading ? <Skeleton /> : value}
+							{loading ? (
+								<Skeleton />
+							) : (
+								pickerItem.find((item) => item.id === value)
+									.value
+							)}
 						</Typography>
 					)}
 				</Grid>
@@ -126,4 +113,4 @@ function EditField({
 	);
 }
 
-export default EditField;
+export default EditPickerField;

@@ -26,6 +26,9 @@ import { axiosInstance } from "../../api/config";
 import routes from "../../navigation/routes";
 import EditField from "../../components/forms/EditField";
 import EditForm from "../../components/forms/EditForm";
+import EditPickerField, {
+	createPickerValue,
+} from "../../components/forms/EditPickerField";
 
 function TabPanel({ children, value, index, ...other }) {
 	return (
@@ -48,6 +51,10 @@ function DetailedUserPage({ match }) {
 	const [tabIndex, setTabIndex] = useState(0);
 	const [isLoading, setLoading] = useState(true);
 	const [user, setUser] = useState({});
+	const [userBranch, setUserBranch] = useState({});
+	const [branches, setBranches] = useState([]);
+	const [userProgram, setUserProgram] = useState({});
+	const [programs, setPrograms] = useState([]);
 	const [error, setError] = useState(false);
 	const [permissions, setPermissions] = useState([]);
 
@@ -61,7 +68,45 @@ function DetailedUserPage({ match }) {
 		axiosInstance
 			.get(`api/users/${match.params.id}`)
 			.then(({ data }) => {
+				console.log(data);
 				setUser(data);
+				fetchBranches(data.branch_id);
+				fetchPrograms(data.program_id);
+			})
+			.catch((error) => {
+				console.log(error);
+				setError(true);
+			});
+	};
+
+	const fetchBranches = (id) => {
+		// setLoading(true);
+		axiosInstance
+			.get(`api/branches`)
+			.then(({ data }) => {
+				const pickerItem = data.map((item) => {
+					return createPickerValue(item.id, item.title_en);
+				});
+				setBranches(pickerItem);
+				setUserBranch(data.find((branch) => branch.id === id));
+			})
+			.catch((error) => {
+				console.log(error);
+				setError(true);
+			});
+	};
+
+	const fetchPrograms = (id) => {
+		// setLoading(true);
+		axiosInstance
+			.get(`api/programs`)
+			.then(({ data }) => {
+				const pickerItem = data.map((item) => {
+					return createPickerValue(item.id, item.title_en);
+				});
+				console.log(pickerItem);
+				setPrograms(pickerItem);
+				setUserProgram(data.find((program) => program.id === id));
 				setLoading(false);
 			})
 			.catch((error) => {
@@ -135,20 +180,23 @@ function DetailedUserPage({ match }) {
 						onSave={(newValue) => updateUser("name", newValue)}
 					/>
 					<Divider />
-					<EditField
+					<EditPickerField
 						loading={isLoading}
 						name="Programme"
-						value={user.program_id}
+						value={userProgram.id}
 						onSave={(newValue) =>
 							updateUser("program_id", newValue)
 						}
+						pickerItem={programs}
 					/>
 					<Divider />
-					<EditField
+					<EditPickerField
 						loading={isLoading}
 						name="BRANCH"
-						value={user.branch_id}
+						value={userBranch.id}
 						onSave={(newValue) => updateUser("branch_id", newValue)}
+						picker
+						pickerItem={branches}
 					/>
 				</EditForm>
 				<EditForm title="Contact Info">
