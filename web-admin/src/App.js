@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import routes from "./app/navigation/routes";
 import ProtectedRoute from "./app/navigation/ProtectedRoute";
 import { LinearProgress } from "@material-ui/core";
+import DetailedProgramPage from "./app/pages/programs/DetailedProgramPage";
 
 const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
@@ -79,6 +80,10 @@ function App() {
 					<ProtectedRoute
 						path={routes.users.MANAGE}
 						component={ManageUsersPage}
+					/>
+					<ProtectedRoute
+						path={routes.programs.DETAILED}
+						component={DetailedProgramPage}
 					/>
 					<ProtectedRoute
 						path={routes.programs.MANAGE}

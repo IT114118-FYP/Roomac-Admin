@@ -14,11 +14,14 @@ export default {
 	},
 	programs: {
 		MANAGE: "/programs",
+		DETAILED: "/programs/:id",
 	},
 	branches: {
 		MANAGE: "/branches",
+		DETAILED: "/branches/:id",
 	},
 	rules: {
 		MANAGE: "/rules",
+		DETAILED: "/rules/:id",
 	},
 };

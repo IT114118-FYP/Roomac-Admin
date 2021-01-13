@@ -44,8 +44,14 @@ function EditField({ name, value, loading, onSave }) {
 		<Box paddingY={2}>
 			<Grid container spacing={1}>
 				<Grid item xs={3}>
-					<Typography variant="caption" color="textSecondary">
-						{name}
+					<Typography
+						variant="caption"
+						color="textSecondary"
+						style={{
+							overflow: "hidden",
+						}}
+					>
+						{name.toUpperCase()}
 					</Typography>
 				</Grid>
 				<Grid item xs={7}>

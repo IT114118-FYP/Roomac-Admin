@@ -14,22 +14,16 @@ import {
 	TableBody,
 	Paper,
 	Breadcrumbs,
-	Button,
-	List,
-	ListItem,
-	ListItemAvatar,
-	ListItemText,
 	Divider,
-	ListItemIcon,
 } from "@material-ui/core";
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
+import { Skeleton } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 
 import NavDrawer from "../../components/NavDrawer";
 import { axiosInstance } from "../../api/config";
 import routes from "../../navigation/routes";
-import { Skeleton } from "@material-ui/lab";
-import { Link } from "react-router-dom";
 import EditField from "../../components/forms/EditField";
 import EditForm from "../../components/forms/EditForm";
 
@@ -54,8 +48,6 @@ function DetailedUserPage({ match }) {
 	const [tabIndex, setTabIndex] = useState(0);
 	const [isLoading, setLoading] = useState(true);
 	const [user, setUser] = useState({});
-	const [user_firstName, setUser_firstName] = useState("");
-	const [user_lastName, setUser_lastName] = useState("");
 	const [error, setError] = useState(false);
 	const [permissions, setPermissions] = useState([]);
 
@@ -69,10 +61,7 @@ function DetailedUserPage({ match }) {
 		axiosInstance
 			.get(`api/users/${match.params.id}`)
 			.then(({ data }) => {
-				console.log(data);
 				setUser(data);
-				setUser_firstName(data.first_name);
-				setUser_lastName(data.last_name);
 				setLoading(false);
 			})
 			.catch((error) => {
@@ -85,7 +74,6 @@ function DetailedUserPage({ match }) {
 		axiosInstance
 			.get(`api/users/${match.params.id}/permissions`)
 			.then(({ data }) => {
-				console.log(data);
 				setPermissions(data);
 			});
 	};

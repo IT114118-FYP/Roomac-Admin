@@ -75,7 +75,7 @@ function ManageProgramsPage(props) {
 	};
 
 	const handleClick = (event, itemID) => {
-		history.push(`/venues/${itemID}`);
+		history.push(`/programs/${itemID}`);
 	};
 
 	const handleAddNew = () => {
