@@ -26,12 +26,6 @@ const ManageBranchesPage = lazy(() =>
 const DetailedBranchPage = lazy(() =>
 	import("./app/pages/branches/DetailedBranchPage")
 );
-const ManageVenuesPage = lazy(() =>
-	import("./app/pages/venues/ManageVenuesPage")
-);
-const DetailedVenuePage = lazy(() =>
-	import("./app/pages/venues/DetailedVenuePage")
-);
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
@@ -63,15 +57,6 @@ function App() {
 					<ProtectedRoute
 						path={routes.branches.MANAGE}
 						component={ManageBranchesPage}
-					/>
-					<ProtectedRoute
-						path={routes.venues.MANAGE}
-						exact
-						component={ManageVenuesPage}
-					/>
-					<ProtectedRoute
-						path={routes.venues.DETAILED}
-						component={DetailedVenuePage}
 					/>
 					<ProtectedRoute
 						path={routes.users.DETAILED}
