@@ -10,8 +10,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { axiosInstance } from "../../api/config";
-import EditField from "../../components/forms/EditField";
-import EditForm from "../../components/forms/EditForm";
+import EditField from "../../components/forms/edit/EditField";
+import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 import DataTable from "../../components/DataTable";

@@ -26,6 +26,12 @@ const ManageBranchesPage = lazy(() =>
 const DetailedBranchPage = lazy(() =>
 	import("./app/pages/branches/DetailedBranchPage")
 );
+const ManageCategoriesPage = lazy(() =>
+	import("./app/pages/category/ManageCategoriesPage")
+);
+const NewCategoryPage = lazy(() =>
+	import("./app/pages/category/NewCategoryPage")
+);
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
@@ -73,6 +79,14 @@ function App() {
 					<ProtectedRoute
 						path={routes.programs.MANAGE}
 						component={ManageProgramsPage}
+					/>
+					<ProtectedRoute
+						path={routes.categories.NEW}
+						component={NewCategoryPage}
+					/>
+					<ProtectedRoute
+						path={routes.categories.MANAGE}
+						component={ManageCategoriesPage}
 					/>
 					<Route path="*" component={NotFoundPage} />
 				</Switch>

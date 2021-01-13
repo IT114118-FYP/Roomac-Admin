@@ -23,13 +23,18 @@ import HistoryIcon from "@material-ui/icons/History";
 import BusinessIcon from "@material-ui/icons/Business";
 import PeopleIcon from "@material-ui/icons/People";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
-import MeetingRoomIcon from "@material-ui/icons/MeetingRoom";
+import CategoryIcon from "@material-ui/icons/Category";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import ArrowRightIcon from "@material-ui/icons/ArrowRight";
+import AddIcon from "@material-ui/icons/Add";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 
 import routes from "../navigation/routes";
 import ConfirmDialog from "./ConfirmDialog";
 import Logo from "./Logo";
 import { axiosInstance } from "../api/config";
+import { Collapse } from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -64,16 +69,27 @@ const useStyles = makeStyles((theme) => ({
 		flexGrow: 1,
 		padding: theme.spacing(3),
 	},
+	nested: {
+		paddingLeft: theme.spacing(4),
+	},
 }));
 
 function ResponsiveDrawer({ window, title, children }) {
 	const history = useHistory();
 	const classes = useStyles();
 	const [mobileOpen, setMobileOpen] = React.useState(false);
+	const [openCategory, setOpenCategory] = React.useState(false);
+	const [categories, setCategories] = React.useState([]);
 	const [username, setUsername] = React.useState("");
 	const [isUsernameReady, setUsernameReady] = React.useState(false);
 
 	const [openLogoutConfirm, setOpenLogoutConfirm] = React.useState(false);
+
+	const fetchCategory = () => {
+		axiosInstance.get("api/categories").then(({ data }) => {
+			setCategories(data);
+		});
+	};
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -81,6 +97,7 @@ function ResponsiveDrawer({ window, title, children }) {
 
 	useEffect(() => {
 		fetchUser();
+		fetchCategory();
 	}, []);
 
 	const fetchUser = () => {
@@ -121,6 +138,35 @@ function ResponsiveDrawer({ window, title, children }) {
 				<DrawerItem title="Branches" path={routes.branches.MANAGE}>
 					<BusinessIcon />
 				</DrawerItem>
+
+				<ListItem button onClick={() => setOpenCategory(!openCategory)}>
+					<ListItemIcon>
+						<CategoryIcon />
+					</ListItemIcon>
+					<ListItemText primary="Categories" />
+					{openCategory ? <ExpandLess /> : <ExpandMore />}
+				</ListItem>
+				<Collapse in={openCategory} timeout="auto" unmountOnExit>
+					<List>
+						<DrawerItem
+							title="Add Category"
+							path={routes.categories.NEW}
+							className={classes.nested}
+						>
+							<AddIcon />
+						</DrawerItem>
+						{categories.map((item) => (
+							<DrawerItem
+								title={item.title_en}
+								path={routes.categories.MANAGE}
+								className={classes.nested}
+								key={item.id}
+							>
+								<ArrowRightIcon />
+							</DrawerItem>
+						))}
+					</List>
+				</Collapse>
 				<DrawerItem title="Users" path={routes.users.MANAGE}>
 					<PeopleIcon />
 				</DrawerItem>
@@ -227,7 +273,7 @@ function ResponsiveDrawer({ window, title, children }) {
 	);
 }
 
-function DrawerItem({ title, children, path }) {
+function DrawerItem({ title, children, path, className }) {
 	const history = useHistory();
 	return (
 		<ListItem
@@ -236,6 +282,7 @@ function DrawerItem({ title, children, path }) {
 			onClick={() => {
 				history.push(path);
 			}}
+			className={className}
 		>
 			<ListItemIcon>{children}</ListItemIcon>
 			<ListItemText primary={title} />

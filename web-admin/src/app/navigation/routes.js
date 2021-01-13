@@ -3,6 +3,10 @@ export default {
 	TIMETABLE: "/timetable",
 	STATISTICS: "/statistics",
 	ACTIVITY_LOG: "/log",
+	categories: {
+		MANAGE: "/categories",
+		NEW: "/categories/new",
+	},
 	users: {
 		MANAGE: "/users",
 		DETAILED: "/users/:id",

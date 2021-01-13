@@ -24,11 +24,11 @@ import { Link } from "react-router-dom";
 import NavDrawer from "../../components/NavDrawer";
 import { axiosInstance } from "../../api/config";
 import routes from "../../navigation/routes";
-import EditField from "../../components/forms/EditField";
-import EditForm from "../../components/forms/EditForm";
+import EditField from "../../components/forms/edit/EditField";
+import EditForm from "../../components/forms/edit/EditForm";
 import EditPickerField, {
 	createPickerValue,
-} from "../../components/forms/EditPickerField";
+} from "../../components/forms/edit/EditPickerField";
 
 function TabPanel({ children, value, index, ...other }) {
 	return (

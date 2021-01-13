@@ -13,16 +13,8 @@ import EditIcon from "@material-ui/icons/Edit";
 import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 
-function EditField({
-	name,
-	value,
-	loading,
-	onSave,
-	picker = false,
-	pickerItem,
-}) {
+function EditField({ name, value, loading, onSave }) {
 	const [textValue, setTextValue] = useState(value);
-	const [pickerValue, setPickerValue] = useState(value);
 	const [edit, setEdit] = useState(false);
 	const [changed, setChanged] = useState(false);
 
@@ -37,7 +29,6 @@ function EditField({
 	};
 
 	const onFinish = () => {
-		// onSva("asd");
 		setEdit(false);
 		onSave(textValue);
 		onClose();
@@ -50,51 +41,27 @@ function EditField({
 		}
 	};
 
-	const handlePickerChange = (event) => {
-		setPickerValue(event.target.value);
-	};
-
 	return (
 		<Box paddingY={2}>
 			<Grid container spacing={1}>
 				<Grid item xs={3}>
-					<Typography
-						variant="caption"
-						color="textSecondary"
-						style={{
-							overflow: "hidden",
-						}}
-					>
+					<Typography variant="caption" color="textSecondary">
 						{name.toUpperCase()}
 					</Typography>
 				</Grid>
 				<Grid item xs={7}>
 					{edit ? (
-						picker ? (
-							<Select
-								fullWidth
-								value={pickerValue}
-								onChange={handlePickerChange}
-							>
-								{pickerItem.map((item) => (
-									<MenuItem value={item.id}>
-										{item.title_en}
-									</MenuItem>
-								))}
-							</Select>
-						) : (
-							<TextField
-								value={textValue}
-								autoFocus
-								fullWidth
-								onChange={handleChange}
-								onKeyDown={(event) => {
-									if (event.key === "Enter") {
-										onFinish();
-									}
-								}}
-							/>
-						)
+						<TextField
+							value={textValue}
+							autoFocus
+							fullWidth
+							onChange={handleChange}
+							onKeyDown={(event) => {
+								if (event.key === "Enter") {
+									onFinish();
+								}
+							}}
+						/>
 					) : (
 						<Typography>
 							{loading ? <Skeleton /> : value}
