@@ -25,11 +25,11 @@ const validationSchema = Yup.object().shape({
 	title_hk: Yup.string()
 		.required()
 		.min(1)
-		.label("Chinese Title (traditional)"),
+		.label("Chinese Title (Traditional)"),
 	title_cn: Yup.string()
 		.required()
 		.min(1)
-		.label("Chinese Title (simplified)"),
+		.label("Chinese Title (Simplified)"),
 });
 
 function NewCategoryPage(props) {

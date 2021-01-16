@@ -20,6 +20,7 @@ import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Skeleton } from "@material-ui/lab";
 import { Link } from "react-router-dom";
+import * as axios from "axios";
 
 import NavDrawer from "../../components/NavDrawer";
 import { axiosInstance } from "../../api/config";
@@ -59,69 +60,60 @@ function DetailedUserPage({ match }) {
 	const [permissions, setPermissions] = useState([]);
 
 	useEffect(() => {
-		fetchUser();
-		fetchPermissions();
+		// fetchUser();
+		// fetchPermissions();
+		fetchAllData();
 	}, []);
 
-	const fetchUser = () => {
+	const fetchAllData = async () => {
 		setLoading(true);
-		axiosInstance
-			.get(`api/users/${match.params.id}`)
-			.then(({ data }) => {
-				console.log(data);
-				setUser(data);
-				fetchBranches(data.branch_id);
-				fetchPrograms(data.program_id);
-			})
-			.catch((error) => {
-				console.log(error);
-				setError(true);
+		try {
+			const [
+				userData,
+				userPermissions,
+				branches,
+				programs,
+			] = await axios.all([
+				fetchUser(),
+				fetchPermissions(),
+				fetchBranches(),
+				fetchPrograms(),
+			]);
+			setUser(userData.data);
+			setPermissions(userPermissions.data);
+
+			const branchesPickerItem = branches.data.map((item) => {
+				return createPickerValue(item.id, item.title_en);
 			});
+			setBranches(branchesPickerItem);
+			setUserBranch(
+				branches.data.find(
+					(branch) => branch.id === userData.data.branch_id
+				)
+			);
+
+			const programsPickerItem = programs.data.map((item) => {
+				return createPickerValue(item.id, item.title_en);
+			});
+			setPrograms(programsPickerItem);
+			setUserProgram(
+				programs.data.find(
+					(program) => program.id === userData.data.program_id
+				)
+			);
+			setLoading(false);
+		} catch (error) {
+			console.log(error.message);
+			setError(true);
+			setLoading(false);
+		}
 	};
 
-	const fetchBranches = (id) => {
-		// setLoading(true);
-		axiosInstance
-			.get(`api/branches`)
-			.then(({ data }) => {
-				const pickerItem = data.map((item) => {
-					return createPickerValue(item.id, item.title_en);
-				});
-				setBranches(pickerItem);
-				setUserBranch(data.find((branch) => branch.id === id));
-			})
-			.catch((error) => {
-				console.log(error);
-				setError(true);
-			});
-	};
-
-	const fetchPrograms = (id) => {
-		// setLoading(true);
-		axiosInstance
-			.get(`api/programs`)
-			.then(({ data }) => {
-				const pickerItem = data.map((item) => {
-					return createPickerValue(item.id, item.title_en);
-				});
-				console.log(pickerItem);
-				setPrograms(pickerItem);
-				setUserProgram(data.find((program) => program.id === id));
-				setLoading(false);
-			})
-			.catch((error) => {
-				console.log(error);
-				setError(true);
-			});
-	};
-
-	const fetchPermissions = () => {
-		axiosInstance
-			.get(`api/users/${match.params.id}/permissions`)
-			.then(({ data }) => {
-				setPermissions(data);
-			});
-	};
+	const fetchUser = () => axiosInstance.get(`api/users/${match.params.id}`);
+	const fetchBranches = () => axiosInstance.get(`api/branches`);
+	const fetchPrograms = () => axiosInstance.get(`api/programs`);
+	const fetchPermissions = () =>
+		axiosInstance.get(`api/users/${match.params.id}/permissions`);
 
 	const updateUser = (name, value) => {
 		setLoading(true);
@@ -137,7 +129,7 @@ function DetailedUserPage({ match }) {
 				program_id: name == "program_id" ? value : user.program_id,
 			})
 			.then(() => {
-				fetchUser();
+				fetchAllData();
 			})
 			.catch((error) => {
 				console.log(error);
@@ -272,7 +264,9 @@ function DetailedUserPage({ match }) {
 					display="flex"
 					flexDirection="column"
 				>
-					<Typography variant="h6">User Not Found...</Typography>
+					<Typography variant="h6">
+						Something went wrong...
+					</Typography>
 					<Link to={routes.users.MANAGE}>go back</Link>
 				</Box>
 			) : (
