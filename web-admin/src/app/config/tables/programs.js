@@ -15,16 +15,6 @@ const labels = [
 		id: "title_cn",
 		label: "Chinese Title (simplified)",
 	},
-	{
-		id: "created_at",
-		label: "Created At",
-	},
-	{
-		id: "updated_at",
-		label: "updated At",
-	},
 ];
 
-const ignoreKeys = ["created_at", "updated_at"];
-
-export { labels, ignoreKeys };
+export { labels };

@@ -1,8 +1,4 @@
 const labels = [
-	// {
-	// 	id: "id",
-	// 	label: "id",
-	// },
 	{
 		id: "name",
 		label: "CNA",
@@ -27,16 +23,6 @@ const labels = [
 		id: "chinese_name",
 		label: "Chinese Name",
 	},
-	// {
-	// 	id: "created_at",
-	// 	label: "Created At",
-	// },
-	// {
-	// 	id: "updated_at",
-	// 	label: "updated At",
-	// },
 ];
 
-const ignoreKeys = ["id", "created_at", "updated_at"];
-
-export { labels, ignoreKeys };
+export { labels };

@@ -9,6 +9,4 @@ const labels = [
 	},
 ];
 
-const ignoreKeys = [];
-
-export { labels, ignoreKeys };
+export { labels };

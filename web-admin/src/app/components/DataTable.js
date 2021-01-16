@@ -47,19 +47,21 @@ const getLabel = (id, labels) => {
 	if (instance) return instance.label;
 };
 
-const createHeadCells = (items, labels, ignoreKeys) => {
+const createHeadCells = (items, labels) => {
 	if (!items) return;
 	var temp = [];
 	for (let index = 0; index < Object.keys(items[0]).length; index++) {
-		if (!ignoreKeys.includes(Object.keys(items[0])[index])) {
-			const headCell = {
-				id: Object.keys(items[0])[index],
-				label: getLabel(Object.keys(items[0])[index], labels),
-				numeric: false,
-				disablePadding: false,
-			};
-			temp.push(headCell);
-		}
+		labels.forEach((label) => {
+			if (Object.keys(items[0])[index] === label.id) {
+				const headCell = {
+					id: Object.keys(items[0])[index],
+					label: getLabel(Object.keys(items[0])[index], labels),
+					numeric: false,
+					disablePadding: false,
+				};
+				temp.push(headCell);
+			}
+		});
 	}
 	return temp;
 };
@@ -138,9 +140,9 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function DataTableWithData({ data, labels, ignoreKeys, onClick }) {
+function DataTableContext({ data, labels, onClick }) {
 	const classes = useStyles();
-	const [headCellData] = useState(createHeadCells(data, labels, ignoreKeys));
+	const [headCellData] = useState(createHeadCells(data, labels));
 	const [order, setOrder] = useState("asc");
 	const [orderBy, setOrderBy] = useState(headCellData[0].id);
 	const [page, setPage] = useState(0);
@@ -189,11 +191,9 @@ function DataTableWithData({ data, labels, ignoreKeys, onClick }) {
 									page * rowsPerPage + rowsPerPage
 								)
 								.map((item, index) => {
-									var filteredItem = {};
-									Object.assign(filteredItem, item);
-									ignoreKeys.forEach((property) => {
-										delete filteredItem[property];
-									});
+									const labelsID = labels.map(
+										(label) => label.id
+									);
 									return (
 										<TableRow
 											hover
@@ -203,18 +203,18 @@ function DataTableWithData({ data, labels, ignoreKeys, onClick }) {
 											tabIndex={-1}
 											key={item.id}
 										>
-											{Object.keys(filteredItem).map(
-												(key) => {
+											{Object.keys(item).map((key) => {
+												if (labelsID.includes(key)) {
 													return (
 														<TableCell
 															align="left"
 															key={key}
 														>
-															{filteredItem[key]}
+															{item[key]}
 														</TableCell>
 													);
 												}
-											)}
+											})}
 										</TableRow>
 									);
 								})}
@@ -244,13 +244,7 @@ function DataTableWithData({ data, labels, ignoreKeys, onClick }) {
 	);
 }
 
-export default function DataTable({
-	loading,
-	data,
-	labels,
-	ignoreKeys,
-	onClick,
-}) {
+export default function DataTable({ loading, data, labels, onClick }) {
 	return (
 		<div>
 			{loading ? (
@@ -263,10 +257,9 @@ export default function DataTable({
 					<CircularProgress />
 				</Box>
 			) : (
-				<DataTableWithData
+				<DataTableContext
 					data={data}
 					labels={labels}
-					ignoreKeys={ignoreKeys}
 					onClick={onClick}
 				/>
 			)}

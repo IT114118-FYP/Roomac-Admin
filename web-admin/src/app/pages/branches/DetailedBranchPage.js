@@ -15,7 +15,7 @@ import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 import DataTable from "../../components/DataTable";
-import { ignoreKeys, labels } from "../../config/tables/rulesConfig";
+import { labels } from "../../config/tables/rulesConfig";
 
 function DetailedBranchPage({ match }) {
 	const [isLoading, setLoading] = useState(true);
@@ -156,7 +156,6 @@ function DetailedBranchPage({ match }) {
 						loading={isLoading}
 						data={settings}
 						labels={labels}
-						ignoreKeys={ignoreKeys}
 						onClick={handleSettingClick}
 					/>
 				</div>

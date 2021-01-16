@@ -18,7 +18,7 @@ import { useHistory } from "react-router-dom";
 
 import NavDrawer from "../../components/NavDrawer";
 import DataTable from "../../components/DataTable";
-import { ignoreKeys, labels } from "../../config/tables/programs";
+import { labels } from "../../config/tables/programs";
 import { axiosInstance } from "../../api/config";
 
 const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
@@ -199,7 +199,6 @@ function ManageProgramsPage(props) {
 				loading={isLoading}
 				data={data}
 				labels={labels}
-				ignoreKeys={ignoreKeys}
 				onClick={handleClick}
 			/>
 

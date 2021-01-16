@@ -1,20 +1,23 @@
 const labels = [
 	{
-		id: "id",
+		id: "branch_id",
 		label: "Branch ID",
 	},
 	{
+		id: "number",
+		label: "Room Number",
+	},
+	{
 		id: "title_en",
-		label: "English Title",
+		label: "Name",
 	},
 	{
 		id: "title_hk",
-		label: "Chinese Title (traditional)",
+		label: "Name",
 	},
 	{
 		id: "title_cn",
-		label: "Chinese Title (simplified)",
+		label: "Name",
 	},
 ];
-
 export { labels };

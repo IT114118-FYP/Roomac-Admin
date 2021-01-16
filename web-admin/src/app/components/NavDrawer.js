@@ -158,7 +158,7 @@ function ResponsiveDrawer({ window, title, children }) {
 						{categories.map((item) => (
 							<DrawerItem
 								title={item.title_en}
-								path={routes.categories.MANAGE}
+								path={`/categories/${item.id}`}
 								className={classes.nested}
 								key={item.id}
 							>

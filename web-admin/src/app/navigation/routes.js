@@ -4,7 +4,7 @@ export default {
 	STATISTICS: "/statistics",
 	ACTIVITY_LOG: "/log",
 	categories: {
-		MANAGE: "/categories",
+		MANAGE: "/categories/:id",
 		NEW: "/categories/new",
 	},
 	users: {
