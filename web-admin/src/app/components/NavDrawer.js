@@ -161,6 +161,7 @@ function ResponsiveDrawer({ window, title, children }) {
 								path={`/categories/${item.id}`}
 								className={classes.nested}
 								key={item.id}
+								refresh="true"
 							>
 								<ArrowRightIcon />
 							</DrawerItem>
@@ -273,7 +274,7 @@ function ResponsiveDrawer({ window, title, children }) {
 	);
 }
 
-function DrawerItem({ title, children, path, className }) {
+function DrawerItem({ title, children, path, className, refresh }) {
 	const history = useHistory();
 	return (
 		<ListItem
@@ -281,6 +282,9 @@ function DrawerItem({ title, children, path, className }) {
 			key={title}
 			onClick={() => {
 				history.push(path);
+				if (refresh) {
+					window.location.reload();
+				}
 			}}
 			className={className}
 		>

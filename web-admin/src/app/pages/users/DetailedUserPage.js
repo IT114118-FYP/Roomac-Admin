@@ -60,8 +60,6 @@ function DetailedUserPage({ match }) {
 	const [permissions, setPermissions] = useState([]);
 
 	useEffect(() => {
-		// fetchUser();
-		// fetchPermissions();
 		fetchAllData();
 	}, []);
 
