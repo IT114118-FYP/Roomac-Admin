@@ -143,7 +143,7 @@ function ResponsiveDrawer({ window, title, children }) {
 					<ListItemIcon>
 						<CategoryIcon />
 					</ListItemIcon>
-					<ListItemText primary="Categories" />
+					<ListItemText primary="Resources" />
 					{openCategory ? <ExpandLess /> : <ExpandMore />}
 				</ListItem>
 				<Collapse in={openCategory} timeout="auto" unmountOnExit>
@@ -293,13 +293,5 @@ function DrawerItem({ title, children, path, className, refresh }) {
 		</ListItem>
 	);
 }
-
-ResponsiveDrawer.propTypes = {
-	/**
-	 * Injected by the documentation to work in an iframe.
-	 * You won't need it on your project.
-	 */
-	window: PropTypes.func,
-};
 
 export default ResponsiveDrawer;

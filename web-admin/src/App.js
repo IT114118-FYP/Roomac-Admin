@@ -11,8 +11,12 @@ const LoginPage = lazy(() => import("./app/pages/LoginPage"));
 const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
 const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
+const NewUserPage = lazy(() => import("./app/pages/users/NewUserPage"));
 const DetailedUserPage = lazy(() =>
 	import("./app/pages/users/DetailedUserPage")
+);
+const NewProgramPage = lazy(() =>
+	import("./app/pages/programs/NewProgramPage")
 );
 const ManageProgramsPage = lazy(() =>
 	import("./app/pages/programs/ManageProgramsPage")
@@ -31,6 +35,9 @@ const ManageCategoriesPage = lazy(() =>
 );
 const NewCategoryPage = lazy(() =>
 	import("./app/pages/category/NewCategoryPage")
+);
+const DetailedCategoryPage = lazy(() =>
+	import("./app/pages/category/DetailedCategoryPage")
 );
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
@@ -65,6 +72,10 @@ function App() {
 						component={ManageBranchesPage}
 					/>
 					<ProtectedRoute
+						path={routes.users.NEW}
+						component={NewUserPage}
+					/>
+					<ProtectedRoute
 						path={routes.users.DETAILED}
 						component={DetailedUserPage}
 					/>
@@ -73,12 +84,20 @@ function App() {
 						component={ManageUsersPage}
 					/>
 					<ProtectedRoute
+						path={routes.programs.NEW}
+						component={NewProgramPage}
+					/>
+					<ProtectedRoute
 						path={routes.programs.DETAILED}
 						component={DetailedProgramPage}
 					/>
 					<ProtectedRoute
 						path={routes.programs.MANAGE}
 						component={ManageProgramsPage}
+					/>
+					<ProtectedRoute
+						path={routes.categories.DETAILED}
+						component={DetailedCategoryPage}
 					/>
 					<ProtectedRoute
 						path={routes.categories.NEW}

@@ -95,7 +95,9 @@ function ManageCategoriesPage({ match }) {
 
 	const fetchCategory = () => axiosInstance.get(`api/categories`);
 
-	const handleClick = () => {};
+	const handleClick = (event, id) => {
+		history.push(`/categories/resource/${id}`);
+	};
 	const handleAddNew = () => {
 		console.log(category);
 	};
