@@ -20,7 +20,7 @@ import {
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Skeleton } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import * as axios from "axios";
 
 import NavDrawer from "../../components/NavDrawer";
@@ -31,6 +31,7 @@ import EditForm from "../../components/forms/edit/EditForm";
 import EditPickerField, {
 	createPickerValue,
 } from "../../components/forms/edit/EditPickerField";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 function TabPanel({ children, value, index, ...other }) {
 	return (
@@ -49,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 function DetailedUserPage({ match }) {
 	const classes = useStyles();
+	const history = useHistory();
 
 	const [tabIndex, setTabIndex] = useState(0);
 	const [isLoading, setLoading] = useState(true);
@@ -59,6 +61,7 @@ function DetailedUserPage({ match }) {
 	const [programs, setPrograms] = useState([]);
 	const [error, setError] = useState(false);
 	const [permissions, setPermissions] = useState([]);
+	const [deleteOpen, setDeleteOpen] = useState(false);
 
 	useEffect(() => {
 		fetchAllData();
@@ -133,6 +136,12 @@ function DetailedUserPage({ match }) {
 			.catch((error) => {
 				console.log(error);
 			});
+	};
+
+	const deleteUser = () => {
+		axiosInstance.delete(`api/users/${match.params.id}`).then(() => {
+			history.push(routes.users.MANAGE);
+		});
 	};
 
 	function GeneralTabPanel() {
@@ -252,7 +261,7 @@ function DetailedUserPage({ match }) {
 		);
 	}
 
-	function SettingsTabPanel() {
+	function SettingsTabPanel({ onDeleteUser }) {
 		return (
 			<Box flexDirection="row" display="flex">
 				<Box flexGrow={1}>
@@ -263,7 +272,11 @@ function DetailedUserPage({ match }) {
 						Upon deletion, the account will not be recoverable.
 					</Typography>
 				</Box>
-				<Button variant="outlined" color="secondary">
+				<Button
+					variant="outlined"
+					color="secondary"
+					onClick={onDeleteUser}
+				>
 					Delete User
 				</Button>
 			</Box>
@@ -347,10 +360,22 @@ function DetailedUserPage({ match }) {
 						<PermissionsTabPanel />
 					</TabPanel>
 					<TabPanel value={tabIndex} index={2}>
-						<SettingsTabPanel />
+						<SettingsTabPanel
+							onDeleteUser={() => setDeleteOpen(true)}
+						/>
 					</TabPanel>
 				</div>
 			)}
+			<ConfirmDialog
+				open={deleteOpen}
+				onClose={() => setDeleteOpen(false)}
+				onConfirm={deleteUser}
+				title={`Delete User ${user.name}?`}
+			>
+				<Typography>
+					Upon deletion, the account will not be recoverable.
+				</Typography>
+			</ConfirmDialog>
 		</NavDrawer>
 	);
 }
