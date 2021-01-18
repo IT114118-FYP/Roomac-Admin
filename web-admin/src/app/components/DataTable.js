@@ -12,6 +12,8 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import { Box, CircularProgress } from "@material-ui/core";
 
+import "../styles/cursor.css";
+
 function descendingComparator(a, b, orderBy) {
 	if (b[orderBy] < a[orderBy]) {
 		return -1;
@@ -196,6 +198,7 @@ function DataTableContext({ data, labels, onClick }) {
 									);
 									return (
 										<TableRow
+											className="hover"
 											hover
 											onClick={(event) =>
 												onClick(event, item.id)
