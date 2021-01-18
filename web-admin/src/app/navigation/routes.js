@@ -21,5 +21,6 @@ export default {
 	branches: {
 		MANAGE: "/branches",
 		DETAILED: "/branches/:id",
+		NEW: "/branches/new",
 	},
 };

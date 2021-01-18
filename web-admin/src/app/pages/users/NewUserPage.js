@@ -3,12 +3,6 @@ import {
 	Typography,
 	Box,
 	Button,
-	FormLabel,
-	RadioGroup,
-	FormControlLabel,
-	FormControl,
-	Radio,
-	Grid,
 	CircularProgress,
 } from "@material-ui/core";
 import { Formik } from "formik";
@@ -24,6 +18,8 @@ import NewPickerField, {
 	createNewPickerValue,
 } from "../../components/forms/new/NewPickerField";
 import SnackbarAlert from "../../components/SnackbarAlert";
+import routes from "../../navigation/routes";
+import { useHistory } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
 	branch_id: Yup.string().required().label("Branch"),
@@ -34,8 +30,10 @@ const validationSchema = Yup.object().shape({
 });
 
 function NewUserPage(props) {
+	const history = useHistory();
 	const [isLoading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
+	const [successAlert, setSuccessAlert] = useState(false);
 	const [error, setError] = useState(false);
 	const [branches, setBranches] = useState([]);
 	const [programs, setPrograms] = useState([]);
@@ -107,6 +105,7 @@ function NewUserPage(props) {
 			})
 			.then(() => {
 				setSuccess(true);
+				setSuccessAlert(true);
 				setLoading(false);
 			})
 			.catch((error) => {
@@ -156,27 +155,27 @@ function NewUserPage(props) {
 							title="First Name"
 							name="first_name"
 							autoFocus={true}
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="Last Name"
 							name="last_name"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="Chinese Name"
 							name="chinese_name"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="CNA"
 							name="name"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="Password"
 							name="password"
-							disabled={isLoading}
+							disabled={success || isLoading}
 							type="password"
 						/>
 					</Box>
@@ -193,13 +192,13 @@ function NewUserPage(props) {
 						<NewPickerField
 							title="Branch"
 							name="branch_id"
-							disabled={isLoading}
+							disabled={success || isLoading}
 							pickerItem={branches}
 						/>
 						<NewPickerField
 							title="Programme"
 							name="program_id"
-							disabled={isLoading}
+							disabled={success || isLoading}
 							pickerItem={programs}
 						/>
 					</Box>
@@ -216,7 +215,7 @@ function NewUserPage(props) {
 						<NewField
 							title="Email"
 							name="email"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 					</Box>
 					<Box
@@ -230,7 +229,7 @@ function NewUserPage(props) {
 								title="Create Category"
 								color="primary"
 								variant="contained"
-								disabled={isLoading}
+								disabled={success || isLoading}
 							/>
 						</Box>
 						{isLoading && <CircularProgress size={30} />}
@@ -238,9 +237,19 @@ function NewUserPage(props) {
 				</>
 			</Formik>
 			<SnackbarAlert
-				open={success}
-				onClose={() => setSuccess(false)}
+				open={successAlert}
+				onClose={() => setSuccessAlert(false)}
+				severity="success"
 				alertText="Successful"
+				action={
+					<Button
+						color="inherit"
+						size="small"
+						onClick={() => history.push(routes.users.MANAGE)}
+					>
+						Go Back
+					</Button>
+				}
 			/>
 			<SnackbarAlert
 				open={error}

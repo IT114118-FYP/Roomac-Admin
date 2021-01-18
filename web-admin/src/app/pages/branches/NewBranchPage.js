@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import * as Yup from "yup";
+import { Formik } from "formik";
 import {
 	Divider,
 	Typography,
@@ -5,20 +8,17 @@ import {
 	CircularProgress,
 	Button,
 } from "@material-ui/core";
-import { Formik } from "formik";
 
-import * as Yup from "yup";
-import React, { useState } from "react";
 import { axiosInstance } from "../../api/config";
 import NewField from "../../components/forms/new/NewField";
 import NavDrawer from "../../components/NavDrawer";
 import NewButton from "../../components/forms/new/NewButton";
 import SnackbarAlert from "../../components/SnackbarAlert";
-import routes from "../../navigation/routes";
 import { useHistory } from "react-router-dom";
+import routes from "../../navigation/routes";
 
 const validationSchema = Yup.object().shape({
-	id: Yup.string().required().min(1).label("Programme code"),
+	id: Yup.string().required().min(1).label("Branch id"),
 	title_en: Yup.string().required().min(4).label("English title"),
 	title_hk: Yup.string()
 		.required()
@@ -30,7 +30,7 @@ const validationSchema = Yup.object().shape({
 		.label("Chinese title (simplified)"),
 });
 
-function NewProgramPage(props) {
+function NewBranchPage(props) {
 	const history = useHistory();
 	const [isLoading, setLoading] = useState(false);
 	const [success, setSuccess] = useState(false);
@@ -40,7 +40,7 @@ function NewProgramPage(props) {
 	const createProgram = ({ id, title_en, title_hk, title_cn }) => {
 		setLoading(true);
 		axiosInstance
-			.post(`api/programs`, {
+			.post(`api/branches`, {
 				id,
 				title_en,
 				title_hk,
@@ -77,7 +77,7 @@ function NewProgramPage(props) {
 								fontWeight: "bold",
 							}}
 						>
-							New Programme
+							New Branch
 						</Typography>
 					</Box>
 					<Divider />
@@ -88,10 +88,10 @@ function NewProgramPage(props) {
 								fontWeight: "bold",
 							}}
 						>
-							Programme Details
+							Branch Details
 						</Typography>
 						<NewField
-							title="Programme Code"
+							title="Branch id"
 							name="id"
 							autoFocus={true}
 							disabled={success || isLoading}
@@ -120,7 +120,7 @@ function NewProgramPage(props) {
 					>
 						<Box marginLeft={2}>
 							<NewButton
-								title="Create Programme"
+								title="Create Branch"
 								color="primary"
 								variant="contained"
 								disabled={success || isLoading}
@@ -139,7 +139,7 @@ function NewProgramPage(props) {
 					<Button
 						color="inherit"
 						size="small"
-						onClick={() => history.push(routes.programs.MANAGE)}
+						onClick={() => history.push(routes.branches.MANAGE)}
 					>
 						Go Back
 					</Button>
@@ -154,4 +154,4 @@ function NewProgramPage(props) {
 	);
 }
 
-export default NewProgramPage;
+export default NewBranchPage;

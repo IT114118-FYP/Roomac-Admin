@@ -8,6 +8,7 @@ function SnackbarAlert({
 	alertText,
 	autoHideDuration = 5000,
 	severity = "error",
+	action,
 }) {
 	return (
 		<Snackbar
@@ -19,7 +20,12 @@ function SnackbarAlert({
 			}}
 			onClose={onClose}
 		>
-			<MuiAlert elevation={6} variant="filled" severity={severity}>
+			<MuiAlert
+				elevation={6}
+				variant="filled"
+				severity={severity}
+				action={action}
+			>
 				{alertText}
 			</MuiAlert>
 		</Snackbar>

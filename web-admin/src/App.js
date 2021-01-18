@@ -30,6 +30,7 @@ const ManageBranchesPage = lazy(() =>
 const DetailedBranchPage = lazy(() =>
 	import("./app/pages/branches/DetailedBranchPage")
 );
+const NewBranchPage = lazy(() => import("./app/pages/branches/NewBranchPage"));
 const ManageCategoriesPage = lazy(() =>
 	import("./app/pages/category/ManageCategoriesPage")
 );
@@ -62,6 +63,10 @@ function App() {
 					<ProtectedRoute
 						path={routes.ACTIVITY_LOG}
 						component={ActivityLogPage}
+					/>
+					<ProtectedRoute
+						path={routes.branches.NEW}
+						component={NewBranchPage}
 					/>
 					<ProtectedRoute
 						path={routes.branches.DETAILED}

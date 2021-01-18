@@ -1,24 +1,25 @@
+import React, { useState } from "react";
 import {
 	Divider,
 	Typography,
 	Box,
 	Button,
-	FormLabel,
 	RadioGroup,
 	FormControlLabel,
 	FormControl,
 	Radio,
-	Grid,
 	CircularProgress,
 } from "@material-ui/core";
 import { Formik } from "formik";
-
 import * as Yup from "yup";
-import React, { useState } from "react";
+
 import { axiosInstance } from "../../api/config";
 import NewField from "../../components/forms/new/NewField";
 import NavDrawer from "../../components/NavDrawer";
 import NewButton from "../../components/forms/new/NewButton";
+import SnackbarAlert from "../../components/SnackbarAlert";
+import routes from "../../navigation/routes";
+import { useHistory } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
 	title_en: Yup.string().required().min(1).label("English Title"),
@@ -33,8 +34,12 @@ const validationSchema = Yup.object().shape({
 });
 
 function NewCategoryPage(props) {
+	const history = useHistory();
 	const [isLoading, setLoading] = useState(false);
 	const [imgMethod, setImgMethod] = useState("None");
+	const [success, setSuccess] = useState(false);
+	const [successAlert, setSuccessAlert] = useState(false);
+	const [error, setError] = useState(false);
 
 	const handleImgMethodChange = (event) => {
 		setImgMethod(event.target.value);
@@ -50,6 +55,12 @@ function NewCategoryPage(props) {
 				image_url: null,
 			})
 			.then(() => {
+				setSuccess(true);
+				setSuccessAlert(true);
+				setLoading(false);
+			})
+			.catch(() => {
+				setError(true);
 				setLoading(false);
 			});
 	};
@@ -86,17 +97,17 @@ function NewCategoryPage(props) {
 							title="English Title"
 							name="title_en"
 							autoFocus={true}
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="Chinese Title (Traditional)"
 							name="title_hk"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 						<NewField
 							title="Chinese Title (Simplified)"
 							name="title_cn"
-							disabled={isLoading}
+							disabled={success || isLoading}
 						/>
 					</Box>
 					<Divider />
@@ -133,13 +144,6 @@ function NewCategoryPage(props) {
 									/>
 								</RadioGroup>
 							</FormControl>
-							{/* <img
-							style={{
-								height: 250,
-							}}
-							src="https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=350"
-							alt="new"
-						/> */}
 						</Box>
 						{imgMethod === "Image Url" && (
 							<NewField name="Image Url" />
@@ -178,13 +182,24 @@ function NewCategoryPage(props) {
 								title="Create Category"
 								color="primary"
 								variant="contained"
-								disabled={isLoading}
+								disabled={success || isLoading}
 							/>
 						</Box>
 						{isLoading && <CircularProgress size={30} />}
 					</Box>
 				</>
 			</Formik>
+			<SnackbarAlert
+				open={successAlert}
+				onClose={() => setSuccessAlert(false)}
+				severity="success"
+				alertText="Successful"
+			/>
+			<SnackbarAlert
+				open={error}
+				onClose={() => setError(false)}
+				alertText="There is an error."
+			/>
 		</NavDrawer>
 	);
 }
