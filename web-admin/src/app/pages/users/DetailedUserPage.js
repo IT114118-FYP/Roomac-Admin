@@ -15,6 +15,7 @@ import {
 	Paper,
 	Breadcrumbs,
 	Divider,
+	Button,
 } from "@material-ui/core";
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -170,6 +171,17 @@ function DetailedUserPage({ match }) {
 						onSave={(newValue) => updateUser("name", newValue)}
 					/>
 					<Divider />
+				</EditForm>
+				<EditForm title="Association Info">
+					<EditPickerField
+						loading={isLoading}
+						name="BRANCH"
+						value={userBranch.id}
+						onSave={(newValue) => updateUser("branch_id", newValue)}
+						picker
+						pickerItem={branches}
+					/>
+					<Divider />
 					<EditPickerField
 						loading={isLoading}
 						name="Programme"
@@ -178,15 +190,6 @@ function DetailedUserPage({ match }) {
 							updateUser("program_id", newValue)
 						}
 						pickerItem={programs}
-					/>
-					<Divider />
-					<EditPickerField
-						loading={isLoading}
-						name="BRANCH"
-						value={userBranch.id}
-						onSave={(newValue) => updateUser("branch_id", newValue)}
-						picker
-						pickerItem={branches}
 					/>
 				</EditForm>
 				<EditForm title="Contact Info">
@@ -246,6 +249,24 @@ function DetailedUserPage({ match }) {
 					</Table>
 				</TableContainer>
 			</>
+		);
+	}
+
+	function SettingsTabPanel() {
+		return (
+			<Box flexDirection="row" display="flex">
+				<Box flexGrow={1}>
+					<Typography variant="body1" color="textPrimary">
+						Delete User Account
+					</Typography>
+					<Typography variant="caption" color="textSecondary">
+						Upon deletion, the account will not be recoverable.
+					</Typography>
+				</Box>
+				<Button variant="outlined" color="secondary">
+					Delete User
+				</Button>
+			</Box>
 		);
 	}
 
@@ -312,13 +333,21 @@ function DetailedUserPage({ match }) {
 								outline: "none",
 							}}
 						/>
+						<Tab
+							label="Settings"
+							style={{
+								outline: "none",
+							}}
+						/>
 					</Tabs>
 					<TabPanel value={tabIndex} index={0}>
 						<GeneralTabPanel />
 					</TabPanel>
-
 					<TabPanel value={tabIndex} index={1}>
 						<PermissionsTabPanel />
+					</TabPanel>
+					<TabPanel value={tabIndex} index={2}>
+						<SettingsTabPanel />
 					</TabPanel>
 				</div>
 			)}
