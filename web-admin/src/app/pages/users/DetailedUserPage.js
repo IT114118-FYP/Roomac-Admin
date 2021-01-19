@@ -87,21 +87,27 @@ function DetailedUserPage({ match }) {
 			const branchesPickerItem = branches.data.map((item) => {
 				return createPickerValue(item.id, item.title_en);
 			});
+			branchesPickerItem.unshift(createPickerValue("none", "none"));
 			setBranches(branchesPickerItem);
 			setUserBranch(
-				branches.data.find(
-					(branch) => branch.id === userData.data.branch_id
-				)
+				userData.data.branch_id === null
+					? createPickerValue("none", "none")
+					: branches.data.find(
+							(branch) => branch.id === userData.data.branch_id
+					  )
 			);
 
 			const programsPickerItem = programs.data.map((item) => {
 				return createPickerValue(item.id, item.title_en);
 			});
+			programsPickerItem.unshift(createPickerValue("none", "none"));
 			setPrograms(programsPickerItem);
 			setUserProgram(
-				programs.data.find(
-					(program) => program.id === userData.data.program_id
-				)
+				userData.data.program_id === null
+					? createPickerValue("none", "none")
+					: programs.data.find(
+							(program) => program.id === userData.data.program_id
+					  )
 			);
 			setLoading(false);
 		} catch (error) {
@@ -121,14 +127,24 @@ function DetailedUserPage({ match }) {
 		setLoading(true);
 		axiosInstance
 			.put(`api/users/${match.params.id}`, {
-				branch_id: name == "branch_id" ? value : user.branch_id,
+				branch_id:
+					name == "branch_id"
+						? value === "none"
+							? null
+							: value
+						: user.branch_id,
 				chinese_name:
 					name == "chinese_name" ? value : user.chinese_name,
 				email: name == "email" ? value : user.email,
 				first_name: name == "first_name" ? value : user.first_name,
 				last_name: name == "last_name" ? value : user.last_name,
 				name: name == "name" ? value : user.name,
-				program_id: name == "program_id" ? value : user.program_id,
+				program_id:
+					name == "program_id"
+						? value === "none"
+							? null
+							: value
+						: user.program_id,
 			})
 			.then(() => {
 				fetchAllData();
