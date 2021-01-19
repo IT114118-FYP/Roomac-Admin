@@ -276,7 +276,7 @@ function DetailedUserPage({ match }) {
 		);
 	}
 
-	function SettingsTabPanel({ onDeleteUser }) {
+	function SettingsTabPanel() {
 		return (
 			<Box flexDirection="row" display="flex" marginTop={2}>
 				<Box flexGrow={1}>
@@ -290,7 +290,7 @@ function DetailedUserPage({ match }) {
 				<Button
 					variant="outlined"
 					color="secondary"
-					onClick={onDeleteUser}
+					onClick={() => setDeleteOpen(true)}
 				>
 					Delete User
 				</Button>
@@ -375,9 +375,7 @@ function DetailedUserPage({ match }) {
 						<PermissionsTabPanel />
 					</TabPanel>
 					<TabPanel value={tabIndex} index={2}>
-						<SettingsTabPanel
-							onDeleteUser={() => setDeleteOpen(true)}
-						/>
+						<SettingsTabPanel />
 					</TabPanel>
 				</div>
 			)}
