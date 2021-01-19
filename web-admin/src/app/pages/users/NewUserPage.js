@@ -82,16 +82,6 @@ function NewUserPage(props) {
 		password,
 	}) => {
 		setLoading(true);
-		console.log(
-			branch_id,
-			chinese_name,
-			email,
-			first_name,
-			last_name,
-			name,
-			program_id,
-			password
-		);
 		axiosInstance
 			.post(`api/users`, {
 				branch_id: branch_id,

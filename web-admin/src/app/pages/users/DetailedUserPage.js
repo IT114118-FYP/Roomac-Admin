@@ -266,7 +266,6 @@ function DetailedUserPage({ match }) {
 										) : (
 											<ClearIcon />
 										)}
-										{/* {String(permission.granted)} */}
 									</TableCell>
 								</TableRow>
 							))}
@@ -279,7 +278,7 @@ function DetailedUserPage({ match }) {
 
 	function SettingsTabPanel({ onDeleteUser }) {
 		return (
-			<Box flexDirection="row" display="flex">
+			<Box flexDirection="row" display="flex" marginTop={2}>
 				<Box flexGrow={1}>
 					<Typography variant="body1" color="textPrimary">
 						Delete User Account
