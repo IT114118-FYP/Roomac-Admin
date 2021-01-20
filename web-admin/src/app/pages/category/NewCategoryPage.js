@@ -18,8 +18,6 @@ import NewField from "../../components/forms/new/NewField";
 import NavDrawer from "../../components/NavDrawer";
 import NewButton from "../../components/forms/new/NewButton";
 import SnackbarAlert from "../../components/SnackbarAlert";
-import routes from "../../navigation/routes";
-import { useHistory } from "react-router-dom";
 
 const validationSchema = Yup.object().shape({
 	title_en: Yup.string().required().min(1).label("English Title"),
@@ -34,7 +32,6 @@ const validationSchema = Yup.object().shape({
 });
 
 function NewCategoryPage(props) {
-	const history = useHistory();
 	const [isLoading, setLoading] = useState(false);
 	const [imgMethod, setImgMethod] = useState("None");
 	const [success, setSuccess] = useState(false);

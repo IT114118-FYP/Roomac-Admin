@@ -5,8 +5,6 @@ import {
 	IconButton,
 	TextField,
 	Typography,
-	Select,
-	MenuItem,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import EditIcon from "@material-ui/icons/Edit";
@@ -16,7 +14,6 @@ import DoneIcon from "@material-ui/icons/Done";
 function EditField({ name, value, loading, onSave }) {
 	const [textValue, setTextValue] = useState(value);
 	const [edit, setEdit] = useState(false);
-	const [changed, setChanged] = useState(false);
 
 	const onEdit = () => {
 		setEdit(true);
@@ -36,9 +33,6 @@ function EditField({ name, value, loading, onSave }) {
 
 	const handleChange = (event) => {
 		setTextValue(event.target.value);
-		if (event.target.value != value) {
-			setChanged(true);
-		}
 	};
 
 	return (

@@ -128,19 +128,19 @@ function DetailedUserPage({ match }) {
 		axiosInstance
 			.put(`api/users/${match.params.id}`, {
 				branch_id:
-					name == "branch_id"
+					name === "branch_id"
 						? value === "none"
 							? null
 							: value
 						: user.branch_id,
 				chinese_name:
-					name == "chinese_name" ? value : user.chinese_name,
-				email: name == "email" ? value : user.email,
-				first_name: name == "first_name" ? value : user.first_name,
-				last_name: name == "last_name" ? value : user.last_name,
-				name: name == "name" ? value : user.name,
+					name === "chinese_name" ? value : user.chinese_name,
+				email: name === "email" ? value : user.email,
+				first_name: name === "first_name" ? value : user.first_name,
+				last_name: name === "last_name" ? value : user.last_name,
+				name: name === "name" ? value : user.name,
 				program_id:
-					name == "program_id"
+					name === "program_id"
 						? value === "none"
 							? null
 							: value

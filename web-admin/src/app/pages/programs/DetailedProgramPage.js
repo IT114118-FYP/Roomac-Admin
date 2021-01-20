@@ -56,10 +56,10 @@ function DetailedProgramPage({ match }) {
 		setLoading(true);
 		axiosInstance
 			.put(`api/programs/${match.params.id}`, {
-				id: name == "id" ? value : program.id,
-				title_en: name == "title_en" ? value : program.title_en,
-				title_hk: name == "title_hk" ? value : program.title_hk,
-				title_cn: name == "title_cn" ? value : program.title_cn,
+				id: name === "id" ? value : program.id,
+				title_en: name === "title_en" ? value : program.title_en,
+				title_hk: name === "title_hk" ? value : program.title_hk,
+				title_cn: name === "title_cn" ? value : program.title_cn,
 			})
 			.then(() => {
 				fetchProgram();

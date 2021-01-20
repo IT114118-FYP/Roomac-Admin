@@ -3,7 +3,6 @@ import {
 	Box,
 	Grid,
 	IconButton,
-	TextField,
 	Typography,
 	Select,
 	MenuItem,
@@ -19,13 +18,12 @@ import DoneIcon from "@material-ui/icons/Done";
 // }]
 
 export const createPickerValue = (id, value) => {
-	return { id: id, value, value };
+	return { id: id, value: value };
 };
 
 function EditPickerField({ name, value, loading, onSave, pickerItem }) {
 	const [pickerValue, setPickerValue] = useState(value);
 	const [edit, setEdit] = useState(false);
-	const [changed, setChanged] = useState(false);
 
 	const onEdit = () => {
 		setEdit(true);
@@ -44,10 +42,7 @@ function EditPickerField({ name, value, loading, onSave, pickerItem }) {
 	};
 
 	const handlePickerChange = (event) => {
-		if (event.target.value != value) {
-			setPickerValue(event.target.value);
-			setChanged(true);
-		}
+		setPickerValue(event.target.value);
 	};
 
 	return (

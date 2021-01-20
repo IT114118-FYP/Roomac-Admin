@@ -80,7 +80,7 @@ function ManageCategoriesPage({ match }) {
 			]);
 			setData(categoryData.data);
 			setCategory(
-				cat.data.find((category) => category.id == match.params.id)
+				cat.data.find((category) => category.id === match.params.id)
 			);
 			setLoading(false);
 		} catch (error) {
@@ -169,7 +169,7 @@ function ManageCategoriesPage({ match }) {
 								size="medium"
 								onClick={handleAddNew}
 							>
-								Add new category
+								Add new resources
 							</Button>
 						</div>
 						<Typography
@@ -177,12 +177,12 @@ function ManageCategoriesPage({ match }) {
 							color="textSecondary"
 							gutterBottom
 						>
-							View and manage categories with customisations
+							View and manage resources with customisations
 						</Typography>
 					</div>
 					<Divider className={classes.divider} />
 					<Typography variant="h6" gutterBottom>
-						View Categories
+						View Resources
 					</Typography>
 					<div className={classes.viewHeaderBar}>
 						<TextField

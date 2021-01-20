@@ -10,10 +10,6 @@ function DetailedCategoryPage({ match }) {
 				console.log(data);
 			});
 	});
-
-	const fetchResource = () =>
-		axiosInstance.get(`api/resources/${match.params.id}`);
-
 	return <NavDrawer>{match.params.id}</NavDrawer>;
 }
 

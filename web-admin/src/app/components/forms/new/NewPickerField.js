@@ -1,9 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import {
 	Box,
 	Grid,
-	IconButton,
-	TextField,
 	Typography,
 	Select,
 	MenuItem,
@@ -18,7 +16,7 @@ import { useFormikContext } from "formik";
 // }]
 
 export const createNewPickerValue = (id, value) => {
-	return { id: id, value, value };
+	return { id: id, value: value };
 };
 
 function NewPickerField({ title, name, value, pickerItem, ...props }) {
@@ -28,7 +26,6 @@ function NewPickerField({ title, name, value, pickerItem, ...props }) {
 		errors,
 		touched,
 		values,
-		handleSubmit,
 	} = useFormikContext();
 
 	return (

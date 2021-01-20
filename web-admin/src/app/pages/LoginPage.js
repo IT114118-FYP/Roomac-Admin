@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Typography from "@material-ui/core/Typography";
-import {
-	Redirect,
-	useHistory,
-	useLocation,
-	withRouter,
-} from "react-router-dom";
+import { Redirect, useHistory, withRouter } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
 
@@ -27,7 +22,6 @@ const validationSchema = Yup.object().shape({
 
 function LoginPage() {
 	const history = useHistory();
-	const location = useLocation();
 
 	const [isLoading, setLoading] = useState(true);
 	const [loginFailed, setLoginFailed] = useState(false);

@@ -69,10 +69,10 @@ function DetailedBranchPage({ match }) {
 		setLoading(true);
 		axiosInstance
 			.put(`api/branches/${match.params.id}`, {
-				id: name == "id" ? value : branch.id,
-				title_en: name == "title_en" ? value : branch.title_en,
-				title_hk: name == "title_hk" ? value : branch.title_hk,
-				title_cn: name == "title_cn" ? value : branch.title_cn,
+				id: name === "id" ? value : branch.id,
+				title_en: name === "title_en" ? value : branch.title_en,
+				title_hk: name === "title_hk" ? value : branch.title_hk,
+				title_cn: name === "title_cn" ? value : branch.title_cn,
 			})
 			.then(() => {
 				fetchBranch();

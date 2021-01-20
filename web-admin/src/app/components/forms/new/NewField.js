@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Grid, TextField, Typography } from "@material-ui/core";
 import { useFormikContext } from "formik";
 
@@ -9,7 +9,6 @@ function NewField({ title, name, value, loading, onChange, ...props }) {
 		errors,
 		touched,
 		values,
-		handleSubmit,
 	} = useFormikContext();
 
 	return (

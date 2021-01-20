@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Divider,
 	makeStyles,
@@ -61,7 +61,6 @@ function ManageUsersPage(props) {
 	const [data, setData] = useState([]);
 	const [isLoading, setLoading] = useState(true);
 	const [isExporting, setExporting] = useState(false);
-	const grid = useRef(null);
 	const history = useHistory();
 
 	useEffect(() => {

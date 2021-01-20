@@ -10,7 +10,7 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
-import { Box, CircularProgress } from "@material-ui/core";
+import { Box, CircularProgress, Typography } from "@material-ui/core";
 
 import "../styles/cursor.css";
 
@@ -216,7 +216,7 @@ function DataTableContext({ data, labels, onClick }) {
 															{item[key]}
 														</TableCell>
 													);
-												}
+												} else return null;
 											})}
 										</TableRow>
 									);
@@ -258,6 +258,15 @@ export default function DataTable({ loading, data, labels, onClick }) {
 					alignItems="center"
 				>
 					<CircularProgress />
+				</Box>
+			) : data === null || data === undefined || data.length === 0 ? (
+				<Box
+					width="100%"
+					display="flex"
+					justifyContent="center"
+					alignItems="center"
+				>
+					<Typography>No Data Available</Typography>
 				</Box>
 			) : (
 				<DataTableContext
