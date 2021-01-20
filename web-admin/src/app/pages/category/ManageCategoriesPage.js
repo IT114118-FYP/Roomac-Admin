@@ -80,7 +80,7 @@ function ManageCategoriesPage({ match }) {
 			]);
 			setData(categoryData.data);
 			setCategory(
-				cat.data.find((category) => category.id === match.params.id)
+				cat.data.find((category) => category.id == match.params.id)
 			);
 			setLoading(false);
 		} catch (error) {
