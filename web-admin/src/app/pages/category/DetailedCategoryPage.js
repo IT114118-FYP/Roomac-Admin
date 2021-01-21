@@ -48,7 +48,7 @@ function DetailedCategoryPage({ match }) {
 				max_user: name === "opacity" ? value[1] : resource.max_user,
 			})
 			.then(() => {
-				fetchResource();
+				fetchAllData();
 			})
 			.catch((error) => {
 				console.log(error);
