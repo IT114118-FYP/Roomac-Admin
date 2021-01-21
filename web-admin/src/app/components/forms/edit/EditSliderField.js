@@ -3,89 +3,69 @@ import {
 	Box,
 	Grid,
 	IconButton,
+	Slider,
+	TextField,
 	Typography,
-	Select,
-	MenuItem,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import EditIcon from "@material-ui/icons/Edit";
 import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 
-// pickerItem format must be in the following: [{
-//      id: ...,
-//      value: ...
-// }]
-
-export const createPickerValue = (id, value) => {
-	return { id: id, value: value };
-};
-
-function EditPickerField({
-	name,
-	value,
-	loading,
-	onSave,
-	pickerItem,
-	editable,
-}) {
-	const [pickerValue, setPickerValue] = useState(value);
+function EditSliderField({ name, value, loading, onSave, editable = true }) {
+	const [textValue, setTextValue] = useState(value);
 	const [edit, setEdit] = useState(false);
 
 	const onEdit = () => {
 		setEdit(true);
-		setPickerValue(value);
+		setTextValue(value);
 	};
 
 	const onClose = () => {
-		setPickerValue(value);
+		setTextValue(value);
 		setEdit(false);
 	};
 
 	const onFinish = () => {
+		console.log(textValue);
 		setEdit(false);
-		onSave(pickerValue);
+		onSave(textValue);
 		onClose();
 	};
 
-	const handlePickerChange = (event) => {
-		setPickerValue(event.target.value);
+	const handleChange = (event, newValue) => {
+		setTextValue(newValue);
 	};
 
 	return (
 		<Box paddingY={2}>
 			<Grid container spacing={1}>
 				<Grid item xs={3}>
-					<Typography
-						variant="caption"
-						color="textSecondary"
-						style={{
-							overflow: "hidden",
-						}}
-					>
+					<Typography variant="caption" color="textSecondary">
 						{name.toUpperCase()}
 					</Typography>
 				</Grid>
 				<Grid item xs={7}>
 					{edit ? (
-						<Select
-							fullWidth
-							value={pickerValue}
-							onChange={handlePickerChange}
-						>
-							{pickerItem.map((item) => (
-								<MenuItem value={item.id} key={item.id}>
-									{item.value}
-								</MenuItem>
-							))}
-						</Select>
+						<Slider
+							autoFocus
+							value={textValue}
+							onChange={handleChange}
+							valueLabelDisplay="auto"
+							// aria-labelledby="range-slider"
+							onKeyDown={(event) => {
+								if (event.key === "Enter") {
+									onFinish();
+								}
+							}}
+							// getAriaValueText={valuetext}
+						/>
 					) : (
 						<Typography>
 							{loading ? (
 								<Skeleton />
 							) : (
-								pickerItem.find((item) => item.id === value)
-									.value
+								`${value[0]} - ${value[1]}`
 							)}
 						</Typography>
 					)}
@@ -116,4 +96,4 @@ function EditPickerField({
 	);
 }
 
-export default EditPickerField;
+export default EditSliderField;

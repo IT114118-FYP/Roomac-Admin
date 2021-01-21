@@ -11,7 +11,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import ClearIcon from "@material-ui/icons/Clear";
 import DoneIcon from "@material-ui/icons/Done";
 
-function EditField({ name, value, loading, onSave }) {
+function EditField({ name, value, loading, onSave, editable = true, type }) {
 	const [textValue, setTextValue] = useState(value);
 	const [edit, setEdit] = useState(false);
 
@@ -47,6 +47,7 @@ function EditField({ name, value, loading, onSave }) {
 					{edit ? (
 						<TextField
 							value={textValue}
+							type={type}
 							autoFocus
 							fullWidth
 							onChange={handleChange}
@@ -63,24 +64,25 @@ function EditField({ name, value, loading, onSave }) {
 					)}
 				</Grid>
 				<Grid item xs={2}>
-					{edit ? (
-						<>
-							<IconButton onClick={onClose} size="small">
-								<ClearIcon color="action" />
-							</IconButton>
-							<IconButton onClick={onFinish} size="small">
-								<DoneIcon color="action" />
-							</IconButton>
-						</>
-					) : (
-						!loading && (
+					{editable &&
+						(edit ? (
 							<>
-								<IconButton onClick={onEdit} size="small">
-									<EditIcon color="action" />
+								<IconButton onClick={onClose} size="small">
+									<ClearIcon color="action" />
+								</IconButton>
+								<IconButton onClick={onFinish} size="small">
+									<DoneIcon color="action" />
 								</IconButton>
 							</>
-						)
-					)}
+						) : (
+							!loading && (
+								<>
+									<IconButton onClick={onEdit} size="small">
+										<EditIcon color="action" />
+									</IconButton>
+								</>
+							)
+						))}
 				</Grid>
 			</Grid>
 		</Box>
