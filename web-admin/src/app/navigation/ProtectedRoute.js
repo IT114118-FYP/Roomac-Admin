@@ -30,7 +30,8 @@ function ProtectedRoute(props) {
 	const fetchUser = () => {
 		axiosInstance
 			.get("/api/users/me")
-			.then(() => {
+			.then(({ data }) => {
+				console.log(data);
 				setValid(true);
 				setLoading(false);
 			})
