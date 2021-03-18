@@ -31,39 +31,69 @@ function NewCategoryPage(props) {
   const [success, setSuccess] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
   const [error, setError] = useState(false);
+  const [selectedFile, setSelectedFile] = useState()
+  const [preview, setPreview] = useState()
 
   const handleImgMethodChange = (event) => {
     setImgMethod(event.target.value);
   };
 
   useEffect(() => {
-    // axiosInstance.delete(`api/categories/4`);
-  }, []);
+    if (!selectedFile) {
+        setPreview(undefined)
+        return
+    }
 
-  const createCategory = ({ title_en, title_hk, title_cn }) => {
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setPreview(objectUrl)
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [selectedFile])
+
+  const onSelectFile = e => {
+    if (!e.target.files || e.target.files.length === 0) {
+        setSelectedFile(undefined)
+        return
+    }
+
+    setSelectedFile(e.target.files[0])
+  }
+
+  const createCategory = ({ title_en, title_hk, title_cn, image_url }) => {
     setLoading(true);
+
+    let formData = new FormData();
+    formData.set('title_en', title_en);
+    formData.set('title_hk', title_hk);
+    formData.set('title_cn', title_cn);
+
+    if (imgMethod === "Upload Image File") {
+      formData.set('image', selectedFile);
+    } else if (imgMethod === "Image Url") {
+      formData.set('image_url', image_url);
+    }
+
     axiosInstance
-      .post(`api/categories`, {
-        title_en: title_en,
-        title_hk: title_hk,
-        title_cn: title_cn,
-        image_url: null,
-      })
+      .post(`api/categories`, formData, { headers: {
+        'content-type': 'multipart/form-data'
+      }})
       .then(() => {
         setSuccess(true);
         setSuccessAlert(true);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         setError(true);
         setLoading(false);
+        console.log(e.response);
       });
   };
 
   return (
     <NavDrawer>
       <Formik
-        initialValues={{ title_en: "", title_hk: "", title_cn: "" }}
+        initialValues={{ title_en: "", title_hk: "", title_cn: "", image_url: "" }}
         onSubmit={createCategory}
         validationSchema={validationSchema}
       >
@@ -140,23 +170,29 @@ function NewCategoryPage(props) {
                 </RadioGroup>
               </FormControl>
             </Box>
-            {imgMethod === "Image Url" && <NewField name="Image Url" />}
+            {imgMethod === "Image Url" && <NewField name="image_url" />}
             {imgMethod === "Upload Image File" && (
-              <div>
-                <input
-                  accept="image/*"
-                  id="contained-button-file"
-                  type="file"
-                  style={{
-                    display: "none",
-                  }}
-                />
-                <label htmlFor="contained-button-file">
-                  <Button variant="contained" color="primary" component="span">
-                    Upload Image File
-                  </Button>
-                </label>
-              </div>
+              <>
+                <div>
+                  <input
+                    accept="image/*"
+                    id="image"
+                    type="file"
+                    style={{
+                      display: "none",
+                    }}
+                    onChange={onSelectFile}
+                  />
+                  <label htmlFor="image">
+                    <Button variant="contained" color="primary" component="span">
+                      Upload Image File
+                    </Button>
+                  </label>
+                </div>
+                <div>
+                  {selectedFile && <img src={preview} width="480" height="320" alt="Preview" />}
+                </div>
+              </>
             )}
           </Box>
           <Divider />
