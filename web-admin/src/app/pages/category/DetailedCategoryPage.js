@@ -14,6 +14,13 @@ import EditPickerField, {
   createPickerValue,
 } from "../../components/forms/edit/EditPickerField";
 
+import FullCalendar from "@fullcalendar/react";
+// import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+
+import moment from "moment";
+
 function TabPanel({ children, value, index, ...other }) {
   return (
     <Box hidden={value !== index} {...other} marginTop={2}>
@@ -26,6 +33,7 @@ function DetailedCategoryPage({ match }) {
   const [isLoading, setLoading] = useState(true);
   const [resource, setResource] = useState({});
   const [branches, setBranches] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [resourceBranch, setResourceBranch] = useState({});
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
@@ -65,7 +73,7 @@ function DetailedCategoryPage({ match }) {
         fetchResource(),
         fetchBranches(),
       ]);
-      console.log(resourceData.data);
+      // console.log(resourceData.data);
       setResource(resourceData.data);
       setBranches(branches.data);
 
@@ -81,6 +89,7 @@ function DetailedCategoryPage({ match }) {
               (branch) => branch.id === resourceData.data.branch_id
             )
       );
+
       setLoading(false);
     } catch (error) {
       console.log(error.message);
@@ -93,6 +102,40 @@ function DetailedCategoryPage({ match }) {
     axiosInstance.get(`api/resources/${match.params.id}`);
 
   const fetchBranches = () => axiosInstance.get(`api/branches`);
+
+  const fetchBookings = () => {
+    setLoading(true);
+    const startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
+    const endDate = moment().add(7, "days").format("YYYY-MM-DD");
+    axiosInstance
+      .get(
+        `/api/resources/${match.params.id}/bookings?start=${startDate}&end=${endDate}`
+      )
+      .then(({ data }) => {
+        let events = [];
+        for (let i in data.allow_times) {
+          let allow_time = data.allow_times[i];
+          for (let date in allow_time) {
+            let times = allow_time[date];
+            for (let j in times) {
+              if (times[j].available) {
+                continue;
+              }
+              events.push({
+                id: times[j].id,
+                title: `Unavailable`,
+                start: date + "T" + times[j].start_time,
+                end: date + "T" + times[j].end_time,
+                color: `red`,
+              });
+            }
+          }
+        }
+
+        setBookings(events);
+        setLoading(false);
+      });
+  };
 
   const delteResource = () => {
     axiosInstance.delete(`api/resources/${match.params.id}`);
@@ -172,6 +215,28 @@ function DetailedCategoryPage({ match }) {
           />
         </EditForm>
       </>
+    );
+  }
+
+  function ViewCalendar() {
+    return (
+      <Box>
+        {isLoading ? (
+          <Skeleton />
+        ) : (
+          <FullCalendar
+            plugins={[interactionPlugin, timeGridPlugin]}
+            initialView="timeGridWeek"
+            selectable={true}
+            allDaySlot={false}
+            nowIndicator={true}
+            contentHeight="auto"
+            slotMinTime={resource.opening_time}
+            slotMaxTime={resource.closing_time}
+            events={bookings}
+          />
+        )}
+      </Box>
     );
   }
 
@@ -256,6 +321,13 @@ function DetailedCategoryPage({ match }) {
               }}
             />
             <Tab
+              label="Timetable"
+              style={{
+                outline: "none",
+              }}
+              onClick={fetchBookings}
+            />
+            <Tab
               label="Settings"
               style={{
                 outline: "none",
@@ -267,6 +339,9 @@ function DetailedCategoryPage({ match }) {
             <GeneralTabPanel />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
+            <ViewCalendar />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2}>
             <SettingsTabPanel />
           </TabPanel>
         </div>
