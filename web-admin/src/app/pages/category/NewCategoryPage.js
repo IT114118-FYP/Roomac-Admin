@@ -12,6 +12,8 @@ import {
 } from "@material-ui/core";
 import { Formik } from "formik";
 import * as Yup from "yup";
+import { Link, useHistory } from "react-router-dom";
+import routes from "../../navigation/routes";
 
 import { axiosInstance } from "../../api/config";
 import NewField from "../../components/forms/new/NewField";
@@ -31,8 +33,10 @@ function NewCategoryPage(props) {
   const [success, setSuccess] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
   const [error, setError] = useState(false);
-  const [selectedFile, setSelectedFile] = useState()
-  const [preview, setPreview] = useState()
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
+
+  const history = useHistory();
 
   const handleImgMethodChange = (event) => {
     setImgMethod(event.target.value);
@@ -40,44 +44,46 @@ function NewCategoryPage(props) {
 
   useEffect(() => {
     if (!selectedFile) {
-        setPreview(undefined)
-        return
+      setPreview(undefined);
+      return;
     }
 
-    const objectUrl = URL.createObjectURL(selectedFile)
-    setPreview(objectUrl)
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
 
     // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl)
-  }, [selectedFile])
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
 
-  const onSelectFile = e => {
+  const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
-        setSelectedFile(undefined)
-        return
+      setSelectedFile(undefined);
+      return;
     }
 
-    setSelectedFile(e.target.files[0])
-  }
+    setSelectedFile(e.target.files[0]);
+  };
 
   const createCategory = ({ title_en, title_hk, title_cn, image_url }) => {
     setLoading(true);
 
     let formData = new FormData();
-    formData.set('title_en', title_en);
-    formData.set('title_hk', title_hk);
-    formData.set('title_cn', title_cn);
+    formData.set("title_en", title_en);
+    formData.set("title_hk", title_hk);
+    formData.set("title_cn", title_cn);
 
     if (imgMethod === "Upload Image File") {
-      formData.set('image', selectedFile);
+      formData.set("image", selectedFile);
     } else if (imgMethod === "Image Url") {
-      formData.set('image_url', image_url);
+      formData.set("image_url", image_url);
     }
 
     axiosInstance
-      .post(`api/categories`, formData, { headers: {
-        'content-type': 'multipart/form-data'
-      }})
+      .post(`api/categories`, formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
+      })
       .then(() => {
         setSuccess(true);
         setSuccessAlert(true);
@@ -93,7 +99,12 @@ function NewCategoryPage(props) {
   return (
     <NavDrawer>
       <Formik
-        initialValues={{ title_en: "", title_hk: "", title_cn: "", image_url: "" }}
+        initialValues={{
+          title_en: "",
+          title_hk: "",
+          title_cn: "",
+          image_url: "",
+        }}
         onSubmit={createCategory}
         validationSchema={validationSchema}
       >
@@ -184,13 +195,19 @@ function NewCategoryPage(props) {
                     onChange={onSelectFile}
                   />
                   <label htmlFor="image">
-                    <Button variant="contained" color="primary" component="span">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="span"
+                    >
                       Upload Image File
                     </Button>
                   </label>
                 </div>
                 <div>
-                  {selectedFile && <img src={preview} width="480" height="320" alt="Preview" />}
+                  {selectedFile && (
+                    <img src={preview} width="480" height="320" alt="Preview" />
+                  )}
                 </div>
               </>
             )}
@@ -219,6 +236,15 @@ function NewCategoryPage(props) {
         onClose={() => setSuccessAlert(false)}
         severity="success"
         alertText="Successful"
+        action={
+          <Button
+            color="inherit"
+            size="small"
+            onClick={() => history.push(routes.home)}
+          >
+            Go Back
+          </Button>
+        }
       />
       <SnackbarAlert
         open={error}

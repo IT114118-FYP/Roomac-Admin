@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Yup from "yup";
 import { Formik } from "formik";
 import {
@@ -23,9 +23,11 @@ import routes from "../../navigation/routes";
 
 const validationSchema = Yup.object().shape({
   id: Yup.string().required().min(1).label("Branch id"),
-  title_en: Yup.string().required().min(4).label("English title"),
-  title_hk: Yup.string().required().min(4).label("Chinese title (traditional)"),
-  title_cn: Yup.string().required().min(4).label("Chinese title (simplified)"),
+  title_en: Yup.string().required().min(1).label("English title"),
+  title_hk: Yup.string().required().min(1).label("Chinese title (traditional)"),
+  title_cn: Yup.string().required().min(1).label("Chinese title (simplified)"),
+  lat: Yup.number().required().moreThan(0).label("Lat"),
+  lng: Yup.number().required().moreThan(0).label("Lng"),
 });
 
 function NewBranchPage(props) {
@@ -34,21 +36,66 @@ function NewBranchPage(props) {
   const [success, setSuccess] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
   const [error, setError] = useState(false);
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
   const [imgMethod, setImgMethod] = useState("None");
 
   const handleImgMethodChange = (event) => {
     setImgMethod(event.target.value);
   };
 
-  const createProgram = ({ id, title_en, title_hk, title_cn }) => {
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const createProgram = ({
+    id,
+    title_en,
+    title_hk,
+    title_cn,
+    lat,
+    lng,
+    image_url,
+  }) => {
     setLoading(true);
+
+    let formData = new FormData();
+    formData.set("id", id);
+    formData.set("title_en", title_en);
+    formData.set("title_hk", title_hk);
+    formData.set("title_cn", title_cn);
+    formData.set("lat", lat);
+    formData.set("lng", lng);
+
+    if (imgMethod === "Upload Image File") {
+      formData.set("image", selectedFile);
+    } else if (imgMethod === "Image Url") {
+      formData.set("image_url", image_url);
+    }
+
     axiosInstance
-      .post(`api/branches`, {
-        id,
-        title_en,
-        title_hk,
-        title_cn,
-        image_url: null,
+      .post(`api/branches`, formData, {
+        headers: {
+          "content-type": "multipart/form-data",
+        },
       })
       .then(() => {
         setSuccess(true);
@@ -69,6 +116,8 @@ function NewBranchPage(props) {
           title_en: "",
           title_hk: "",
           title_cn: "",
+          lat: "",
+          lng: "",
         }}
         onSubmit={createProgram}
         validationSchema={validationSchema}
@@ -115,22 +164,8 @@ function NewBranchPage(props) {
               name="title_cn"
               disabled={success || isLoading}
             />
-          </Box>
-          <Box
-            marginTop={3}
-            display="flex"
-            flexDirection="row-reverse"
-            alignItems="center"
-          >
-            <Box marginLeft={2}>
-              <NewButton
-                title="Create Branch"
-                color="primary"
-                variant="contained"
-                disabled={success || isLoading}
-              />
-            </Box>
-            {isLoading && <CircularProgress size={30} />}
+            <NewField title="lat" name="lat" disabled={success || isLoading} />
+            <NewField title="lng" name="lng" disabled={success || isLoading} />
           </Box>
 
           <Divider />
@@ -170,24 +205,53 @@ function NewBranchPage(props) {
             </Box>
             {imgMethod === "Image Url" && <NewField name="Image Url" />}
             {imgMethod === "Upload Image File" && (
-              <div>
-                <input
-                  accept="image/*"
-                  id="contained-button-file"
-                  type="file"
-                  style={{
-                    display: "none",
-                  }}
-                />
-                <label htmlFor="contained-button-file">
-                  <Button variant="contained" color="primary" component="span">
-                    Upload Image File
-                  </Button>
-                </label>
-              </div>
+              <>
+                <div>
+                  <input
+                    accept="image/*"
+                    id="image"
+                    type="file"
+                    style={{
+                      display: "none",
+                    }}
+                    onChange={onSelectFile}
+                  />
+                  <label htmlFor="image">
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component="span"
+                    >
+                      Upload Image File
+                    </Button>
+                  </label>
+                </div>
+                <div>
+                  {selectedFile && (
+                    <img src={preview} width="480" height="320" alt="Preview" />
+                  )}
+                </div>
+              </>
             )}
           </Box>
           <Divider />
+
+          <Box
+            marginTop={3}
+            display="flex"
+            flexDirection="row-reverse"
+            alignItems="center"
+          >
+            <Box marginLeft={2}>
+              <NewButton
+                title="Create Branch"
+                color="primary"
+                variant="contained"
+                disabled={success || isLoading}
+              />
+            </Box>
+            {isLoading && <CircularProgress size={30} />}
+          </Box>
         </>
       </Formik>
       <SnackbarAlert

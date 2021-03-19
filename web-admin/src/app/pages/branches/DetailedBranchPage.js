@@ -206,22 +206,29 @@ function DetailedBranchPage({ match }) {
     };
 
     const handleClick = (event, itemID) => {
-      history.push(`/branches/${itemID}`);
+      history.push(`/tos/${itemID}`);
     };
 
-    // const handleAddNew = () => {
-    // 	history.push(routes.branches.NEW);
-    // };
+    const handleAddNew = () => {
+      history.push(routes.tos.NEW);
+    };
 
     return (
-      <Box>
-        <DataTable
-          loading={isLoading}
-          data={data}
-          labels={toss}
-          onClick={handleClick}
-        />
-      </Box>
+      <>
+        <Box>
+          <DataTable
+            loading={isLoading}
+            data={data}
+            labels={toss}
+            onClick={handleClick}
+          />
+        </Box>
+        <div style={{ float: "right" }}>
+          <Button color="primary" size="medium" onClick={handleAddNew}>
+            Add new Terms And Conditions
+          </Button>
+        </div>
+      </>
     );
   }
 

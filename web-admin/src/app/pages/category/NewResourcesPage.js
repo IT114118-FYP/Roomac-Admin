@@ -1,60 +1,64 @@
+import React, { useState, useEffect } from "react";
 import {
   Divider,
   Typography,
   Box,
   Button,
-  CircularProgress,
+  RadioGroup,
   FormControlLabel,
   FormControl,
   Radio,
-  RadioGroup,
+  CircularProgress,
 } from "@material-ui/core";
 import { Formik } from "formik";
-
 import * as Yup from "yup";
-import * as axios from "axios";
-import React, { useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import routes from "../../navigation/routes";
+
 import { axiosInstance } from "../../api/config";
 import NewField from "../../components/forms/new/NewField";
+import EditSliderField from "../../components/forms/edit/EditSliderField";
 import NavDrawer from "../../components/NavDrawer";
 import NewButton from "../../components/forms/new/NewButton";
+import SnackbarAlert from "../../components/SnackbarAlert";
 import NewPickerField, {
   createNewPickerValue,
 } from "../../components/forms/new/NewPickerField";
-import SnackbarAlert from "../../components/SnackbarAlert";
-import routes from "../../navigation/routes";
-import { useHistory } from "react-router-dom";
+import EditPickerField, {
+  createPickerValue,
+} from "../../components/forms/edit/EditPickerField";
+import * as axios from "axios";
+import { Skeleton } from "@material-ui/lab";
 
 const validationSchema = Yup.object().shape({
-  branch_id: Yup.string().required().label("Branch"),
-  email: Yup.string().required().email().label("Email"),
-  name: Yup.string().required().min(5).label("CNA"),
-  program_id: Yup.string().required().label("Programme"),
-  password: Yup.string().required().min(8).label("Password"),
+  number: Yup.string().required().min(1).label("Number"),
+  title_en: Yup.string().required().min(1).label("English Title"),
+  title_hk: Yup.string().required().min(1).label("Chinese Title (Traditional)"),
+  title_cn: Yup.string().required().min(1).label("Chinese Title (Simplified)"),
 });
 
-function NewUserPage(props) {
-  const history = useHistory();
+function NewResourcesPage({ match }) {
   const [isLoading, setLoading] = useState(false);
+  const [imgMethod, setImgMethod] = useState("None");
   const [success, setSuccess] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
   const [error, setError] = useState(false);
-  const [branches, setBranches] = useState([]);
-  const [programs, setPrograms] = useState([]);
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
-  const [imgMethod, setImgMethod] = useState("None");
+  const [branches, setBranches] = useState([]);
+  const [categories, setCategory] = useState([]);
+  const history = useHistory();
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
+  const fetchBranches = () => axiosInstance.get(`api/branches`);
+  const fetchCategories = () =>
+    axiosInstance.get(`api/categories/${match.params.id}`);
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [branches, programs] = await axios.all([
+      const [branches, categories] = await axios.all([
         fetchBranches(),
-        fetchPrograms(),
+        fetchCategories(),
       ]);
       const branchesPickerItem = branches.data.map((item) => {
         return createNewPickerValue(item.id, item.title_en);
@@ -62,11 +66,11 @@ function NewUserPage(props) {
       branchesPickerItem.unshift(createNewPickerValue("none", "none"));
       setBranches(branchesPickerItem);
 
-      const programsPickerItem = programs.data.map((item) => {
-        return createNewPickerValue(item.id, item.title_en);
-      });
-      programsPickerItem.unshift(createNewPickerValue("none", "none"));
-      setPrograms(programsPickerItem);
+      setCategory(categories.data);
+
+      // const CategoryPickerItem = categories.data.map((item) => {
+      //   return createNewPickerValue(item.id, item.title_en);
+      // });
 
       setLoading(false);
     } catch (error) {
@@ -80,6 +84,8 @@ function NewUserPage(props) {
   };
 
   useEffect(() => {
+    fetchAllData();
+
     if (!selectedFile) {
       setPreview(undefined);
       return;
@@ -101,31 +107,34 @@ function NewUserPage(props) {
     setSelectedFile(e.target.files[0]);
   };
 
-  const fetchBranches = () => axiosInstance.get(`api/branches`);
-  const fetchPrograms = () => axiosInstance.get(`api/programs`);
-
-  const createUser = ({
+  const createCategory = ({
+    number,
+    title_en,
+    title_hk,
+    title_cn,
     branch_id,
-    chinese_name,
-    email,
-    first_name,
-    last_name,
-    name,
-    program_id,
-    password,
+    opening_time,
+    closing_time,
+    min_user,
+    max_user,
+    interval,
     image_url,
   }) => {
     setLoading(true);
 
     let formData = new FormData();
+    formData.set("category_id", match.params.id);
+    formData.set("number", number);
+    formData.set("title_en", title_en);
+    formData.set("title_en", title_en);
+    formData.set("title_hk", title_hk);
+    formData.set("title_cn", title_cn);
     formData.set("branch_id", branch_id);
-    formData.set("chinese_name", chinese_name);
-    formData.set("email", email);
-    formData.set("first_name", first_name);
-    formData.set("last_name", last_name);
-    formData.set("name", name);
-    formData.set("program_id", program_id === "none" ? null : program_id);
-    formData.set("password", password);
+    formData.set("opening_time", opening_time);
+    formData.set("closing_time", closing_time);
+    formData.set("min_user", min_user);
+    formData.set("max_user", max_user);
+    formData.set("interval", interval);
 
     if (imgMethod === "Upload Image File") {
       formData.set("image", selectedFile);
@@ -134,7 +143,7 @@ function NewUserPage(props) {
     }
 
     axiosInstance
-      .post(`api/users`, formData, {
+      .post(`api/resources`, formData, {
         headers: {
           "content-type": "multipart/form-data",
         },
@@ -144,9 +153,10 @@ function NewUserPage(props) {
         setSuccessAlert(true);
         setLoading(false);
       })
-      .catch((error) => {
+      .catch((e) => {
         setError(true);
         setLoading(false);
+        console.log(e.response);
       });
   };
 
@@ -154,17 +164,19 @@ function NewUserPage(props) {
     <NavDrawer>
       <Formik
         initialValues={{
-          branch_id: "none",
-          chinese_name: "",
-          email: "",
-          first_name: "",
-          last_name: "",
-          name: "",
-          program_id: "none",
-          password: "",
+          number: "",
+          title_en: "",
+          title_hk: "",
+          title_cn: "",
+          branch_id: "",
+          opening_time: "",
+          closing_time: "",
+          min_user: "",
+          max_user: "",
+          interval: "",
           image_url: "",
         }}
-        onSubmit={createUser}
+        onSubmit={createCategory}
         validationSchema={validationSchema}
       >
         <>
@@ -175,7 +187,7 @@ function NewUserPage(props) {
                 fontWeight: "bold",
               }}
             >
-              New User
+              New Resources
             </Typography>
           </Box>
           <Divider />
@@ -186,54 +198,35 @@ function NewUserPage(props) {
                 fontWeight: "bold",
               }}
             >
-              User Basic Info
+              Resources Basic info
             </Typography>
             <NewField
-              title="First Name"
-              name="first_name"
+              title="Number"
+              name="number"
               autoFocus={true}
               disabled={success || isLoading}
             />
             <NewField
-              title="Last Name"
-              name="last_name"
+              title="English Title"
+              name="title_en"
               disabled={success || isLoading}
             />
             <NewField
-              title="Chinese Name"
-              name="chinese_name"
+              title="Chinese Title (Traditional)"
+              name="title_hk"
               disabled={success || isLoading}
             />
-            <NewField title="CNA" name="name" disabled={success || isLoading} />
             <NewField
-              title="Password"
-              name="password"
+              title="Chinese Title (Simplified)"
+              name="title_cn"
               disabled={success || isLoading}
-              type="password"
             />
-          </Box>
-          <Divider />
-          <Box marginTop={3} marginBottom={3}>
-            <Typography
-              variant="h6"
-              style={{
-                fontWeight: "bold",
-              }}
-            >
-              Association Info
-            </Typography>
             <NewPickerField
               title="Branch"
               name="branch_id"
               disabled={success || isLoading}
               pickerItem={branches}
             />
-            <NewPickerField
-              title="Programme"
-              name="program_id"
-              disabled={success || isLoading}
-              pickerItem={programs}
-            />
           </Box>
           <Divider />
           <Box marginTop={3} marginBottom={3}>
@@ -243,11 +236,33 @@ function NewUserPage(props) {
                 fontWeight: "bold",
               }}
             >
-              Contact Info
+              Resources Details
             </Typography>
             <NewField
-              title="Email"
-              name="email"
+              title="OPENING TIME"
+              name="opening_time"
+              type="time"
+              disabled={success || isLoading}
+            />
+            <NewField
+              title="CLOSING TIME"
+              name="closing_time"
+              type="time"
+              disabled={success || isLoading}
+            />
+            <NewField
+              title="Minimum User"
+              name="min_user"
+              disabled={success || isLoading}
+            />
+            <NewField
+              title="Maximum User"
+              name="max_user"
+              disabled={success || isLoading}
+            />
+            <NewField
+              title="INTERVAL"
+              name="interval"
               disabled={success || isLoading}
             />
           </Box>
@@ -259,7 +274,7 @@ function NewUserPage(props) {
                 fontWeight: "bold",
               }}
             >
-              User Attachments (Under Construction)
+              Category Attachments (Under Construction)
             </Typography>
             <Box marginTop={2}>
               <FormControl component="fieldset">
@@ -345,7 +360,7 @@ function NewUserPage(props) {
           <Button
             color="inherit"
             size="small"
-            onClick={() => history.push(routes.users.MANAGE)}
+            onClick={() => history.push(`/categories/${match.params.id}`)}
           >
             Go Back
           </Button>
@@ -360,4 +375,4 @@ function NewUserPage(props) {
   );
 }
 
-export default NewUserPage;
+export default NewResourcesPage;

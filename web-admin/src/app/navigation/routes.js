@@ -7,6 +7,7 @@ export default {
     MANAGE: "/categories/:id",
     NEW: "/categories/new",
     DETAILED: "/categories/resource/:id",
+    NEWR: "/categories/:id/new",
   },
   users: {
     MANAGE: "/users",
