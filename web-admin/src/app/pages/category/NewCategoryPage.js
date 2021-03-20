@@ -240,7 +240,7 @@ function NewCategoryPage(props) {
           <Button
             color="inherit"
             size="small"
-            onClick={() => history.push(routes.home)}
+            onClick={() => history.push(routes.categories.MANAGEC)}
           >
             Go Back
           </Button>

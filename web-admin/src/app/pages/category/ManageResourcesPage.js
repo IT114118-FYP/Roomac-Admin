@@ -11,9 +11,14 @@ import {
   Chip,
   CircularProgress,
   Box,
+  Avatar,
+  Tab,
+  Tabs,
 } from "@material-ui/core";
+import EditForm from "../../components/forms/edit/EditForm";
 import SearchIcon from "@material-ui/icons/Search";
 import FilterListIcon from "@material-ui/icons/FilterList";
+import EditField from "../../components/forms/edit/EditField";
 import download from "downloadjs";
 import { useHistory } from "react-router-dom";
 import * as axios from "axios";
@@ -24,6 +29,11 @@ import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/resources";
 import { Skeleton } from "@material-ui/lab";
 import routes from "../../navigation/routes";
+
+import Badge from "@material-ui/core/Badge";
+import editpen from "../../resources/edit.png";
+import { withStyles } from "@material-ui/core/styles";
+import ConfirmDialog from "../../components/ConfirmDialog";
 
 const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
@@ -55,7 +65,19 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     alignItems: "center",
   },
+  avatar: {
+    width: theme.spacing(20),
+    height: theme.spacing(20),
+  },
 }));
+
+function TabPanel({ children, value, index, ...other }) {
+  return (
+    <Box hidden={value !== index} {...other} marginTop={2}>
+      {value === index && <div>{children}</div>}
+    </Box>
+  );
+}
 
 function ManageResourcesPage({ match }) {
   const classes = useStyles();
@@ -67,13 +89,45 @@ function ManageResourcesPage({ match }) {
   const [error, setError] = useState(false);
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
+  const [imgMethod, setImgMethod] = useState("None");
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+    setImgMethod("Upload Image File");
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    }
 
-  const fetchAllData = async () => {
-    setLoading(true);
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    setSelectedFile(e.target.files[0]);
+    updateCategories("image", e.target.files[0]);
+  };
+
+  const delteCategory = () => {
+    axiosInstance
+      .delete(`api/categories/${match.params.id}`)
+      .then(() => history.push(routes.categories.MANAGE));
+  };
+
+  const fetchAllData = async (silence = true) => {
+    if (!silence) setLoading(true);
     try {
       const [categoryData, cat] = await axios.all([
         fetchCategoryData(),
@@ -88,6 +142,49 @@ function ManageResourcesPage({ match }) {
       setLoading(false);
     }
   };
+
+  const updateCategories = (name, value) => {
+    setLoading(true);
+
+    if (name === "image") {
+      let formData = new FormData();
+      formData.set("image", value);
+      formData.append("_method", "PATCH");
+
+      axiosInstance
+        .post(`api/categories/${match.params.id}`, formData)
+        .then(() => {
+          setPreview(undefined);
+          fetchAllData();
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+
+      return;
+    }
+
+    axiosInstance
+      .put(`api/categories/${match.params.id}`, {
+        title_en: name === "title_en" ? value : category.title_en,
+        title_hk: name === "title_hk" ? value : category.title_hk,
+        title_cn: name === "title_cn" ? value : category.title_cn,
+      })
+      .then(() => {
+        fetchAllData();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const SmallAvatar = withStyles((theme) => ({
+    root: {
+      width: 40,
+      height: 40,
+      border: `2px solid ${theme.palette.background.paper}`,
+    },
+  }))(Avatar);
 
   const fetchCategoryData = () =>
     axiosInstance.get(`api/categories/${match.params.id}`);
@@ -140,6 +237,106 @@ function ManageResourcesPage({ match }) {
     setAnchorEl(null);
   };
 
+  function GeneralTabPanel() {
+    return (
+      <>
+        <Typography variant="h6" gutterBottom>
+          View Resources
+        </Typography>
+        <div className={classes.viewHeaderBar}>
+          <TextField
+            className={classes.viewHeaderBarItems}
+            id="search-bar"
+            placeholder="Search..."
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+          <div className={classes.viewHeaderBarItems}>
+            <Button
+              onClick={toggleAddFilters}
+              color="primary"
+              startIcon={<FilterListIcon />}
+            >
+              Add filters
+            </Button>
+            <Menu
+              id="fliters"
+              anchorEl={anchorEl}
+              keepMounted
+              open={Boolean(anchorEl)}
+              onClose={handleCloseFilter}
+            >
+              {filterData.map((data, index) => (
+                <MenuItem
+                  key={data}
+                  onClick={(event) => addfilter(event, index)}
+                >
+                  {data}
+                </MenuItem>
+              ))}
+            </Menu>
+          </div>
+
+          {searchFilters.map((filter) => (
+            <Chip
+              color="default"
+              onDelete={() => handlefilterDelete(filter)}
+              label={filter}
+              className={classes.filterChip}
+            />
+          ))}
+        </div>
+        <DataTable
+          loading={isLoading}
+          data={data}
+          labels={labels}
+          onClick={handleClick}
+        />
+
+        {!isLoading && (
+          <div className={classes.exportWrapper}>
+            <Button
+              size="small"
+              color="primary"
+              onClick={handleExport}
+              disabled={isExporting}
+            >
+              Export resources
+            </Button>
+            {isExporting && <CircularProgress size={24} />}
+          </div>
+        )}
+      </>
+    );
+  }
+
+  function SettingsTabPanel() {
+    return (
+      <Box flexDirection="row" display="flex" marginTop={2}>
+        <Box flexGrow={1}>
+          <Typography variant="body1" color="textPrimary">
+            Delete resource
+          </Typography>
+          <Typography variant="caption" color="textSecondary">
+            Upon deletion, the resource will not be recoverable.
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => setDeleteOpen(true)}
+        >
+          Delete Resource
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <NavDrawer>
       {error ? (
@@ -155,13 +352,110 @@ function ManageResourcesPage({ match }) {
         <>
           <div>
             <div className={classes.titleDiv}>
+              <Box
+                display="flex"
+                alignItems="center"
+                marginBottom={2}
+                marginTop={3}
+              >
+                <Badge
+                  overlap="circle"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right",
+                  }}
+                  badgeContent={
+                    imgMethod === "Upload Image File" && (
+                      <>
+                        <div>
+                          <input
+                            accept="image/*"
+                            id="image"
+                            type="file"
+                            style={{
+                              display: "none",
+                            }}
+                            onChange={onSelectFile}
+                          />
+                          <label htmlFor="image">
+                            <Button
+                              // variant="contained"
+                              color="primary"
+                              component="span"
+                            >
+                              <SmallAvatar alt="Edit image" src={editpen} />
+                            </Button>
+                          </label>
+                        </div>
+                      </>
+                    )
+                  }
+                >
+                  <Avatar className={classes.avatar}>
+                    ;
+                    {isLoading ? (
+                      <Skeleton />
+                    ) : category.image_url == null ? (
+                      category.title_en.charAt(0)
+                    ) : (
+                      <img src={category.image_url} alt={category.title_en} />
+                    )}
+                  </Avatar>
+                </Badge>
+              </Box>
+
+              {/* <EditForm title="">
+                <EditField
+                  loading={isLoading}
+                  value={category.id}
+                  onSave={(newValue) => updateCategories("title_en", newValue)}
+                />
+              </EditForm> */}
+
               <Typography
+                // variant="h3"
+                color="textPrimary"
+                className={classes.title}
+              >
+                {isLoading ? (
+                  <Skeleton />
+                ) : (
+                  <EditForm>
+                    <EditField
+                      value={category.title_en}
+                      name="English"
+                      onSave={(newValue) =>
+                        updateCategories("title_en", newValue)
+                      }
+                    />
+                    <Divider />
+                    <EditField
+                      value={category.title_hk}
+                      name="Chinese (traditional)"
+                      onSave={(newValue) =>
+                        updateCategories("title_hk", newValue)
+                      }
+                    />
+                    <Divider />
+                    <EditField
+                      value={category.title_cn}
+                      name="Chinese (simplified)"
+                      onSave={(newValue) =>
+                        updateCategories("title_cn", newValue)
+                      }
+                    />
+                  </EditForm>
+                )}
+              </Typography>
+
+              {/* <Typography
                 variant="h3"
                 color="textPrimary"
                 className={classes.title}
               >
                 {isLoading ? <Skeleton /> : category.title_en}
-              </Typography>
+              </Typography> */}
+
               <Button color="primary" size="medium" onClick={handleAddNew}>
                 Add new resources
               </Button>
@@ -170,78 +464,43 @@ function ManageResourcesPage({ match }) {
               View and manage resources with customisations
             </Typography>
           </div>
-          <Divider className={classes.divider} />
-          <Typography variant="h6" gutterBottom>
-            View Resources
-          </Typography>
-          <div className={classes.viewHeaderBar}>
-            <TextField
-              className={classes.viewHeaderBarItems}
-              id="search-bar"
-              placeholder="Search..."
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
+          <Tabs
+            value={tabIndex}
+            onChange={(event, newValue) => {
+              setTabIndex(newValue);
+            }}
+          >
+            <Tab
+              label="General"
+              style={{
+                outline: "none",
               }}
             />
-            <div className={classes.viewHeaderBarItems}>
-              <Button
-                onClick={toggleAddFilters}
-                color="primary"
-                startIcon={<FilterListIcon />}
-              >
-                Add filters
-              </Button>
-              <Menu
-                id="fliters"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleCloseFilter}
-              >
-                {filterData.map((data, index) => (
-                  <MenuItem
-                    key={data}
-                    onClick={(event) => addfilter(event, index)}
-                  >
-                    {data}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </div>
+            <Tab
+              label="Settings"
+              style={{
+                outline: "none",
+              }}
+            />
+          </Tabs>
 
-            {searchFilters.map((filter) => (
-              <Chip
-                color="default"
-                onDelete={() => handlefilterDelete(filter)}
-                label={filter}
-                className={classes.filterChip}
-              />
-            ))}
-          </div>
-          <DataTable
-            loading={isLoading}
-            data={data}
-            labels={labels}
-            onClick={handleClick}
-          />
+          <TabPanel value={tabIndex} index={0}>
+            <GeneralTabPanel />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1}>
+            <SettingsTabPanel />
+          </TabPanel>
 
-          {!isLoading && (
-            <div className={classes.exportWrapper}>
-              <Button
-                size="small"
-                color="primary"
-                onClick={handleExport}
-                disabled={isExporting}
-              >
-                Export resources
-              </Button>
-              {isExporting && <CircularProgress size={24} />}
-            </div>
-          )}
+          <ConfirmDialog
+            open={deleteOpen}
+            onClose={() => setDeleteOpen(false)}
+            onConfirm={delteCategory}
+            // title={`Delete Category ${category.id}?`}
+          >
+            <Typography>
+              Upon deletion, the category will not be recoverable.
+            </Typography>
+          </ConfirmDialog>
         </>
       )}
     </NavDrawer>

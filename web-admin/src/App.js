@@ -112,13 +112,12 @@ function App() {
             path={routes.categories.MANAGEC}
             component={ManageCategoriesPage}
           />
-
-          <ProtectedRoute path={routes.tos.NEW} component={NewTosPage} />
-          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTosPage} />
           <ProtectedRoute
             path={routes.tos.DETAILED}
             component={DetailedTosPage}
           />
+          <ProtectedRoute path={routes.tos.NEW} component={NewTosPage} />
+          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTosPage} />
 
           <Route path="*" component={NotFoundPage} />
         </Switch>
