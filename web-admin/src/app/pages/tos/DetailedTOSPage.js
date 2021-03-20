@@ -15,7 +15,6 @@ import { axiosInstance } from "../../api/config";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
-import EditPickerField from "../../components/forms/edit/EditPickerField";
 import NavDrawer from "../../components/NavDrawer";
 import routes from "../../navigation/routes";
 
@@ -53,10 +52,11 @@ function DetailedTOSPage({ match }) {
       });
   };
 
-  const updateTOS = (name, value) => {
+  const updateTos = (name, value) => {
     setLoading(true);
     axiosInstance
       .put(`api/tos/${match.params.id}`, {
+        id: name === "id" ? value : tos.id,
         tos_en: name === "tos_en" ? value : tos.tos_en,
         tos_hk: name === "tos_hk" ? value : tos.tos_hk,
         tos_cn: name === "tos_cn" ? value : tos.tos_cn,
@@ -69,41 +69,41 @@ function DetailedTOSPage({ match }) {
       });
   };
 
-  const deleteTOS = () => {
+  const deleteTos = () => {
     axiosInstance.delete(`api/tos/${match.params.id}`).then(() => {
-      history.push(routes.programs.MANAGE);
+      history.push(routes.tos.MANAGE);
     });
   };
 
   function GeneralTabPanel() {
     return (
-      <EditForm title="Teams And Conditions info">
-        <EditField
+      <EditForm title="TOS info">
+        {/* <EditField
           loading={isLoading}
-          name="Teams And Conditions code"
+          name="tos code"
           value={tos.id}
-          // onSave={(newValue) => updateTOS("id", newValue)}
+          // onSave={(newValue) => updateTos("id", newValue)}
         />
-        <Divider />
+        <Divider /> */}
         <EditField
           loading={isLoading}
           name="English"
           value={tos.tos_en}
-          onSave={(newValue) => updateTOS("tos_en", newValue)}
+          onSave={(newValue) => updateTos("tos_en", newValue)}
         />
         <Divider />
         <EditField
           loading={isLoading}
           name="Chinese (traditional)"
           value={tos.tos_hk}
-          onSave={(newValue) => updateTOS("tos_hk", newValue)}
+          onSave={(newValue) => updateTos("tos_hk", newValue)}
         />
         <Divider />
         <EditField
           loading={isLoading}
           name="Chinese (simplified)"
           value={tos.tos_cn}
-          onSave={(newValue) => updateTOS("tos_cn", newValue)}
+          onSave={(newValue) => updateTos("tos_cn", newValue)}
         />
       </EditForm>
     );
@@ -114,10 +114,10 @@ function DetailedTOSPage({ match }) {
       <Box flexDirection="row" display="flex" marginTop={2}>
         <Box flexGrow={1}>
           <Typography variant="body1" color="textPrimary">
-            Delete Teams And Conditions
+            Delete tos
           </Typography>
           <Typography variant="caption" color="textSecondary">
-            Upon deletion, the Teams And Conditions will not be recoverable.
+            Upon deletion, the tos will not be recoverable.
           </Typography>
         </Box>
         <Button
@@ -125,7 +125,7 @@ function DetailedTOSPage({ match }) {
           color="secondary"
           onClick={() => setDeleteOpen(true)}
         >
-          Delete TOS
+          Delete tos
         </Button>
       </Box>
     );
@@ -134,7 +134,7 @@ function DetailedTOSPage({ match }) {
   return (
     <NavDrawer>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link to={routes.branches.MANAGE}>Teams And Conditions</Link>
+        <Link to={routes.tos.MANAGE}>tos</Link>
         <Typography color="textPrimary">details</Typography>
       </Breadcrumbs>
       {error ? (
@@ -144,10 +144,8 @@ function DetailedTOSPage({ match }) {
           display="flex"
           flexDirection="column"
         >
-          <Typography variant="h6">
-            Teams And Conditions Not Found...
-          </Typography>
-          <Link to={routes.branches.MANAGE}>go back</Link>
+          <Typography variant="h6">Tos Not Found...</Typography>
+          <Link to={routes.tos.MANAGE}>go back</Link>
         </Box>
       ) : (
         <div>
@@ -159,10 +157,10 @@ function DetailedTOSPage({ match }) {
                 fontWeight: "bold",
               }}
             >
-              {isLoading ? <Skeleton /> : `Teams And Conditions`}
+              {/* {isLoading ? <Skeleton /> : `${tos.tos_en}`} */}
             </Typography>
             <Typography variant="h6" component="div" color="textSecondary">
-              {isLoading ? <Skeleton /> : `Code ${tos.id}`}
+              {isLoading ? <Skeleton /> : `Terms and Conditions Code ${tos.id}`}
             </Typography>
           </Box>
 
@@ -197,12 +195,10 @@ function DetailedTOSPage({ match }) {
       <ConfirmDialog
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
-        // onConfirm={deleteProgram}
-        title={`Delete Teams And Conditions ${tos.id}?`}
+        onConfirm={deleteTos}
+        title={`Delete tos ${tos.id}?`}
       >
-        <Typography>
-          Upon deletion, the programme will not be recoverable.
-        </Typography>
+        <Typography>Upon deletion, the tos will not be recoverable.</Typography>
       </ConfirmDialog>
     </NavDrawer>
   );

@@ -18,7 +18,7 @@ import { useHistory } from "react-router-dom";
 
 import NavDrawer from "../../components/NavDrawer";
 import DataTable from "../../components/DataTable";
-import { labels } from "../../config/tables/categories";
+import { labels } from "../../config/tables/toss";
 import { axiosInstance } from "../../api/config";
 import routes from "../../navigation/routes";
 
@@ -54,7 +54,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ManageCategoriesPage(props) {
+function ManageTOSPage(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [searchFilters, setSeacrhFilters] = React.useState([]);
@@ -69,31 +69,33 @@ function ManageCategoriesPage(props) {
 
   const fetchData = () => {
     setLoading(true);
-    axiosInstance.get("api/categories").then(({ data }) => {
+    axiosInstance.get("api/tos").then(({ data }) => {
       setData(data);
       setLoading(false);
     });
   };
 
   const handleClick = (event, itemID) => {
-    history.push(`/categories/${itemID}`);
+    console.log("clicked");
+    // history.push(routes.tos.NEW);
+    history.push(`/tos/${itemID}`);
   };
 
   const handleAddNew = () => {
-    history.push(routes.categories.NEW);
+    history.push(routes.tos.NEW);
   };
 
   const handleExport = () => {
     setExporting(true);
     axiosInstance
-      .get("/api/categories/export", {
+      .get("/api/tos/export", {
         headers: "Content-type: application/vnd.ms-excel",
         responseType: "blob",
       })
       .then((response) => {
         download(
           new Blob([response.data]),
-          "programs.xlsx",
+          "tos.xlsx",
           "application/vnd.ms-excel"
         );
         setExporting(false);
@@ -130,19 +132,19 @@ function ManageCategoriesPage(props) {
             color="textPrimary"
             className={classes.title}
           >
-            Categories
+            Terms And Conditions
           </Typography>
           <Button color="primary" size="medium" onClick={handleAddNew}>
-            Add new categories
+            Add new Terms And Conditions
           </Button>
         </div>
         <Typography variant="body1" color="textSecondary" gutterBottom>
-          View and manage categories with customisations
+          View and manage Terms And Conditions with customisations
         </Typography>
       </div>
       <Divider className={classes.divider} />
       <Typography variant="h6" gutterBottom>
-        View Categories
+        View Terms And Conditions
       </Typography>
       <div className={classes.viewHeaderBar}>
         <TextField
@@ -201,10 +203,10 @@ function ManageCategoriesPage(props) {
           <Button
             size="small"
             color="primary"
-            onClick={handleExport}
+            // onClick={handleExport}
             disabled={isExporting}
           >
-            Export Categories
+            Export Terms And Conditions
           </Button>
           {isExporting && <CircularProgress size={24} />}
         </div>
@@ -213,4 +215,4 @@ function ManageCategoriesPage(props) {
   );
 }
 
-export default ManageCategoriesPage;
+export default ManageTOSPage;

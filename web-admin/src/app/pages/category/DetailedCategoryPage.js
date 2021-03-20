@@ -1,4 +1,13 @@
-import { Box, Divider, Tab, Tabs, Typography, Button } from "@material-ui/core";
+import {
+  Box,
+  Divider,
+  Tab,
+  Tabs,
+  Typography,
+  Button,
+  makeStyles,
+  Avatar,
+} from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -21,6 +30,17 @@ import interactionPlugin from "@fullcalendar/interaction";
 
 import moment from "moment";
 
+import Badge from "@material-ui/core/Badge";
+import editpen from "../../resources/edit.png";
+import { withStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  avatar: {
+    width: theme.spacing(20),
+    height: theme.spacing(20),
+  },
+}));
+
 function TabPanel({ children, value, index, ...other }) {
   return (
     <Box hidden={value !== index} {...other} marginTop={2}>
@@ -38,9 +58,51 @@ function DetailedCategoryPage({ match }) {
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [imgMethod, setImgMethod] = useState("None");
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
+
+  const classes = useStyles();
+
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    setSelectedFile(e.target.files[0]);
+    updateResource("image", e.target.files[0]);
+  };
+
+  const SmallAvatar = withStyles((theme) => ({
+    root: {
+      width: 40,
+      height: 40,
+      border: `2px solid ${theme.palette.background.paper}`,
+    },
+  }))(Avatar);
 
   const updateResource = (name, value) => {
     setLoading(true);
+
+    if (name === "image") {
+      let formData = new FormData();
+      formData.set("image", value);
+      formData.append("_method", "PATCH");
+
+      axiosInstance
+        .post(`api/resources/${match.params.id}`, formData)
+        .then(() => {
+          setPreview(undefined);
+          fetchAllData();
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+
+      return;
+    }
+
     axiosInstance
       .put(`api/resources/${match.params.id}`, {
         number: name === "number" ? value : resource.number,
@@ -64,10 +126,22 @@ function DetailedCategoryPage({ match }) {
 
   useEffect(() => {
     fetchAllData();
-  }, []);
 
-  const fetchAllData = async () => {
-    setLoading(true);
+    setImgMethod("Upload Image File");
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  const fetchAllData = async (silence = true) => {
+    if (!silence) setLoading(true);
     try {
       const [resourceData, branches] = await axios.all([
         fetchResource(),
@@ -281,7 +355,7 @@ function DetailedCategoryPage({ match }) {
             display="flex"
             flexDirection="row"
           >
-            {isLoading ? (
+            {/* {isLoading ? (
               <Skeleton variant="rect" width={200} height={150} />
             ) : (
               <img
@@ -291,7 +365,53 @@ function DetailedCategoryPage({ match }) {
                   maxHeight: 150,
                 }}
               />
-            )}
+            )} */}
+
+            <Badge
+              overlap="circle"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              badgeContent={
+                imgMethod === "Upload Image File" && (
+                  <>
+                    <div>
+                      <input
+                        accept="image/*"
+                        id="image"
+                        type="file"
+                        style={{
+                          display: "none",
+                        }}
+                        onChange={onSelectFile}
+                      />
+                      <label htmlFor="image">
+                        <Button
+                          // variant="contained"
+                          color="primary"
+                          component="span"
+                        >
+                          <SmallAvatar alt="Edit image" src={editpen} />
+                        </Button>
+                      </label>
+                    </div>
+                  </>
+                )
+              }
+            >
+              <Avatar className={classes.avatar}>
+                ;
+                {isLoading ? (
+                  <Skeleton />
+                ) : resource.image_url == null ? (
+                  resource.title_en.charAt(0)
+                ) : (
+                  <img src={resource.image_url} alt={resource.title_en} />
+                )}
+              </Avatar>
+            </Badge>
+
             <Box flexGrow={1} marginLeft={2}>
               <Typography
                 variant="h5"

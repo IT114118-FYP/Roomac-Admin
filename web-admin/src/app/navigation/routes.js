@@ -1,9 +1,8 @@
 export default {
   HOME: "/home",
-  TIMETABLE: "/timetable",
-  STATISTICS: "/statistics",
-  ACTIVITY_LOG: "/log",
+
   categories: {
+    MANAGEC: "/categories",
     MANAGE: "/categories/:id",
     NEW: "/categories/new",
     DETAILED: "/categories/resource/:id",
@@ -25,6 +24,7 @@ export default {
     NEW: "/branches/new",
   },
   tos: {
+    MANAGE: "/tos",
     DETAILED: "/tos/:id",
     NEW: "/tos/new",
   },

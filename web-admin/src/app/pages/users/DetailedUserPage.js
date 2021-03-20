@@ -17,6 +17,7 @@ import {
   Divider,
   Button,
 } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
 import { Skeleton } from "@material-ui/lab";
@@ -32,6 +33,9 @@ import EditPickerField, {
   createPickerValue,
 } from "../../components/forms/edit/EditPickerField";
 import ConfirmDialog from "../../components/ConfirmDialog";
+
+import Badge from "@material-ui/core/Badge";
+import editpen from "../../resources/edit.png";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -62,13 +66,45 @@ function DetailedUserPage({ match }) {
   const [error, setError] = useState(false);
   const [permissions, setPermissions] = useState([]);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [imgMethod, setImgMethod] = useState("None");
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
 
   useEffect(() => {
     fetchAllData();
-  }, []);
+    setImgMethod("Upload Image File");
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    }
 
-  const fetchAllData = async () => {
-    setLoading(true);
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    setSelectedFile(e.target.files[0]);
+    updateUser("image", e.target.files[0]);
+  };
+
+  const SmallAvatar = withStyles((theme) => ({
+    root: {
+      width: 40,
+      height: 40,
+      border: `2px solid ${theme.palette.background.paper}`,
+    },
+  }))(Avatar);
+
+  const fetchAllData = async (silence = true) => {
+    if (!silence) setLoading(true);
     try {
       const [userData, userPermissions, branches, programs] = await axios.all([
         fetchUser(),
@@ -120,6 +156,26 @@ function DetailedUserPage({ match }) {
 
   const updateUser = (name, value) => {
     setLoading(true);
+
+    // Update image
+    if (name === "image") {
+      let formData = new FormData();
+      formData.set("image", value);
+      formData.append("_method", "PATCH");
+
+      axiosInstance
+        .post(`api/users/${match.params.id}`, formData)
+        .then(() => {
+          setPreview(undefined);
+          fetchAllData();
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+
+      return;
+    }
+
     axiosInstance
       .put(`api/users/${match.params.id}`, {
         branch_id:
@@ -305,15 +361,49 @@ function DetailedUserPage({ match }) {
             marginBottom={2}
             marginTop={3}
           >
-            <Avatar className={classes.avatar}>
-              {isLoading ? (
-                <Skeleton />
-              ) : user.first_name == null ? (
-                user.last_name.charAt(0)
-              ) : (
-                <img src={user.image_url} alt="new" />
-              )}
-            </Avatar>
+            <Badge
+              overlap="circle"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              badgeContent={
+                imgMethod === "Upload Image File" && (
+                  <>
+                    <div>
+                      <input
+                        accept="image/*"
+                        id="image"
+                        type="file"
+                        style={{
+                          display: "none",
+                        }}
+                        onChange={onSelectFile}
+                      />
+                      <label htmlFor="image">
+                        <Button
+                          // variant="contained"
+                          color="primary"
+                          component="span"
+                        >
+                          <SmallAvatar alt="Edit image" src={editpen} />
+                        </Button>
+                      </label>
+                    </div>
+                  </>
+                )
+              }
+            >
+              <Avatar className={classes.avatar}>
+                {isLoading ? (
+                  <Skeleton />
+                ) : user.first_name == null ? (
+                  user.last_name.charAt(0)
+                ) : (
+                  <img src={user.image_url} alt="new" />
+                )}
+              </Avatar>
+            </Badge>
             <Box marginLeft={3} flexGrow={1}>
               <Typography variant="h5" component="div">
                 {isLoading ? (

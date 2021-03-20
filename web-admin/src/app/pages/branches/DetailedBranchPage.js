@@ -9,6 +9,9 @@ import {
   Avatar,
   makeStyles,
 } from "@material-ui/core";
+import Badge from "@material-ui/core/Badge";
+import { withStyles } from "@material-ui/core/styles";
+
 import { Skeleton } from "@material-ui/lab";
 import React, { useState, useEffect } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -23,6 +26,7 @@ import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/rulesConfig";
 import { toss } from "../../config/tables/tos";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import editpen from "../../resources/edit.png";
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -38,6 +42,14 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(20),
   },
 }));
+
+const SmallAvatar = withStyles((theme) => ({
+  root: {
+    width: 40,
+    height: 40,
+    border: `2px solid ${theme.palette.background.paper}`,
+  },
+}))(Avatar);
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -55,15 +67,30 @@ function DetailedBranchPage({ match }) {
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState();
+  const [preview, setPreview] = useState();
+  const [imgMethod, setImgMethod] = useState("None");
 
   const classes = useStyles();
 
   useEffect(() => {
     fetchAllData();
-  }, []);
 
-  const fetchAllData = async () => {
-    setLoading(true);
+    setImgMethod("Upload Image File");
+    if (!selectedFile) {
+      setPreview(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  const fetchAllData = async (silence = true) => {
+    if (!silence) setLoading(true);
     try {
       const [branch, settings] = await axios.all([
         fetchBranch(),
@@ -87,22 +114,37 @@ function DetailedBranchPage({ match }) {
 
   const updateBranch = (name, value) => {
     setLoading(true);
+
+    // Update image
+    if (name === "image") {
+      let formData = new FormData();
+      formData.set("image", value);
+      formData.append("_method", "PATCH");
+
+      axiosInstance
+        .post(`api/branches/${match.params.id}`, formData)
+        .then(() => {
+          setPreview(undefined);
+          fetchAllData();
+        })
+        .catch((error) => {
+          console.log(error.response);
+        });
+
+      return;
+    }
+
+    // Update normal fields
+    let data = {};
+    data[name] = value;
+
     axiosInstance
-      .put(`api/branches/${match.params.id}`, {
-        id: name === "id" ? value : branch.id,
-        title_en: name === "title_en" ? value : branch.title_en,
-        title_hk: name === "title_hk" ? value : branch.title_hk,
-        title_cn: name === "title_cn" ? value : branch.title_cn,
-        image_url: name == "image_url" ? value : branch.image_url,
-        lat: name == "lat" ? value : branch.lat,
-        lng: name == "lng" ? value : branch.lng,
+      .put(`api/branches/${match.params.id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
-      .then(() => {
-        fetchBranch();
-        setLoading(false);
-      })
+      .then(() => fetchAllData())
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
       });
   };
 
@@ -114,6 +156,16 @@ function DetailedBranchPage({ match }) {
     });
   };
 
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      setSelectedFile(undefined);
+      return;
+    }
+
+    setSelectedFile(e.target.files[0]);
+    updateBranch("image", e.target.files[0]);
+  };
+
   function GeneralTabPanel() {
     return (
       <>
@@ -123,6 +175,7 @@ function DetailedBranchPage({ match }) {
             name="Branch ID"
             value={branch.id}
             onSave={(newValue) => updateBranch("id", newValue)}
+            editable={false}
           />
           <Divider />
           <EditField
@@ -278,15 +331,51 @@ function DetailedBranchPage({ match }) {
             marginBottom={2}
             marginTop={3}
           >
-            <Avatar className={classes.avatar}>
-              {isLoading ? (
-                <Skeleton />
-              ) : branch.image_url == null ? (
-                branch.title_en.charAt(0)
-              ) : (
-                <img src={branch.image_url} alt={branch.title_en} />
-              )}
-            </Avatar>
+            <Badge
+              overlap="circle"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              badgeContent={
+                imgMethod === "Upload Image File" && (
+                  <>
+                    <div>
+                      <input
+                        accept="image/*"
+                        id="image"
+                        type="file"
+                        style={{
+                          display: "none",
+                        }}
+                        onChange={onSelectFile}
+                      />
+                      <label htmlFor="image">
+                        <Button
+                          // variant="contained"
+                          color="primary"
+                          component="span"
+                        >
+                          <SmallAvatar alt="Edit image" src={editpen} />
+                        </Button>
+                      </label>
+                    </div>
+                  </>
+                )
+              }
+            >
+              <Avatar className={classes.avatar}>
+                ;
+                {isLoading ? (
+                  <Skeleton />
+                ) : branch.image_url == null ? (
+                  branch.title_en.charAt(0)
+                ) : (
+                  <img src={branch.image_url} alt={branch.title_en} />
+                )}
+              </Avatar>
+            </Badge>
+
             <Box marginLeft={3} flexGrow={1}>
               <Typography
                 variant="h5"

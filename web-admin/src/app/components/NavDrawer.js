@@ -137,8 +137,11 @@ function ResponsiveDrawer({ window, title, children }) {
         <DrawerItem title="Branches" path={routes.branches.MANAGE}>
           <BusinessIcon />
         </DrawerItem>
+        <DrawerItem title="Categories" path={routes.categories.MANAGEC}>
+          <PeopleIcon />
+        </DrawerItem>
 
-        <ListItem button onClick={() => setOpenCategory(!openCategory)}>
+        {/* <ListItem button onClick={() => setOpenCategory(!openCategory)}>
           <ListItemIcon>
             <CategoryIcon />
           </ListItemIcon>
@@ -166,11 +169,14 @@ function ResponsiveDrawer({ window, title, children }) {
               </DrawerItem>
             ))}
           </List>
-        </Collapse>
+        </Collapse> */}
         <DrawerItem title="Users" path={routes.users.MANAGE}>
           <PeopleIcon />
         </DrawerItem>
         <DrawerItem title="Programmes" path={routes.programs.MANAGE}>
+          <MenuBookIcon />
+        </DrawerItem>
+        <DrawerItem title="Teams and Conditions" path={routes.tos.MANAGE}>
           <MenuBookIcon />
         </DrawerItem>
       </List>

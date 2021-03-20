@@ -5,11 +5,8 @@ import routes from "./app/navigation/routes";
 import ProtectedRoute from "./app/navigation/ProtectedRoute";
 import { LinearProgress } from "@material-ui/core";
 
-const ActivityLogPage = lazy(() => import("./app/pages/ActivityLogPage"));
 const HomePage = lazy(() => import("./app/pages/HomePage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
-const StatisticsPage = lazy(() => import("./app/pages/StatisticsPage"));
-const TimetablePage = lazy(() => import("./app/pages/TimetablePage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
 const NewUserPage = lazy(() => import("./app/pages/users/NewUserPage"));
 const DetailedUserPage = lazy(() =>
@@ -31,6 +28,9 @@ const DetailedBranchPage = lazy(() =>
   import("./app/pages/branches/DetailedBranchPage")
 );
 const NewBranchPage = lazy(() => import("./app/pages/branches/NewBranchPage"));
+const ManageResourcesPage = lazy(() =>
+  import("./app/pages/category/ManageResourcesPage")
+);
 const ManageCategoriesPage = lazy(() =>
   import("./app/pages/category/ManageCategoriesPage")
 );
@@ -43,8 +43,10 @@ const DetailedCategoryPage = lazy(() =>
 const NewResourcesPage = lazy(() =>
   import("./app/pages/category/NewResourcesPage")
 );
-const NewTOSPage = lazy(() => import("./app/pages/tos/NewTOSPage"));
-const DetailedTOSPage = lazy(() => import("./app/pages/tos/DetailedTOSPage"));
+const NewTosPage = lazy(() => import("./app/pages/tos/NewTosPage"));
+const ManageTosPage = lazy(() => import("./app/pages/tos/ManageTosPage"));
+const DetailedTosPage = lazy(() => import("./app/pages/tos/DetailedTosPage"));
+
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 function App() {
@@ -57,12 +59,6 @@ function App() {
           </Route>
 
           <ProtectedRoute path={routes.HOME} component={HomePage} />
-          <ProtectedRoute path={routes.TIMETABLE} component={TimetablePage} />
-          <ProtectedRoute path={routes.STATISTICS} component={StatisticsPage} />
-          <ProtectedRoute
-            path={routes.ACTIVITY_LOG}
-            component={ActivityLogPage}
-          />
           <ProtectedRoute
             path={routes.branches.NEW}
             component={NewBranchPage}
@@ -110,12 +106,18 @@ function App() {
           />
           <ProtectedRoute
             path={routes.categories.MANAGE}
+            component={ManageResourcesPage}
+          />
+          <ProtectedRoute
+            path={routes.categories.MANAGEC}
             component={ManageCategoriesPage}
           />
-          <ProtectedRoute path={routes.tos.NEW} component={NewTOSPage} />
+
+          <ProtectedRoute path={routes.tos.NEW} component={NewTosPage} />
+          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTosPage} />
           <ProtectedRoute
             path={routes.tos.DETAILED}
-            component={DetailedTOSPage}
+            component={DetailedTosPage}
           />
 
           <Route path="*" component={NotFoundPage} />

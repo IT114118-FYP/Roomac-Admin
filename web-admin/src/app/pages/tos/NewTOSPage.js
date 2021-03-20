@@ -43,9 +43,10 @@ function NewTOSPage(props) {
         setSuccessAlert(true);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((e) => {
         setError(true);
         setLoading(false);
+        console.log(e);
       });
   };
 
@@ -124,7 +125,7 @@ function NewTOSPage(props) {
           <Button
             color="inherit"
             size="small"
-            onClick={() => history.push(routes.branches.MANAGE)}
+            onClick={() => history.push(routes.tos.MANAGE)}
           >
             Go Back
           </Button>

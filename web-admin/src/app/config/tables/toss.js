@@ -1,4 +1,4 @@
-const toss = [
+const labels = [
   {
     id: "id",
     label: "ID",
@@ -9,4 +9,4 @@ const toss = [
   },
 ];
 
-export { toss };
+export { labels };
