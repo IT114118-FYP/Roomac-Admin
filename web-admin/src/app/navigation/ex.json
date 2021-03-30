@@ -1,0 +1,49 @@
+{
+  "0": { "name": "login:admin", "granted": false, "role": null },
+
+  "1": { "name": "create:roles", "granted": false, "role": null },
+  "2": { "name": "read:roles", "granted": false, "role": null },
+  "3": { "name": "update:roles", "granted": false, "role": null },
+  "4": { "name": "delete:roles", "granted": false, "role": null },
+  "5": { "name": "grant:roles", "granted": false, "role": null },
+  "6": { "name": "revoke:roles", "granted": false, "role": null },
+
+  "7": { "name": "create:permissions", "granted": false, "role": null },
+  "8": { "name": "read:permissions", "granted": false, "role": null },
+  "9": { "name": "update:permissions", "granted": false, "role": null },
+  "10": { "name": "delete:permissions", "granted": false, "role": null },
+  "11": { "name": "grant:permissions", "granted": false, "role": null },
+  "12": { "name": "revoke:permissions", "granted": false, "role": null },
+
+  "13": { "name": "create:programs", "granted": false, "role": null },
+  "14": { "name": "read:programs", "granted": false, "role": null },
+  "15": { "name": "update:programs", "granted": true, "role": null },
+  "16": { "name": "delete:programs", "granted": false, "role": null },
+
+  "17": { "name": "create:branches", "granted": false, "role": null },
+  "18": { "name": "read:branches", "granted": false, "role": null },
+  "19": { "name": "update:branches", "granted": false, "role": null },
+  "20": { "name": "delete:branches", "granted": false, "role": null },
+
+  "21": { "name": "create:users", "granted": true, "role": "User Admin" },
+  "22": { "name": "read:users", "granted": false, "role": null },
+  "23": { "name": "update:users", "granted": true, "role": "User Admin" },
+  "24": { "name": "delete:users", "granted": true, "role": "User Admin" },
+
+  "25": { "name": "create:tos", "granted": false, "role": null },
+  "26": { "name": "read:tos", "granted": false, "role": null },
+  "27": { "name": "update:tos", "granted": false, "role": null },
+  "28": { "name": "delete:tos", "granted": false, "role": null },
+
+  "29": { "name": "create:categories", "granted": false, "role": null },
+  "30": { "name": "read:categories", "granted": false, "role": null },
+  "31": { "name": "update:categories", "granted": false, "role": null },
+  "32": { "name": "delete:categories", "granted": false, "role": null },
+
+  "33": { "name": "create:resources", "granted": false, "role": null },
+  "34": { "name": "read:resources", "granted": false, "role": null },
+  "35": { "name": "update:resources", "granted": false, "role": null },
+  "36": { "name": "delete:resources", "granted": false, "role": null }
+}
+
+

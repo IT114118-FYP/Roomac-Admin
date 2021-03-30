@@ -26,8 +26,8 @@ const validationSchema = Yup.object().shape({
   title_en: Yup.string().required().min(1).label("English title"),
   title_hk: Yup.string().required().min(1).label("Chinese title (traditional)"),
   title_cn: Yup.string().required().min(1).label("Chinese title (simplified)"),
-  lat: Yup.number().required().moreThan(0).label("Lat"),
-  lng: Yup.number().required().moreThan(0).label("Lng"),
+  lat: Yup.number().required().moreThan(0).label("Latitude"),
+  lng: Yup.number().required().moreThan(0).label("Longitude"),
 });
 
 function NewBranchPage(props) {
@@ -164,8 +164,16 @@ function NewBranchPage(props) {
               name="title_cn"
               disabled={success || isLoading}
             />
-            <NewField title="lat" name="lat" disabled={success || isLoading} />
-            <NewField title="lng" name="lng" disabled={success || isLoading} />
+            <NewField
+              title="Latitude"
+              name="lat"
+              disabled={success || isLoading}
+            />
+            <NewField
+              title="Longitude"
+              name="lng"
+              disabled={success || isLoading}
+            />
           </Box>
 
           <Divider />

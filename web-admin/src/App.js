@@ -43,11 +43,17 @@ const DetailedCategoryPage = lazy(() =>
 const NewResourcesPage = lazy(() =>
   import("./app/pages/category/NewResourcesPage")
 );
-const NewTosPage = lazy(() => import("./app/pages/tos/NewTosPage"));
-const ManageTosPage = lazy(() => import("./app/pages/tos/ManageTosPage"));
-const DetailedTosPage = lazy(() => import("./app/pages/tos/DetailedTosPage"));
+
+const ManageTOSPage = lazy(() => import("./app/pages/tos/ManageTOSPage"));
+const NewTOSPage = lazy(() => import("./app/pages/tos/NewTOSPage"));
+const DetailedTOSPage = lazy(() => import("./app/pages/tos/DetailedTOSPage"));
 
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
+
+const permissionCheck = (Component) => (
+  <ProtectedRoute>{() => Component}</ProtectedRoute>
+);
+// Component;
 
 function App() {
   return (
@@ -112,12 +118,13 @@ function App() {
             path={routes.categories.MANAGEC}
             component={ManageCategoriesPage}
           />
+
+          <ProtectedRoute path={routes.tos.NEW} component={NewTOSPage} />
           <ProtectedRoute
             path={routes.tos.DETAILED}
-            component={DetailedTosPage}
+            component={DetailedTOSPage}
           />
-          <ProtectedRoute path={routes.tos.NEW} component={NewTosPage} />
-          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTosPage} />
+          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTOSPage} />
 
           <Route path="*" component={NotFoundPage} />
         </Switch>

@@ -25,6 +25,8 @@ import SnackbarAlert from "../../components/SnackbarAlert";
 import routes from "../../navigation/routes";
 import { useHistory } from "react-router-dom";
 
+import usePermission from "../../navigation/usePermission";
+
 const validationSchema = Yup.object().shape({
   branch_id: Yup.string().required().label("Branch"),
   email: Yup.string().required().email().label("Email"),
@@ -35,6 +37,7 @@ const validationSchema = Yup.object().shape({
 
 function NewUserPage(props) {
   const history = useHistory();
+
   const [isLoading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
@@ -44,10 +47,19 @@ function NewUserPage(props) {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
   const [imgMethod, setImgMethod] = useState("None");
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchAllData();
   }, []);
+
+  useEffect(() => {
+    if (!permissionReady) return;
+    if (getPermission("create:users")) {
+      alert("No Permission");
+      history.push(routes.HOME);
+    }
+  }, [permissionReady]);
 
   const fetchAllData = async () => {
     setLoading(true);

@@ -45,9 +45,11 @@ const useStyles = makeStyles((theme) => ({
   titleDiv: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
   },
   title: {
     flex: 1,
+    marginLeft: theme.spacing(2),
   },
   viewHeaderBar: {
     display: "flex",
@@ -123,7 +125,7 @@ function ManageResourcesPage({ match }) {
   const delteCategory = () => {
     axiosInstance
       .delete(`api/categories/${match.params.id}`)
-      .then(() => history.push(routes.categories.MANAGE));
+      .then(() => history.push(`/categories`));
   };
 
   const fetchAllData = async (silence = true) => {
@@ -314,6 +316,37 @@ function ManageResourcesPage({ match }) {
       </>
     );
   }
+  function ChangeNameTabPanel() {
+    return (
+      <Box flexDirection="row" display="flex" marginTop={2}>
+        <Box flexGrow={1}>
+          {isLoading ? (
+            <Skeleton />
+          ) : (
+            <EditForm title="Category Info">
+              <EditField
+                value={category.title_en}
+                name="English"
+                onSave={(newValue) => updateCategories("title_en", newValue)}
+              />
+              <Divider />
+              <EditField
+                value={category.title_hk}
+                name="Chinese (traditional)"
+                onSave={(newValue) => updateCategories("title_hk", newValue)}
+              />
+              <Divider />
+              <EditField
+                value={category.title_cn}
+                name="Chinese (simplified)"
+                onSave={(newValue) => updateCategories("title_cn", newValue)}
+              />
+            </EditForm>
+          )}
+        </Box>
+      </Box>
+    );
+  }
 
   function SettingsTabPanel() {
     return (
@@ -352,105 +385,70 @@ function ManageResourcesPage({ match }) {
         <>
           <div>
             <div className={classes.titleDiv}>
-              <Box
+              {/* <Box
                 display="flex"
                 alignItems="center"
                 marginBottom={2}
                 marginTop={3}
+              > */}
+              <Badge
+                overlap="circle"
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "right",
+                }}
+                badgeContent={
+                  imgMethod === "Upload Image File" && (
+                    <>
+                      <div>
+                        <input
+                          accept="image/*"
+                          id="image"
+                          type="file"
+                          style={{
+                            display: "none",
+                          }}
+                          onChange={onSelectFile}
+                        />
+                        <label htmlFor="image">
+                          <Button
+                            // variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <SmallAvatar alt="Edit image" src={editpen} />
+                          </Button>
+                        </label>
+                      </div>
+                    </>
+                  )
+                }
               >
-                <Badge
-                  overlap="circle"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right",
-                  }}
-                  badgeContent={
-                    imgMethod === "Upload Image File" && (
-                      <>
-                        <div>
-                          <input
-                            accept="image/*"
-                            id="image"
-                            type="file"
-                            style={{
-                              display: "none",
-                            }}
-                            onChange={onSelectFile}
-                          />
-                          <label htmlFor="image">
-                            <Button
-                              // variant="contained"
-                              color="primary"
-                              component="span"
-                            >
-                              <SmallAvatar alt="Edit image" src={editpen} />
-                            </Button>
-                          </label>
-                        </div>
-                      </>
-                    )
-                  }
-                >
-                  <Avatar className={classes.avatar}>
-                    ;
-                    {isLoading ? (
-                      <Skeleton />
-                    ) : category.image_url == null ? (
-                      category.title_en.charAt(0)
-                    ) : (
-                      <img src={category.image_url} alt={category.title_en} />
-                    )}
-                  </Avatar>
-                </Badge>
-              </Box>
-
-              {/* <EditForm title="">
-                <EditField
-                  loading={isLoading}
-                  value={category.id}
-                  onSave={(newValue) => updateCategories("title_en", newValue)}
-                />
-              </EditForm> */}
-
+                <Avatar className={classes.avatar}>
+                  ;
+                  {isLoading ? (
+                    <Skeleton />
+                  ) : category.image_url == null ? (
+                    category.title_en.charAt(0)
+                  ) : (
+                    <img src={category.image_url} alt={category.title_en} />
+                  )}
+                </Avatar>
+              </Badge>
               <Typography
-                // variant="h3"
+                variant="h3"
                 color="textPrimary"
+                alignItems="center"
                 className={classes.title}
               >
-                {isLoading ? (
-                  <Skeleton />
-                ) : (
-                  <EditForm>
-                    <EditField
-                      value={category.title_en}
-                      name="English"
-                      onSave={(newValue) =>
-                        updateCategories("title_en", newValue)
-                      }
-                    />
-                    <Divider />
-                    <EditField
-                      value={category.title_hk}
-                      name="Chinese (traditional)"
-                      onSave={(newValue) =>
-                        updateCategories("title_hk", newValue)
-                      }
-                    />
-                    <Divider />
-                    <EditField
-                      value={category.title_cn}
-                      name="Chinese (simplified)"
-                      onSave={(newValue) =>
-                        updateCategories("title_cn", newValue)
-                      }
-                    />
-                  </EditForm>
-                )}
+                {isLoading ? <Skeleton /> : category.title_en}
               </Typography>
+              {/* </Box> */}
 
               {/* <Typography
                 variant="h3"
                 color="textPrimary"
+                alignItems="center"
                 className={classes.title}
               >
                 {isLoading ? <Skeleton /> : category.title_en}
@@ -477,6 +475,12 @@ function ManageResourcesPage({ match }) {
               }}
             />
             <Tab
+              label="Change Name"
+              style={{
+                outline: "none",
+              }}
+            />
+            <Tab
               label="Settings"
               style={{
                 outline: "none",
@@ -488,6 +492,9 @@ function ManageResourcesPage({ match }) {
             <GeneralTabPanel />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
+            <ChangeNameTabPanel />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={2}>
             <SettingsTabPanel />
           </TabPanel>
 

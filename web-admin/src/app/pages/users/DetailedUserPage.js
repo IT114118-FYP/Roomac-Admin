@@ -17,6 +17,7 @@ import {
   Divider,
   Button,
 } from "@material-ui/core";
+import Switch from "@material-ui/core/Switch";
 import { withStyles } from "@material-ui/core/styles";
 import DoneIcon from "@material-ui/icons/Done";
 import ClearIcon from "@material-ui/icons/Clear";
@@ -69,6 +70,7 @@ function DetailedUserPage({ match }) {
   const [imgMethod, setImgMethod] = useState("None");
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
+  const [state, setState] = React.useState({});
 
   useEffect(() => {
     fetchAllData();
@@ -146,6 +148,37 @@ function DetailedUserPage({ match }) {
       setError(true);
       setLoading(false);
     }
+  };
+
+  //event.target.name
+  //event.target.checked
+  const updatePermission = (event, index) => {
+    const temp = [...permissions];
+    temp[index].granted = event.target.checked;
+    setPermissions(temp);
+
+    // setLoading(true);
+
+    let data = [];
+    // data[event.target.name] = event.target.checked;
+    data[0] = {
+      name: event.target.name,
+      granted: event.target.checked,
+    };
+
+    // console.log(event.target);
+    // console.log(data);
+    axiosInstance
+      .put(`api/users/${match.params.id}/permissions`, data)
+      .then(({ data }) => {
+        // setPermissions([...permissions, data]);
+        // fetchAllData();
+        console.log("done");
+      })
+      .catch((error) => {
+        console.log(error.response);
+      })
+      .finally(() => console.log(permissions));
   };
 
   const fetchUser = () => axiosInstance.get(`api/users/${match.params.id}`);
@@ -293,8 +326,8 @@ function DetailedUserPage({ match }) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {permissions.map((permission) => (
-                <TableRow key={permission.name}>
+              {permissions.map((permission, index) => (
+                <TableRow key={index}>
                   <TableCell component="th" scope="row">
                     {permission.name}
                   </TableCell>
@@ -304,7 +337,14 @@ function DetailedUserPage({ match }) {
                       color: permission.granted ? "#4c4" : "#c11",
                     }}
                   >
-                    {permission.granted ? <DoneIcon /> : <ClearIcon />}
+                    <Switch
+                      checked={permission.granted}
+                      onChange={(event) => updatePermission(event, index)}
+                      color="secondary"
+                      name={permission.name}
+                      inputProps={{ "aria-label": permission.name }}
+                    />
+                    {/* {permission.granted ? <DoneIcon /> : <ClearIcon />} */}
                   </TableCell>
                 </TableRow>
               ))}

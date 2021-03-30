@@ -24,9 +24,9 @@ import EditPickerField, {
 } from "../../components/forms/edit/EditPickerField";
 
 import FullCalendar from "@fullcalendar/react";
-// import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import routes from "../../navigation/routes";
 
 import moment from "moment";
 
@@ -186,6 +186,7 @@ function DetailedCategoryPage({ match }) {
         `/api/resources/${match.params.id}/bookings?start=${startDate}&end=${endDate}`
       )
       .then(({ data }) => {
+        console.log(data);
         let events = [];
         for (let i in data.allow_times) {
           let allow_time = data.allow_times[i];
@@ -207,12 +208,14 @@ function DetailedCategoryPage({ match }) {
         }
 
         setBookings(events);
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   const delteResource = () => {
-    axiosInstance.delete(`api/resources/${match.params.id}`);
+    axiosInstance.delete(`api/resources/${match.params.id}`).then(() => {
+      history.push(`/categories`);
+    });
   };
 
   function GeneralTabPanel() {

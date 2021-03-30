@@ -201,14 +201,14 @@ function DetailedBranchPage({ match }) {
           <Divider />
           <EditField
             loading={isLoading}
-            name="Lat"
+            name="Latitude"
             value={branch.lat}
             onSave={(newValue) => updateBranch("lat", newValue)}
           />
           <Divider />
           <EditField
             loading={isLoading}
-            name="Lng"
+            name="Longitude"
             value={branch.lng}
             onSave={(newValue) => updateBranch("lng", newValue)}
           />

@@ -29,7 +29,8 @@ import AddIcon from "@material-ui/icons/Add";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 
-import routes from "../navigation/routes";
+import routes, { TAG } from "../navigation/routes";
+import usePermission from "../navigation/usePermission";
 import ConfirmDialog from "./ConfirmDialog";
 import Logo from "./Logo";
 import { axiosInstance } from "../api/config";
@@ -76,8 +77,8 @@ const useStyles = makeStyles((theme) => ({
 function ResponsiveDrawer({ window, title, children }) {
   const history = useHistory();
   const classes = useStyles();
+  const { permissionReady, permissions, getPermission } = usePermission();
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [openCategory, setOpenCategory] = React.useState(false);
   const [categories, setCategories] = React.useState([]);
   const [username, setUsername] = React.useState("");
   const [isUsernameReady, setUsernameReady] = React.useState(false);
@@ -118,69 +119,45 @@ function ResponsiveDrawer({ window, title, children }) {
         <Logo title="roomac admin" />
       </div>
       <Divider />
-      <List>
-        <DrawerItem title="Home" path={routes.HOME}>
-          <HomeIcon />
-        </DrawerItem>
-        {/* <DrawerItem title="Timetable" path={routes.TIMETABLE}>
-          <EventIcon />
-        </DrawerItem>
-        <DrawerItem title="Statistics" path={routes.STATISTICS}>
-          <BarChartIcon />
-        </DrawerItem>
-        <DrawerItem title="Activity Log" path={routes.ACTIVITY_LOG}>
-          <HistoryIcon />
-        </DrawerItem> */}
-      </List>
-      <Divider />
-      <List>
-        <DrawerItem title="Branches" path={routes.branches.MANAGE}>
-          <BusinessIcon />
-        </DrawerItem>
-        <DrawerItem title="Categories" path={routes.categories.MANAGEC}>
-          <PeopleIcon />
-        </DrawerItem>
-
-        {/* <ListItem button onClick={() => setOpenCategory(!openCategory)}>
-          <ListItemIcon>
-            <CategoryIcon />
-          </ListItemIcon>
-          <ListItemText primary="Categories" />
-          {openCategory ? <ExpandLess /> : <ExpandMore />}
-        </ListItem>
-        <Collapse in={openCategory} timeout="auto" unmountOnExit>
+      {permissionReady && (
+        <>
           <List>
-            <DrawerItem
-              title="Add Category"
-              path={routes.categories.NEW}
-              className={classes.nested}
-            >
-              <AddIcon />
+            <DrawerItem title="Home" path={routes.HOME}>
+              <HomeIcon />
             </DrawerItem>
-            {categories.map((item) => (
-              <DrawerItem
-                title={item.title_en}
-                path={`/categories/${item.id}`}
-                className={classes.nested}
-                key={item.id}
-                refresh="true"
-              >
-                <ArrowRightIcon />
-              </DrawerItem>
-            ))}
           </List>
-        </Collapse> */}
-        <DrawerItem title="Users" path={routes.users.MANAGE}>
-          <PeopleIcon />
-        </DrawerItem>
-        <DrawerItem title="Programmes" path={routes.programs.MANAGE}>
-          <MenuBookIcon />
-        </DrawerItem>
-        <DrawerItem title="Teams and Conditions" path={routes.tos.MANAGE}>
-          <MenuBookIcon />
-        </DrawerItem>
-      </List>
-      <Divider />
+          <Divider />
+          <List>
+            {getPermission(TAG.CRUD.READ + TAG.routes.branches) && (
+              <DrawerItem title="Branches" path={routes.branches.MANAGE}>
+                <BusinessIcon />
+              </DrawerItem>
+            )}
+            {getPermission(TAG.CRUD.READ + TAG.routes.categories) && (
+              <DrawerItem title="Categories" path={routes.categories.MANAGEC}>
+                <PeopleIcon />
+              </DrawerItem>
+            )}
+            {getPermission(TAG.CRUD.READ + TAG.routes.users) && (
+              <DrawerItem title="Users" path={routes.users.MANAGE}>
+                <PeopleIcon />
+              </DrawerItem>
+            )}
+
+            {getPermission(TAG.CRUD.READ + TAG.routes.programs) && (
+              <DrawerItem title="Programmes" path={routes.programs.MANAGE}>
+                <MenuBookIcon />
+              </DrawerItem>
+            )}
+            {getPermission(TAG.CRUD.READ + TAG.routes.tos) && (
+              <DrawerItem title="Teams and Conditions" path={routes.tos.MANAGE}>
+                <MenuBookIcon />
+              </DrawerItem>
+            )}
+          </List>
+          <Divider />
+        </>
+      )}
       <List>
         <ListItem
           button

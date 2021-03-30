@@ -82,7 +82,7 @@ function ManageTOSPage(props) {
   };
 
   const handleAddNew = () => {
-    history.push(routes.tos.NEW);
+    history.push(`/tos/new`);
   };
 
   const handleExport = () => {

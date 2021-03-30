@@ -1,6 +1,5 @@
-export default {
+const routes = {
   HOME: "/home",
-
   categories: {
     MANAGEC: "/categories",
     MANAGE: "/categories/:id",
@@ -29,3 +28,28 @@ export default {
     NEW: "/tos/new",
   },
 };
+
+export const TAG = {
+  CRUD: {
+    UPDATE: "update",
+    DELETE: "delete",
+    CREATE: "create",
+    READ: "read",
+  },
+  routes: {
+    categories: ":categories",
+    programs: ":programs",
+    users: ":users",
+    branches: ":branches",
+    roles: ":roles",
+    tos: ":tos",
+  },
+};
+
+export const permissionTags = {
+  [routes.users.NEW]: TAG.CRUD.CREATE + TAG.routes.users,
+  [routes.users.MANAGE]: TAG.CRUD.READ + TAG.routes.users,
+  [routes.users.DETAILED]: TAG.CRUD.CREATE + TAG.routes.users,
+};
+
+export default routes;
