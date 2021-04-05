@@ -16,7 +16,8 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -33,6 +34,7 @@ function DetailedProgramPage({ match }) {
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchProgram();
@@ -83,6 +85,9 @@ function DetailedProgramPage({ match }) {
           name="programme code"
           value={program.id}
           onSave={(newValue) => updateProgram("id", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.programs) ? true : false
+          }
         />
         <Divider />
         <EditField
@@ -90,6 +95,9 @@ function DetailedProgramPage({ match }) {
           name="English"
           value={program.title_en}
           onSave={(newValue) => updateProgram("title_en", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.programs) ? true : false
+          }
         />
         <Divider />
         <EditField
@@ -97,6 +105,9 @@ function DetailedProgramPage({ match }) {
           name="Chinese (traditional)"
           value={program.title_hk}
           onSave={(newValue) => updateProgram("title_hk", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.programs) ? true : false
+          }
         />
         <Divider />
         <EditField
@@ -104,6 +115,9 @@ function DetailedProgramPage({ match }) {
           name="Chinese (simplified)"
           value={program.title_cn}
           onSave={(newValue) => updateProgram("title_cn", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.programs) ? true : false
+          }
         />
       </EditForm>
     );
@@ -112,21 +126,25 @@ function DetailedProgramPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
-            Delete program
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the programme will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete Program
-        </Button>
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.programs) && (
+          <Box flexGrow={1}>
+            <Typography variant="body1" color="textPrimary">
+              Delete program
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Upon deletion, the programme will not be recoverable.
+            </Typography>
+          </Box>
+        )}
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.programs) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete Program
+          </Button>
+        )}
       </Box>
     );
   }

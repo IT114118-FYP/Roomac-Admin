@@ -35,6 +35,8 @@ export const TAG = {
     DELETE: "delete",
     CREATE: "create",
     READ: "read",
+    GRANT: "grant",
+    REVOKE: "revoke",
   },
   routes: {
     categories: ":categories",
@@ -43,6 +45,8 @@ export const TAG = {
     branches: ":branches",
     roles: ":roles",
     tos: ":tos",
+    resources: ":resources",
+    permissions: ":permissions",
   },
 };
 

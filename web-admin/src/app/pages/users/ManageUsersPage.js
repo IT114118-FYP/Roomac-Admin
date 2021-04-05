@@ -20,7 +20,8 @@ import NavDrawer from "../../components/NavDrawer";
 import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/users";
 import { axiosInstance } from "../../api/config";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
@@ -62,6 +63,7 @@ function ManageUsersPage(props) {
   const [isLoading, setLoading] = useState(true);
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchData();
@@ -131,9 +133,11 @@ function ManageUsersPage(props) {
           >
             Users
           </Typography>
-          <Button color="primary" size="medium" onClick={handleAddNew}>
-            Add new users
-          </Button>
+          {getPermission(TAG.CRUD.CREATE + TAG.routes.users) && (
+            <Button color="primary" size="medium" onClick={handleAddNew}>
+              Add new users
+            </Button>
+          )}
         </div>
         <Typography variant="body1" color="textSecondary" gutterBottom>
           View and manage users with customisations

@@ -26,7 +26,8 @@ import EditPickerField, {
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 import moment from "moment";
 
@@ -61,6 +62,7 @@ function DetailedCategoryPage({ match }) {
   const [imgMethod, setImgMethod] = useState("None");
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   const classes = useStyles();
 
@@ -227,6 +229,11 @@ function DetailedCategoryPage({ match }) {
             name="Number"
             value={resource.number}
             onSave={(newValue) => updateResource("number", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditField
@@ -234,6 +241,11 @@ function DetailedCategoryPage({ match }) {
             name="English"
             value={resource.title_en}
             onSave={(newValue) => updateResource("title_en", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditField
@@ -241,6 +253,11 @@ function DetailedCategoryPage({ match }) {
             name="Chinese (traditional)"
             value={resource.title_hk}
             onSave={(newValue) => updateResource("title_hk", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditField
@@ -248,6 +265,11 @@ function DetailedCategoryPage({ match }) {
             name="Chinese (simplified)"
             value={resource.title_cn}
             onSave={(newValue) => updateResource("title_cn", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditPickerField
@@ -267,6 +289,11 @@ function DetailedCategoryPage({ match }) {
             name="Opening Time"
             value={resource.opening_time}
             onSave={(newValue) => updateResource("opening_time", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditField
@@ -275,6 +302,11 @@ function DetailedCategoryPage({ match }) {
             name="Closing Time"
             value={resource.closing_time}
             onSave={(newValue) => updateResource("closing_time", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditSliderField
@@ -282,6 +314,11 @@ function DetailedCategoryPage({ match }) {
             name="Opacity"
             value={[resource.min_user, resource.max_user]}
             onSave={(newValue) => updateResource("opacity", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
           <Divider />
           <EditField
@@ -289,6 +326,11 @@ function DetailedCategoryPage({ match }) {
             name="Interval"
             value={resource.interval}
             onSave={(newValue) => updateResource("interval", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.resources)
+                ? true
+                : false
+            }
           />
         </EditForm>
       </>
@@ -320,21 +362,25 @@ function DetailedCategoryPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
-            Delete resource
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the resource will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete Resource
-        </Button>
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.resources) && (
+          <Box flexGrow={1}>
+            <Typography variant="body1" color="textPrimary">
+              Delete resource
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Upon deletion, the resource will not be recoverable.
+            </Typography>
+          </Box>
+        )}
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.resources) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete Resource
+          </Button>
+        )}
       </Box>
     );
   }
@@ -390,13 +436,17 @@ function DetailedCategoryPage({ match }) {
                         onChange={onSelectFile}
                       />
                       <label htmlFor="image">
-                        <Button
-                          // variant="contained"
-                          color="primary"
-                          component="span"
-                        >
-                          <SmallAvatar alt="Edit image" src={editpen} />
-                        </Button>
+                        {getPermission(
+                          TAG.CRUD.UPDATE + TAG.routes.resources
+                        ) && (
+                          <Button
+                            // variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <SmallAvatar alt="Edit image" src={editpen} />
+                          </Button>
+                        )}
                       </label>
                     </div>
                   </>

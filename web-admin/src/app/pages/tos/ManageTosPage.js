@@ -20,7 +20,8 @@ import NavDrawer from "../../components/NavDrawer";
 import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/toss";
 import { axiosInstance } from "../../api/config";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
@@ -62,6 +63,7 @@ function ManageTOSPage(props) {
   const [isLoading, setLoading] = useState(true);
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchData();
@@ -134,9 +136,11 @@ function ManageTOSPage(props) {
           >
             Terms And Conditions
           </Typography>
-          <Button color="primary" size="medium" onClick={handleAddNew}>
-            Add new Terms And Conditions
-          </Button>
+          {getPermission(TAG.CRUD.CREATE + TAG.routes.tos) && (
+            <Button color="primary" size="medium" onClick={handleAddNew}>
+              Add new Terms And Conditions
+            </Button>
+          )}
         </div>
         <Typography variant="body1" color="textSecondary" gutterBottom>
           View and manage Terms And Conditions with customisations

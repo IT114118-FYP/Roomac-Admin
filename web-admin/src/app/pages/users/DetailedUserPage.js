@@ -27,7 +27,8 @@ import * as axios from "axios";
 
 import NavDrawer from "../../components/NavDrawer";
 import { axiosInstance } from "../../api/config";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
 import EditPickerField, {
@@ -71,6 +72,7 @@ function DetailedUserPage({ match }) {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
   const [state, setState] = React.useState({});
+  const { permissionReady, getPermission } = usePermission();
 
   useEffect(() => {
     fetchAllData();
@@ -253,6 +255,9 @@ function DetailedUserPage({ match }) {
             name="FIRST NAME"
             value={user.first_name}
             onSave={(newValue) => updateUser("first_name", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
           />
           <Divider />
           <EditField
@@ -260,6 +265,9 @@ function DetailedUserPage({ match }) {
             name="LAST NAME"
             value={user.last_name}
             onSave={(newValue) => updateUser("last_name", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
           />
           <Divider />
           <EditField
@@ -267,6 +275,9 @@ function DetailedUserPage({ match }) {
             name="CHINESE NAME"
             value={user.chinese_name}
             onSave={(newValue) => updateUser("chinese_name", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
           />
           <Divider />
           <EditField
@@ -274,6 +285,9 @@ function DetailedUserPage({ match }) {
             name="CNA"
             value={user.name}
             onSave={(newValue) => updateUser("name", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
           />
           <Divider />
         </EditForm>
@@ -301,6 +315,9 @@ function DetailedUserPage({ match }) {
             name="EMAIL"
             value={user.email}
             onSave={(newValue) => updateUser("email", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
           />
         </EditForm>
       </>
@@ -358,21 +375,25 @@ function DetailedUserPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
-            Delete User Account
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the account will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete User
-        </Button>
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.users) && (
+          <Box flexGrow={1}>
+            <Typography variant="body1" color="textPrimary">
+              Delete User Account
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Upon deletion, the account will not be recoverable.
+            </Typography>
+          </Box>
+        )}
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.users) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete User
+          </Button>
+        )}
       </Box>
     );
   }
@@ -421,13 +442,15 @@ function DetailedUserPage({ match }) {
                         onChange={onSelectFile}
                       />
                       <label htmlFor="image">
-                        <Button
-                          // variant="contained"
-                          color="primary"
-                          component="span"
-                        >
-                          <SmallAvatar alt="Edit image" src={editpen} />
-                        </Button>
+                        {getPermission(TAG.CRUD.UPDATE + TAG.routes.users) && (
+                          <Button
+                            // variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <SmallAvatar alt="Edit image" src={editpen} />
+                          </Button>
+                        )}
                       </label>
                     </div>
                   </>
@@ -454,31 +477,36 @@ function DetailedUserPage({ match }) {
               </Typography>
             </Box>
           </Box>
-          <Tabs
-            value={tabIndex}
-            onChange={(event, newValue) => {
-              setTabIndex(newValue);
-            }}
-          >
-            <Tab
-              label="General"
-              style={{
-                outline: "none",
+          {permissionReady && (
+            <Tabs
+              value={tabIndex}
+              onChange={(event, newValue) => {
+                setTabIndex(newValue);
               }}
-            />
-            <Tab
-              label="Permissions"
-              style={{
-                outline: "none",
-              }}
-            />
-            <Tab
-              label="Settings"
-              style={{
-                outline: "none",
-              }}
-            />
-          </Tabs>
+            >
+              <Tab
+                label="General"
+                style={{
+                  outline: "none",
+                }}
+              />
+              {(getPermission(TAG.CRUD.GRANT + TAG.routes.permissions) ||
+                getPermission(TAG.CRUD.REVOKE + TAG.routes.permissions)) && (
+                <Tab
+                  label="Permissions"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+              )}
+              <Tab
+                label="Settings"
+                style={{
+                  outline: "none",
+                }}
+              />
+            </Tabs>
+          )}
           <TabPanel value={tabIndex} index={0}>
             <GeneralTabPanel />
           </TabPanel>

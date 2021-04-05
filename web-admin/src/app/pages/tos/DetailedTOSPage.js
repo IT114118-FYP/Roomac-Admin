@@ -16,7 +16,8 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
-import routes from "../../navigation/routes";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 function TabPanel({ children, value, index, ...other }) {
   return (
@@ -33,6 +34,7 @@ function DetailedTOSPage({ match }) {
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchTos();
@@ -90,6 +92,9 @@ function DetailedTOSPage({ match }) {
           name="English"
           value={tos.tos_en}
           onSave={(newValue) => updateTos("tos_en", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
+          }
         />
         <Divider />
         <EditField
@@ -97,6 +102,9 @@ function DetailedTOSPage({ match }) {
           name="Chinese (traditional)"
           value={tos.tos_hk}
           onSave={(newValue) => updateTos("tos_hk", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
+          }
         />
         <Divider />
         <EditField
@@ -104,6 +112,9 @@ function DetailedTOSPage({ match }) {
           name="Chinese (simplified)"
           value={tos.tos_cn}
           onSave={(newValue) => updateTos("tos_cn", newValue)}
+          editable={
+            getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
+          }
         />
       </EditForm>
     );
@@ -112,21 +123,25 @@ function DetailedTOSPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
+          <Box flexGrow={1}>
+            <Typography variant="body1" color="textPrimary">
+              Delete tos
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Upon deletion, the tos will not be recoverable.
+            </Typography>
+          </Box>
+        )}
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setDeleteOpen(true)}
+          >
             Delete tos
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the tos will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete tos
-        </Button>
+          </Button>
+        )}
       </Box>
     );
   }

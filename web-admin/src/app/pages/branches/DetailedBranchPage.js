@@ -21,12 +21,14 @@ import { axiosInstance } from "../../api/config";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
-import routes from "../../navigation/routes";
 import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/rulesConfig";
 import { toss } from "../../config/tables/tos";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import editpen from "../../resources/edit.png";
+
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -70,6 +72,8 @@ function DetailedBranchPage({ match }) {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
   const [imgMethod, setImgMethod] = useState("None");
+
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   const classes = useStyles();
 
@@ -169,75 +173,104 @@ function DetailedBranchPage({ match }) {
   function GeneralTabPanel() {
     return (
       <>
-        <EditForm title="Branch info">
-          <EditField
-            loading={isLoading}
-            name="Branch ID"
-            value={branch.id}
-            onSave={(newValue) => updateBranch("id", newValue)}
-            editable={false}
-          />
-          <Divider />
-          <EditField
-            loading={isLoading}
-            name="English"
-            value={branch.title_en}
-            onSave={(newValue) => updateBranch("title_en", newValue)}
-          />
-          <Divider />
-          <EditField
-            loading={isLoading}
-            name="Chinese (traditional)"
-            value={branch.title_hk}
-            onSave={(newValue) => updateBranch("title_hk", newValue)}
-          />
-          <Divider />
-          <EditField
-            loading={isLoading}
-            name="Chinese (simplified)"
-            value={branch.title_cn}
-            onSave={(newValue) => updateBranch("title_cn", newValue)}
-          />
-          <Divider />
-          <EditField
-            loading={isLoading}
-            name="Latitude"
-            value={branch.lat}
-            onSave={(newValue) => updateBranch("lat", newValue)}
-          />
-          <Divider />
-          <EditField
-            loading={isLoading}
-            name="Longitude"
-            value={branch.lng}
-            onSave={(newValue) => updateBranch("lng", newValue)}
-          />
-        </EditForm>
+        {permissionReady && (
+          <>
+            <EditForm title="Branch info">
+              <EditField
+                loading={isLoading}
+                name="Branch ID"
+                value={branch.id}
+                onSave={(newValue) => updateBranch("id", newValue)}
+                editable={false}
+              />
+              <Divider />
+              <EditField
+                loading={isLoading}
+                name="English"
+                value={branch.title_en}
+                onSave={(newValue) => updateBranch("title_en", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.branches)
+                    ? true
+                    : false
+                }
+              />
+              <Divider />
+              <EditField
+                loading={isLoading}
+                name="Chinese (traditional)"
+                value={branch.title_hk}
+                onSave={(newValue) => updateBranch("title_hk", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.branches)
+                    ? true
+                    : false
+                }
+              />
+              <Divider />
+              <EditField
+                loading={isLoading}
+                name="Chinese (simplified)"
+                value={branch.title_cn}
+                onSave={(newValue) => updateBranch("title_cn", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.branches)
+                    ? true
+                    : false
+                }
+              />
+              <Divider />
+              <EditField
+                loading={isLoading}
+                name="Latitude"
+                value={branch.lat}
+                onSave={(newValue) => updateBranch("lat", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.branches)
+                    ? true
+                    : false
+                }
+              />
+              <Divider />
+              <EditField
+                loading={isLoading}
+                name="Longitude"
+                value={branch.lng}
+                onSave={(newValue) => updateBranch("lng", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.branches)
+                    ? true
+                    : false
+                }
+              />
+            </EditForm>
 
-        <Box marginBottom={2} marginTop={3} display="flex">
-          <Typography
-            variant="h6"
-            component="div"
-            style={{
-              flexGrow: 1,
-            }}
-          >
-            Branch Settings / Rules Configuration
-          </Typography>
-          <Button
-            color="primary"
-            size="small"
-            // onClick={handleAddNew}
-          >
-            Add new rules configurations
-          </Button>
-        </Box>
-        <DataTable
-          loading={isLoading}
-          data={settings}
-          labels={labels}
-          onClick={handleSettingClick}
-        />
+            <Box marginBottom={2} marginTop={3} display="flex">
+              <Typography
+                variant="h6"
+                component="div"
+                style={{
+                  flexGrow: 1,
+                }}
+              >
+                Branch Settings / Rules Configuration
+              </Typography>
+              <Button
+                color="primary"
+                size="small"
+                // onClick={handleAddNew}
+              >
+                Add new rules configurations
+              </Button>
+            </Box>
+            <DataTable
+              loading={isLoading}
+              data={settings}
+              labels={labels}
+              onClick={handleSettingClick}
+            />
+          </>
+        )}
       </>
     );
   }
@@ -288,21 +321,29 @@ function DetailedBranchPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
-            Delete Branch
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the branch will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete Branch
-        </Button>
+        {permissionReady && (
+          <>
+            {getPermission(TAG.CRUD.DELETE + TAG.routes.branches) && (
+              <Box flexGrow={1}>
+                <Typography variant="body1" color="textPrimary">
+                  Delete Branch
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  Upon deletion, the branch will not be recoverable.
+                </Typography>
+              </Box>
+            )}
+            {getPermission(TAG.CRUD.DELETE + TAG.routes.branches) && (
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => setDeleteOpen(true)}
+              >
+                Delete Branch
+              </Button>
+            )}
+          </>
+        )}
       </Box>
     );
   }
@@ -351,13 +392,17 @@ function DetailedBranchPage({ match }) {
                         onChange={onSelectFile}
                       />
                       <label htmlFor="image">
-                        <Button
-                          // variant="contained"
-                          color="primary"
-                          component="span"
-                        >
-                          <SmallAvatar alt="Edit image" src={editpen} />
-                        </Button>
+                        {getPermission(
+                          TAG.CRUD.UPDATE + TAG.routes.branches
+                        ) && (
+                          <Button
+                            // variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <SmallAvatar alt="Edit image" src={editpen} />
+                          </Button>
+                        )}
                       </label>
                     </div>
                   </>
@@ -388,31 +433,35 @@ function DetailedBranchPage({ match }) {
               </Typography>
             </Box>
           </Box>
-          <Tabs
-            value={tabIndex}
-            onChange={(event, newValue) => {
-              setTabIndex(newValue);
-            }}
-          >
-            <Tab
-              label="General"
-              style={{
-                outline: "none",
-              }}
-            />
-            <Tab
-              label="Teams And Conditions"
-              style={{
-                outline: "none",
-              }}
-            />
-            <Tab
-              label="Settings"
-              style={{
-                outline: "none",
-              }}
-            />
-          </Tabs>
+          {permissionReady && (
+            <>
+              <Tabs
+                value={tabIndex}
+                onChange={(event, newValue) => {
+                  setTabIndex(newValue);
+                }}
+              >
+                <Tab
+                  label="General"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+                <Tab
+                  label="Teams And Conditions"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+                <Tab
+                  label="Settings"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+              </Tabs>
+            </>
+          )}
           <TabPanel value={tabIndex} index={0}>
             <GeneralTabPanel />
           </TabPanel>

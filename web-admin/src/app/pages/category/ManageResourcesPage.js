@@ -28,12 +28,14 @@ import { axiosInstance } from "../../api/config";
 import DataTable from "../../components/DataTable";
 import { labels } from "../../config/tables/resources";
 import { Skeleton } from "@material-ui/lab";
-import routes from "../../navigation/routes";
 
 import Badge from "@material-ui/core/Badge";
 import editpen from "../../resources/edit.png";
 import { withStyles } from "@material-ui/core/styles";
 import ConfirmDialog from "../../components/ConfirmDialog";
+
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 
 const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
@@ -96,6 +98,7 @@ function ManageResourcesPage({ match }) {
   const [preview, setPreview] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
+  const { permissionReady, permissions, getPermission } = usePermission();
 
   useEffect(() => {
     fetchAllData();
@@ -328,18 +331,33 @@ function ManageResourcesPage({ match }) {
                 value={category.title_en}
                 name="English"
                 onSave={(newValue) => updateCategories("title_en", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.categories)
+                    ? true
+                    : false
+                }
               />
               <Divider />
               <EditField
                 value={category.title_hk}
                 name="Chinese (traditional)"
                 onSave={(newValue) => updateCategories("title_hk", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.categories)
+                    ? true
+                    : false
+                }
               />
               <Divider />
               <EditField
                 value={category.title_cn}
                 name="Chinese (simplified)"
                 onSave={(newValue) => updateCategories("title_cn", newValue)}
+                editable={
+                  getPermission(TAG.CRUD.UPDATE + TAG.routes.categories)
+                    ? true
+                    : false
+                }
               />
             </EditForm>
           )}
@@ -351,21 +369,25 @@ function ManageResourcesPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        <Box flexGrow={1}>
-          <Typography variant="body1" color="textPrimary">
-            Delete resource
-          </Typography>
-          <Typography variant="caption" color="textSecondary">
-            Upon deletion, the resource will not be recoverable.
-          </Typography>
-        </Box>
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => setDeleteOpen(true)}
-        >
-          Delete Resource
-        </Button>
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.categories) && (
+          <Box flexGrow={1}>
+            <Typography variant="body1" color="textPrimary">
+              Delete Category
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              Upon deletion, the category will not be recoverable.
+            </Typography>
+          </Box>
+        )}
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.categories) && (
+          <Button
+            variant="outlined"
+            color="secondary"
+            onClick={() => setDeleteOpen(true)}
+          >
+            Delete Category
+          </Button>
+        )}
       </Box>
     );
   }
@@ -411,13 +433,17 @@ function ManageResourcesPage({ match }) {
                           onChange={onSelectFile}
                         />
                         <label htmlFor="image">
-                          <Button
-                            // variant="contained"
-                            color="primary"
-                            component="span"
-                          >
-                            <SmallAvatar alt="Edit image" src={editpen} />
-                          </Button>
+                          {getPermission(
+                            TAG.CRUD.UPDATE + TAG.routes.categories
+                          ) && (
+                            <Button
+                              // variant="contained"
+                              color="primary"
+                              component="span"
+                            >
+                              <SmallAvatar alt="Edit image" src={editpen} />
+                            </Button>
+                          )}
                         </label>
                       </div>
                     </>
@@ -454,9 +480,12 @@ function ManageResourcesPage({ match }) {
                 {isLoading ? <Skeleton /> : category.title_en}
               </Typography> */}
 
-              <Button color="primary" size="medium" onClick={handleAddNew}>
-                Add new resources
-              </Button>
+              {permissionReady &&
+                getPermission(TAG.CRUD.CREATE + TAG.routes.resources) && (
+                  <Button color="primary" size="medium" onClick={handleAddNew}>
+                    Add new resources
+                  </Button>
+                )}
             </div>
             <Typography variant="body1" color="textSecondary" gutterBottom>
               View and manage resources with customisations
