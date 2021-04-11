@@ -80,7 +80,7 @@ function NewTOSPage(props) {
                 fontWeight: "bold",
               }}
             >
-              Terms And Conditions Details
+              Terms And Conditions Details.
             </Typography>
             <NewField
               title="English"

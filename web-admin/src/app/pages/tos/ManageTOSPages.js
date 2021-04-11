@@ -63,7 +63,7 @@ function ManageTOSPage(props) {
   const [isLoading, setLoading] = useState(true);
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
-  const { permissionReady, permissions, getPermission } = usePermission();
+  const { permissionReady, getPermission } = usePermission();
 
   useEffect(() => {
     fetchData();
