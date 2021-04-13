@@ -55,7 +55,7 @@ function NewUserPage(props) {
 
   useEffect(() => {
     if (!permissionReady) return;
-    if (getPermission("create:users")) {
+    if (!getPermission("create:users")) {
       alert("No Permission");
       history.push(routes.HOME);
     }

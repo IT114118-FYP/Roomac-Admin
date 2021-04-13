@@ -122,7 +122,7 @@ function ResponsiveDrawer({ window, title, children }) {
       {permissionReady && (
         <>
           <List>
-            <DrawerItem title="Home" path={routes.HOME}>
+            <DrawerItem title="Dashboard" path={routes.HOME}>
               <HomeIcon />
             </DrawerItem>
           </List>

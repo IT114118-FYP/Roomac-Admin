@@ -27,6 +27,9 @@ const routes = {
     DETAILED: "/tos/:id",
     NEW: "/tos/new",
   },
+  bookings: {
+    DETAILED: "/bookings/:id",
+  },
 };
 
 export const TAG = {
