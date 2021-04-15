@@ -42,7 +42,7 @@ import CardView from "../../components/CardView";
     const [resourceData, setResourceData] = useState([]);
     const [userData, setUser] = useState([]);
     const [data, setBookings] = useState([]);
-  
+
     useEffect(() => {
         fetchAllData();
       }, []);
@@ -51,7 +51,12 @@ import CardView from "../../components/CardView";
 
     const fetchResources = () => axiosInstance.get(`api/resources`);
 
-    const fetchDashboard = () => axiosInstance.get("api/dashboard");
+    // const fetchDashboard = () => axiosInstance.get("api/dashboard");
+
+    const startDate = moment().subtract(30, "days").format("YYYY-MM-DD");
+    const endDate = moment().add(30, "days").format("YYYY-MM-DD");
+    
+    const fetchDashboard = () => axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`);
 
     const fetchAllData = async (silence = true) => {
         if (!silence) setLoading(true);
@@ -86,7 +91,7 @@ import CardView from "../../components/CardView";
         var temp3 = [];
 
         // console.log(dashboard_data.data.active_bookings);
-        dashboard_data.data.active_bookings.forEach((data) => {
+        dashboard_data.data.bookings.forEach((data) => {
             temp3.push({
                 id: data.id,
                 branch_id:(temp2.find((resource)=> resource.id === data.resource_id).branch_id),
@@ -94,9 +99,9 @@ import CardView from "../../components/CardView";
                 user_id: (temp.find((user)=> user.id === data.user_id).user_id),
                 user_name: (temp.find((user)=> user.id === data.user_id).user_name),
                 number: data.number,
-                date: moment(data.start_time).format("MM-DD-YYYY"),
-                start_time: moment(data.start_time).format("HH:mm"),
-                end_time: moment(data.end_time).format("HH:mm"),
+                date: moment(data.start_time).format("YYYY-MM-DD"),
+                start_time: moment(data.start_time).format("HH:mm:ss"),
+                end_time: moment(data.end_time).format("HH:mm:ss"),
                 checkin_time: data.checkin_time == null ? "null": moment(data.checkin_time).format("HH:mm"),
             });
         });
@@ -112,10 +117,10 @@ import CardView from "../../components/CardView";
         }
     };
   
-    const deleteTos = () => {
-    //   axiosInstance.delete(`api/tos/${match.params.id}`).then(() => {
-    //     history.push(routes.tos.MANAGE);
-    //   });
+    const deleteBooking = () => {
+      axiosInstance.delete(`api/resourcebookings/${match.params.id}`).then(() => {
+        history.push(routes.HOME);
+      });
     };
 
     const check_in = () => {
@@ -123,6 +128,29 @@ import CardView from "../../components/CardView";
         .post(`api/resourcebookings/${match.params.id}/checkin`);
         fetchAllData();
         history.push(`/bookings/${match.params.id}`);
+    }
+
+    const updateBooking = (name, value) => {
+      setLoading(true);
+
+      const date = (name === "date" ? value : data.date);
+      const start = (name === "start_time" ? value : data.start_time);
+      const end = (name === "end_time" ? value : data.end_time);
+
+      console.log(date+"/"+start+"/"+end);
+      axiosInstance
+        .put(`api/resourcebookings/${match.params.id}`,{
+          date : name === "date" ? value : data.date,
+          start : name === "start_time" ? value : data.start_time,
+          end : name === "end_time" ? value : data.end_time,
+        })
+        .then(() => {
+          fetchAllData();
+          })
+          .catch((error) => {
+          console.log(error.response);
+        }).finally(setLoading(false));
+
     }
   
     function GeneralTabPanel() {
@@ -192,8 +220,9 @@ import CardView from "../../components/CardView";
                 loading={isLoading}
                 name="Date"
                 value={data.date}
-                editable={false}
-                // onSave={(newValue) => updateTos("tos_en", newValue)}
+                // editable={false}
+                type="date"
+                onSave={(newValue) => updateBooking("date", newValue)}
                 // editable={
                 //   getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
                 // }
@@ -203,8 +232,8 @@ import CardView from "../../components/CardView";
                 loading={isLoading}
                 name="Start Time"
                 value={data.start_time}
-                editable={false}
-                // onSave={(newValue) => updateTos("tos_en", newValue)}
+                type="time"
+                onSave={(newValue) => updateBooking("start_time", newValue)}
                 // editable={
                 //   getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
                 // }
@@ -214,8 +243,8 @@ import CardView from "../../components/CardView";
                 loading={isLoading}
                 name="End Time"
                 value={data.end_time}
-                editable={false}
-                // onSave={(newValue) => updateTos("tos_en", newValue)}
+                type="time"
+                onSave={(newValue) => updateBooking("end_time", newValue)}
                 // editable={
                 //   getPermission(TAG.CRUD.UPDATE + TAG.routes.tos) ? true : false
                 // }
@@ -240,13 +269,13 @@ import CardView from "../../components/CardView";
     function SettingsTabPanel() {
       return (
         <Box flexDirection="row" display="flex" marginTop={2}>
-          {/* {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
+          {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
             <Box flexGrow={1}>
               <Typography variant="body1" color="textPrimary">
-                Delete tos
+                Delete booking
               </Typography>
               <Typography variant="caption" color="textSecondary">
-                Upon deletion, the tos will not be recoverable.
+                Upon deletion, the booking will not be recoverable.
               </Typography>
             </Box>
           )}
@@ -256,9 +285,9 @@ import CardView from "../../components/CardView";
               color="secondary"
               onClick={() => setDeleteOpen(true)}
             >
-              Delete tos
+              Delete Booking
             </Button>
-          )} */}
+          )}
         </Box>
       );
     }
@@ -288,7 +317,7 @@ import CardView from "../../components/CardView";
                     </Typography>
                     {data.checkin_time == "null" && (
                     <>
-                        <Button color="primary" size="medium" Right={0} position="absolute" onClick={check_in}>
+                        <Button color="primary" size="medium" position="absolute" onClick={check_in}>
                         Check-in
                         </Button>
                     </>
@@ -327,7 +356,7 @@ import CardView from "../../components/CardView";
         <ConfirmDialog
           open={deleteOpen}
           onClose={() => setDeleteOpen(false)}
-          onConfirm={deleteTos}
+          onConfirm={deleteBooking}
           title={`Cancel Bookings ${data.number}?`}
         >
           <Typography>Upon deletion, the tos will not be recoverable.</Typography>

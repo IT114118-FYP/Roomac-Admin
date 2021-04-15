@@ -85,7 +85,13 @@ function HomePage(props) {
 
   useEffect(() => {
     fetchAllData();
+    fetchbookings();
   }, []);
+
+  
+  const fetchbookings = () => axiosInstance.get(`api/resources/1/bookings_admin?start=2021-04-13&end=2021-04-20`).then((data)=>console.log(data.data.bookings));
+  
+  
 
   useEffect(() => {
     if (!permissionReady) return;
@@ -146,6 +152,7 @@ function HomePage(props) {
             date: moment(data.start_time).format("MM-DD-YYYY"),
             start_time: moment(data.start_time).format("HH:mm"),
             end_time: moment(data.end_time).format("HH:mm"),
+            checkin_time: (data.checkin_time ? moment(data.checkin_time).format("HH:mm") : "null"), 
            },
          ]);
       });

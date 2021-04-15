@@ -9,7 +9,7 @@ import {
   Avatar,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { useHistory } from "react-router-dom";
 
 import { axiosInstance } from "../../api/config";
@@ -55,6 +55,7 @@ function DetailedCategoryPage({ match }) {
   const [resource, setResource] = useState({});
   const [branches, setBranches] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [userData, setUser] = useState([]);
   const [resourceBranch, setResourceBranch] = useState({});
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
@@ -145,10 +146,21 @@ function DetailedCategoryPage({ match }) {
   const fetchAllData = async (silence = true) => {
     if (!silence) setLoading(true);
     try {
-      const [resourceData, branches] = await axios.all([
+      const [resourceData, branches , user] = await axios.all([
         fetchResource(),
         fetchBranches(),
+        fetchUser(),
       ]);
+
+      var temp = [];
+      user.data.forEach((data) => {
+        temp.push({
+          id: data.id,
+          user_id: data.name,
+        });
+      });
+      setUser(temp);
+
       // console.log(resourceData.data);
       setResource(resourceData.data);
       setBranches(branches.data);
@@ -179,39 +191,28 @@ function DetailedCategoryPage({ match }) {
 
   const fetchBranches = () => axiosInstance.get(`api/branches`);
 
+  const fetchUser = () => axiosInstance.get(`api/users`);
+
+
   const fetchBookings = () => {
-    setLoading(true);
+
     const startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
     const endDate = moment().add(7, "days").format("YYYY-MM-DD");
-    axiosInstance
-      .get(
-        `/api/resources/${match.params.id}/bookings?start=${startDate}&end=${endDate}`
-      )
-      .then(({ data }) => {
-        console.log(data);
-        let events = [];
-        for (let i in data.allow_times) {
-          let allow_time = data.allow_times[i];
-          for (let date in allow_time) {
-            let times = allow_time[date];
-            for (let j in times) {
-              if (times[j].available) {
-                continue;
-              }
-              events.push({
-                id: times[j].id,
-                title: `Unavailable`,
-                start: date + "T" + times[j].start_time,
-                end: date + "T" + times[j].end_time,
-                color: `red`,
-              });
-            }
-          }
-        }
 
-        setBookings(events);
-      })
-      .finally(() => setLoading(false));
+    axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
+    console.log(data.data.bookings);
+    let events = [];
+    data.data.bookings.forEach((data) => {
+      events.push({
+        id: data.id,
+        title: data.number + "\n" + (userData.find((user)=> user.id === data.user_id).user_id),
+        start: data.start_time,
+        end: data.end_time,
+        color: `red`,
+      });
+    });
+    setBookings(events);
+  });
   };
 
   const delteResource = () => {
@@ -353,6 +354,10 @@ function DetailedCategoryPage({ match }) {
             slotMinTime={resource.opening_time}
             slotMaxTime={resource.closing_time}
             events={bookings}
+            eventClick={function(arg){
+              // alert(arg.event.id)
+              history.push(`/bookings/${arg.event.id}`);
+            }}
           />
         )}
       </Box>

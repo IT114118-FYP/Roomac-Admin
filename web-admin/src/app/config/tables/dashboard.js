@@ -27,6 +27,10 @@ const labels = [
     id: "end_time",
     label: "End Time",
   },
+  {
+    id: "checkin_time",
+    label: "Check-in",
+  },
 ];
 
 export { labels };
