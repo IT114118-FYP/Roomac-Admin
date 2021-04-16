@@ -16,6 +16,9 @@ import {
   Breadcrumbs,
   Divider,
   Button,
+  Select,
+  MenuItem,
+  Grid,
 } from "@material-ui/core";
 import Switch from "@material-ui/core/Switch";
 import { withStyles } from "@material-ui/core/styles";
@@ -34,6 +37,9 @@ import EditForm from "../../components/forms/edit/EditForm";
 import EditPickerField, {
   createPickerValue,
 } from "../../components/forms/edit/EditPickerField";
+import NewPickerField, {
+  createNewPickerValue,
+} from "../../components/forms/new/NewPickerField";
 import ConfirmDialog from "../../components/ConfirmDialog";
 
 import Badge from "@material-ui/core/Badge";
@@ -51,6 +57,14 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: theme.spacing(10),
     height: theme.spacing(10),
+  },
+  select: {
+    marginLeft: theme.spacing(3),
+    height: theme.spacing(5),
+    position: "center",
+  },
+  title_ban: {
+    marginRight: theme.spacing(25),
   },
 }));
 
@@ -71,11 +85,15 @@ function DetailedUserPage({ match }) {
   const [imgMethod, setImgMethod] = useState("None");
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
-  const [state, setState] = React.useState({});
+  const [banTimeData, setBanTimeData] = useState([]);
+  const [banTime, setBanTime] = useState([]);
   const { permissionReady, getPermission } = usePermission();
+  const [success, setSuccess] = useState(true);
 
   useEffect(() => {
     fetchAllData();
+    creatBanTimeData();
+
     setImgMethod("Upload Image File");
     if (!selectedFile) {
       setPreview(undefined);
@@ -107,6 +125,14 @@ function DetailedUserPage({ match }) {
     },
   }))(Avatar);
 
+  const creatBanTimeData = () =>{
+    const data = [{id:15,value:"15mins"},{id:60,value:"1hour"},{id:180,value:"3hours"},{id:1440,value:"1day"},{id:4320,value:"3days"}];
+    const banPickerItem = data.map((item) => {
+      return createNewPickerValue(item.id, item.value);
+    });
+    setBanTimeData(banPickerItem);
+  }
+
   const fetchAllData = async (silence = true) => {
     if (!silence) setLoading(true);
     try {
@@ -116,6 +142,7 @@ function DetailedUserPage({ match }) {
         fetchBranches(),
         fetchPrograms(),
       ]);
+      console.log(userData.data);
       setUser(userData.data);
       setPermissions(userPermissions.data);
 
@@ -246,6 +273,16 @@ function DetailedUserPage({ match }) {
     });
   };
 
+  const banUser = () => {
+    setLoading(true);
+    axiosInstance
+    .post(`api/userbans`, {
+      user_id : match.params.id,
+      ban_minutes : banTime,
+    }).then((data)=>{console.log(data);
+      setLoading(false);})
+  }
+
   function GeneralTabPanel() {
     return (
       <>
@@ -320,7 +357,45 @@ function DetailedUserPage({ match }) {
             }
           />
         </EditForm>
+        <Divider />
+        <EditForm title="" >
+        <Grid container spacing={1}>     
+        <Grid item xs={3}>
+          <Typography variant="body1" color="textPrimary">
+              Ban User
+            </Typography>
+            </Grid>
+            <Grid item xs={7}>
+        <Select
+        disabled={isLoading}
+							id={banTimeData.id}
+							variant="outlined"
+							fullWidth
+							onChange={(event)=>setBanTime(event.target.value)
+							}
+							value={banTime}
+              style={{height:35}}
+						>
+							{banTimeData.map((item) => (
+								<MenuItem value={item.id} key={item.id}>
+									{item.value}
+								</MenuItem>
+							))}
+						</Select>
+            </Grid>
+            <Grid item xs={2}>
+          <Button 
+            variant="outlined"
+            color="secondary"
+            onClick={() => banUser()}
+          >
+            Ban User
+          </Button>
+          </Grid>
+          </Grid>
+        </EditForm>
       </>
+        
     );
   }
 

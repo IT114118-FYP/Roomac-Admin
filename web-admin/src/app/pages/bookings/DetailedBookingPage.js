@@ -6,6 +6,7 @@ import {
     Tabs,
     Typography,
     Button,
+    Grid,
   } from "@material-ui/core";
   import { Skeleton } from "@material-ui/lab";
   import React, { useState, useEffect } from "react";
@@ -45,18 +46,19 @@ import CardView from "../../components/CardView";
 
     useEffect(() => {
         fetchAllData();
+        // console.log(match.params.id);
       }, []);
 
     const fetchUser = () => axiosInstance.get(`api/users`);
 
     const fetchResources = () => axiosInstance.get(`api/resources`);
 
-    // const fetchDashboard = () => axiosInstance.get("api/dashboard");
+    const fetchDashboard = () => axiosInstance.get("api/dashboard");
 
     const startDate = moment().subtract(30, "days").format("YYYY-MM-DD");
     const endDate = moment().add(30, "days").format("YYYY-MM-DD");
     
-    const fetchDashboard = () => axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`);
+    // const fetchDashboard = () => axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>console.log(data));
 
     const fetchAllData = async (silence = true) => {
         if (!silence) setLoading(true);
@@ -90,8 +92,8 @@ import CardView from "../../components/CardView";
 
         var temp3 = [];
 
-        // console.log(dashboard_data.data.active_bookings);
-        dashboard_data.data.bookings.forEach((data) => {
+        console.log(dashboard_data.data.active_bookings);
+        dashboard_data.data.active_bookings.forEach((data) => {
             temp3.push({
                 id: data.id,
                 branch_id:(temp2.find((resource)=> resource.id === data.resource_id).branch_id),
@@ -124,10 +126,12 @@ import CardView from "../../components/CardView";
     };
 
     const check_in = () => {
+      setLoading(true);
         axiosInstance
-        .post(`api/resourcebookings/${match.params.id}/checkin`);
+        .post(`api/resourcebookings/${match.params.id}/checkin`).then((data)=>{
         fetchAllData();
-        history.push(`/bookings/${match.params.id}`);
+        window.location.reload();
+        });
     }
 
     const updateBooking = (name, value) => {
@@ -150,7 +154,6 @@ import CardView from "../../components/CardView";
           .catch((error) => {
           console.log(error.response);
         }).finally(setLoading(false));
-
     }
   
     function GeneralTabPanel() {
@@ -311,18 +314,24 @@ import CardView from "../../components/CardView";
         ) : (
           <div>
             <Box marginBottom={2} marginTop={3}>
-                <Box flexDirection="row" display="flex">
+                {/* <Box flexDirection="row" display="flex"> */}
+                <Grid container spacing={1}>
+                <Grid item xs={10}>
                     <Typography variant="h6" component="div" color="textSecondary">
                         {isLoading ? <Skeleton /> : `${data.number}`}
                     </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
                     {data.checkin_time == "null" && (
                     <>
-                        <Button color="primary" size="medium" position="absolute" onClick={check_in}>
+                        <Button color="primary" size="medium" style={{background:"#C4FD90",}} onClick={check_in}>
                         Check-in
                         </Button>
                     </>
                     )}
-                </Box>
+                    </Grid>
+                    </Grid>
+                {/* </Box> */}
             </Box>
   
             <Tabs

@@ -82,6 +82,8 @@ function HomePage(props) {
   const history = useHistory();
   const { permissionReady, permissions, getPermission } = usePermission();
   const [isAdmin, setAdmin] = useState(false);
+  const [searchTerms, setSearchTerms] = useState([]);
+
 
   useEffect(() => {
     fetchAllData();
@@ -168,23 +170,7 @@ function HomePage(props) {
   };
 
   const handleExport = () => {
-    console.log(userData);
     console.log(data);
-    // console.log(userData.find((data)=> data.id == 1).user_id);
-    // setExporting(true);
-    // axiosInstance
-    //   .get("/api/users/export", {
-    //     headers: "Content-type: application/vnd.ms-excel",
-    //     responseType: "blob",
-    //   })
-    //   .then((response) => {
-    //     download(
-    //       new Blob([response.data]),
-    //       "users.xlsx",
-    //       "application/vnd.ms-excel"
-    //     );
-    //     setExporting(false);
-    //   });
   };
 
   const toggleAddFilters = (event) => {
@@ -207,6 +193,24 @@ function HomePage(props) {
   const handleCloseFilter = () => {
     setAnchorEl(null);
   };
+
+  const searchFunction = (value) =>{
+    // console.log(value);
+    if (value !== ""){
+      const newList = data.filter((contact)=>{
+
+        var key = Object.keys(contact).map(function(key) {
+          return contact[key];
+      });
+        return key.join(" ").toLowerCase().includes(value.toLowerCase());
+      })
+
+      setSearchTerms(newList);
+
+    }  else {
+      setSearchTerms(value);
+    }
+  }
 
   return (
     <NavDrawer>
@@ -254,6 +258,8 @@ function HomePage(props) {
           className={classes.viewHeaderBarItems}
           id="search-bar"
           placeholder="Search..."
+          onChange={(event)=>searchFunction(event.target.value)}
+
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -261,9 +267,9 @@ function HomePage(props) {
               </InputAdornment>
             ),
           }}
+          // onChange={setSearchTerms("1")}
         />
-      
-        <div className={classes.viewHeaderBarItems}>
+        {/* <div className={classes.viewHeaderBarItems}>
           <Button
             onClick={toggleAddFilters}
             color="primary"
@@ -289,21 +295,21 @@ function HomePage(props) {
               ))}
             </Menu>
           )}
-        </div>
+        </div> */}
       
-        {searchFilters.map((filter) => (
+        {/* {searchFilters.map((filter) => (
           <Chip
             color="default"
             onDelete={() => handlefilterDelete(filter)}
             label={filter}
             className={classes.filterChip}
           />
-        ))}
+        ))} */}
       </div>
 }
       <DataTable
         loading={isLoading}
-        data={data}
+        data= {searchTerms.length < 1 ? data : searchTerms}
         labels={labels}
         onClick={handleClick}
       />

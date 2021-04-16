@@ -150,7 +150,7 @@ function ResponsiveDrawer({ window, title, children }) {
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.tos) && (
-              <DrawerItem title="Teams and Conditions" path={routes.tos.MANAGE}>
+              <DrawerItem title="Terms and Conditions" path={routes.tos.MANAGE}>
                 <MenuBookIcon />
               </DrawerItem>
             )}

@@ -275,7 +275,7 @@ function DetailedBranchPage({ match }) {
     );
   }
 
-  function TeamsAndConditions() {
+  function TermsAndConditions() {
     const [data, setData] = useState([]);
     const [isLoading, setLoading] = useState(true);
 
@@ -448,7 +448,7 @@ function DetailedBranchPage({ match }) {
                   }}
                 />
                 <Tab
-                  label="Teams And Conditions"
+                  label="Terms And Conditions"
                   style={{
                     outline: "none",
                   }}
@@ -466,7 +466,7 @@ function DetailedBranchPage({ match }) {
             <GeneralTabPanel />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            <TeamsAndConditions />
+            <TermsAndConditions />
           </TabPanel>
           <TabPanel value={tabIndex} index={2}>
             <SettingsTabPanel onDeleteUser={() => setDeleteOpen(true)} />

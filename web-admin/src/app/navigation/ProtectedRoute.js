@@ -35,7 +35,7 @@ function ProtectedRoute({ match = null, ...props }) {
     axiosInstance
       .get("/api/users/me")
       .then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         setValid(true);
       })
       .catch((error) => {

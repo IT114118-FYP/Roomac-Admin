@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
   titleDiv: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
   },
   title: {
     flex: 1,
@@ -67,7 +66,6 @@ const useStyles = makeStyles((theme) => ({
   exportWrapper: {
     display: "flex",
     margin: theme.spacing(1),
-    alignItems: "center",
   },
   avatar: {
     width: theme.spacing(20),
@@ -99,6 +97,7 @@ function ManageResourcesPage({ match }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const { permissionReady, permissions, getPermission } = usePermission();
+  const [searchTerms, setSearchTerms] = useState([]);
 
   useEffect(() => {
     fetchAllData();
@@ -242,6 +241,24 @@ function ManageResourcesPage({ match }) {
     setAnchorEl(null);
   };
 
+  const searchFunction = (value) =>{
+    // console.log(value);
+    if (value !== ""){
+      const newList = data.filter((contact)=>{
+
+        var key = Object.keys(contact).map(function(key) {
+          return contact[key];
+      });
+        return key.join(" ").toLowerCase().includes(value.toLowerCase());
+      })
+
+      setSearchTerms(newList);
+
+    }  else {
+      setSearchTerms(value);
+    }
+  };
+
   function GeneralTabPanel() {
     return (
       <>
@@ -253,6 +270,7 @@ function ManageResourcesPage({ match }) {
             className={classes.viewHeaderBarItems}
             id="search-bar"
             placeholder="Search..."
+            onChange={(event)=>searchFunction(event.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -261,7 +279,7 @@ function ManageResourcesPage({ match }) {
               ),
             }}
           />
-          <div className={classes.viewHeaderBarItems}>
+          {/* <div className={classes.viewHeaderBarItems}>
             <Button
               onClick={toggleAddFilters}
               color="primary"
@@ -294,11 +312,11 @@ function ManageResourcesPage({ match }) {
               label={filter}
               className={classes.filterChip}
             />
-          ))}
+          ))} */}
         </div>
         <DataTable
           loading={isLoading}
-          data={data}
+          data= {searchTerms.length < 1 ? data : searchTerms}
           labels={labels}
           onClick={handleClick}
         />
@@ -396,7 +414,6 @@ function ManageResourcesPage({ match }) {
     <NavDrawer>
       {error ? (
         <Box
-          alignItems="center"
           justifyContent="center"
           display="flex"
           flexDirection="column"
@@ -464,7 +481,6 @@ function ManageResourcesPage({ match }) {
               <Typography
                 variant="h3"
                 color="textPrimary"
-                alignItems="center"
                 className={classes.title}
               >
                 {isLoading ? <Skeleton /> : category.title_en}

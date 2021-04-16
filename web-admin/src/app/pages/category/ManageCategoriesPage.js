@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
   exportWrapper: {
     display: "flex",
     margin: theme.spacing(1),
-    alignItems: "center",
   },
 }));
 
@@ -65,6 +64,7 @@ function ManageCategoriesPage(props) {
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
   const { permissionReady, permissions, getPermission } = usePermission();
+  const [searchTerms, setSearchTerms] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -126,6 +126,22 @@ function ManageCategoriesPage(props) {
     setAnchorEl(null);
   };
 
+  const searchFunction = (value) =>{
+    console.log(value);
+    // if (value !== ""){
+    //   const newList = data.filter((contact)=>{
+
+    //     var key = Object.keys(contact).map(function(key) {
+    //       return contact[key];
+    //   });
+    //     return key.join(" ").toLowerCase().includes(value.toLowerCase());
+    //   })
+    //   setSearchTerms(newList);
+    // }  else {
+    //   setSearchTerms(value);
+    // }
+  };
+
   return (
     <NavDrawer>
       <div>
@@ -157,6 +173,7 @@ function ManageCategoriesPage(props) {
           className={classes.viewHeaderBarItems}
           id="search-bar"
           placeholder="Search..."
+          onChange={(event)=>searchFunction(event.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -165,7 +182,7 @@ function ManageCategoriesPage(props) {
             ),
           }}
         />
-        <div className={classes.viewHeaderBarItems}>
+        {/* <div className={classes.viewHeaderBarItems}>
           <Button
             onClick={toggleAddFilters}
             color="primary"
@@ -195,11 +212,11 @@ function ManageCategoriesPage(props) {
             label={filter}
             className={classes.filterChip}
           />
-        ))}
+        ))} */}
       </div>
       <DataTable
         loading={isLoading}
-        data={data}
+        data= {searchTerms.length < 1 ? data : searchTerms}
         labels={labels}
         onClick={handleClick}
       />
