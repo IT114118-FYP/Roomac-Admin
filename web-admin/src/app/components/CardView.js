@@ -40,10 +40,10 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function CardView({ title, count }) {
+function CardView({ title, count, click }) {
   const classes = useStyles();
   return (
-    <Card className={classes.card}>
+    <Card className={classes.card} onClick={click}>
       <CardContent>
         <Typography
           className={classes.title}

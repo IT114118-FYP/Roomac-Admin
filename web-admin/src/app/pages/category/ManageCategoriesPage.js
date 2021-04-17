@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Chip,
+  Grid,
   CircularProgress,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
@@ -23,8 +24,6 @@ import { axiosInstance } from "../../api/config";
 
 import usePermission from "../../navigation/usePermission";
 import routes, { TAG } from "../../navigation/routes";
-
-const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -104,42 +103,21 @@ function ManageCategoriesPage(props) {
         setExporting(false);
       });
   };
-
-  const toggleAddFilters = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const addfilter = (event, index) => {
-    if (!searchFilters.includes(filterData[index])) {
-      setSeacrhFilters([...searchFilters, filterData[index]]);
-    }
-    handleCloseFilter();
-  };
-
-  const handlefilterDelete = (filterToDelete) => {
-    setSeacrhFilters((filters) =>
-      filters.filter((filter) => filter !== filterToDelete)
-    );
-  };
-
-  const handleCloseFilter = () => {
-    setAnchorEl(null);
-  };
-
+  
   const searchFunction = (value) =>{
-    console.log(value);
-    // if (value !== ""){
-    //   const newList = data.filter((contact)=>{
+    // console.log(value);
+    if (value !== ""){
+      const newList = data.filter((contact)=>{
 
-    //     var key = Object.keys(contact).map(function(key) {
-    //       return contact[key];
-    //   });
-    //     return key.join(" ").toLowerCase().includes(value.toLowerCase());
-    //   })
-    //   setSearchTerms(newList);
-    // }  else {
-    //   setSearchTerms(value);
-    // }
+        var key = Object.keys(contact).map(function(key) {
+          return contact[key];
+      });
+        return key.join(" ").toLowerCase().includes(value.toLowerCase());
+      })
+      setSearchTerms(newList);
+    }  else {
+      setSearchTerms(value);
+    }
   };
 
   return (
@@ -165,9 +143,13 @@ function ManageCategoriesPage(props) {
         </Typography>
       </div>
       <Divider className={classes.divider} />
+      <Grid container spacing={1}>
+      <Grid item xs={9}>
       <Typography variant="h6" gutterBottom>
         View Categories
       </Typography>
+      </Grid>
+      <Grid item xs={3}>
       <div className={classes.viewHeaderBar}>
         <TextField
           className={classes.viewHeaderBarItems}
@@ -182,38 +164,9 @@ function ManageCategoriesPage(props) {
             ),
           }}
         />
-        {/* <div className={classes.viewHeaderBarItems}>
-          <Button
-            onClick={toggleAddFilters}
-            color="primary"
-            startIcon={<FilterListIcon />}
-          >
-            Add filters
-          </Button>
-          <Menu
-            id="fliters"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleCloseFilter}
-          >
-            {filterData.map((data, index) => (
-              <MenuItem key={data} onClick={(event) => addfilter(event, index)}>
-                {data}
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-
-        {searchFilters.map((filter) => (
-          <Chip
-            color="default"
-            onDelete={() => handlefilterDelete(filter)}
-            label={filter}
-            className={classes.filterChip}
-          />
-        ))} */}
       </div>
+      </Grid>
+      </Grid>
       <DataTable
         loading={isLoading}
         data= {searchTerms.length < 1 ? data : searchTerms}

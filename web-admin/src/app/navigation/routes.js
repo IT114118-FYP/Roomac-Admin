@@ -28,6 +28,7 @@ const routes = {
     NEW: "/tos/new",
   },
   bookings: {
+    MANAGE: "/bookings",
     DETAILED: "/bookings/:id",
   },
 };
@@ -50,6 +51,7 @@ export const TAG = {
     tos: ":tos",
     resources: ":resources",
     permissions: ":permissions",
+    bookings: ":bookings",
   },
 };
 

@@ -48,6 +48,7 @@ const ManageTOSPage = lazy(() => import("./app/pages/tos/ManageTOSPage"));
 const NewTOSPage = lazy(() => import("./app/pages/tos/NewTOSPage"));
 const DetailedTOSPage = lazy(() => import("./app/pages/tos/DetailedTOSPage"));
 
+const ManageBookingPage = lazy(() => import("./app/pages/bookings/ManageBookingPage"));
 const DetailedBookingPage = lazy(() => import("./app/pages/bookings/DetailedBookingPage"));
 
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
@@ -126,12 +127,13 @@ function App() {
             path={routes.tos.DETAILED}
             component={DetailedTOSPage}
           />
+          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTOSPage} />
+
           <ProtectedRoute
             path={routes.bookings.DETAILED}
             component={DetailedBookingPage}
           />
-          <ProtectedRoute path={routes.tos.MANAGE} component={ManageTOSPage} />
-
+          <ProtectedRoute path={routes.bookings.MANAGE} component={ManageBookingPage} />
           <Route path="*" component={NotFoundPage} />
         </Switch>
       </Suspense>

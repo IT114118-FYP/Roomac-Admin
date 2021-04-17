@@ -9,6 +9,7 @@ import {
   Menu,
   MenuItem,
   Chip,
+  Grid,
   CircularProgress,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
@@ -22,8 +23,6 @@ import { labels } from "../../config/tables/programs";
 import { axiosInstance } from "../../api/config";
 import usePermission from "../../navigation/usePermission";
 import routes, { TAG } from "../../navigation/routes";
-
-const filterData = ["filter 1", "filter 2", "filter 3", "filter 4", "filter 5"];
 
 const useStyles = makeStyles((theme) => ({
   divider: {
@@ -57,14 +56,13 @@ const useStyles = makeStyles((theme) => ({
 
 function ManageProgramsPage(props) {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [searchFilters, setSeacrhFilters] = React.useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const [isExporting, setExporting] = useState(false);
   const history = useHistory();
   const { permissionReady, permissions, getPermission } = usePermission();
   const [searchTerms, setSearchTerms] = useState([]);
+  const [isImporting, setImporting] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -103,43 +101,47 @@ function ManageProgramsPage(props) {
       });
   };
 
-  const toggleAddFilters = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const addfilter = (event, index) => {
-    if (!searchFilters.includes(filterData[index])) {
-      setSeacrhFilters([...searchFilters, filterData[index]]);
-    }
-    handleCloseFilter();
-  };
-
-  const handlefilterDelete = (filterToDelete) => {
-    setSeacrhFilters((filters) =>
-      filters.filter((filter) => filter !== filterToDelete)
-    );
-  };
-
-  const handleCloseFilter = () => {
-    setAnchorEl(null);
-  };
-
   const searchFunction = (value) =>{
     // console.log(value);
     if (value !== ""){
       const newList = data.filter((contact)=>{
-
         var key = Object.keys(contact).map(function(key) {
           return contact[key];
       });
         return key.join(" ").toLowerCase().includes(value.toLowerCase());
       })
-
       setSearchTerms(newList);
-
     }  else {
       setSearchTerms(value);
     }
+  };
+
+  const onSelectFile = (e) => {
+    if (!e.target.files || e.target.files.length === 0) {
+      return;
+    }
+    handleImport("file", e.target.files[0]);
+  };
+
+  const handleImport = (name, value) => {
+    setImporting(true);
+      let formData = new FormData();
+      formData.set(name, value);
+    
+      axiosInstance
+        .post(`api/programs/import`, formData)
+        .then(() => {
+          setImporting(false);
+          alert("Data Imported!");
+          window.location.reload();
+        })
+        .catch((error) => {
+          setImporting(false);
+          alert("Failed Import Data \nPlease provide correct format");
+          console.log(error.response);
+        });
+
+      return;
   };
 
   return (
@@ -164,9 +166,13 @@ function ManageProgramsPage(props) {
         </Typography>
       </div>
       <Divider className={classes.divider} />
+      <Grid container spacing={1}>
+      <Grid item xs={9}>
       <Typography variant="h6" gutterBottom>
         View Programmes
       </Typography>
+      </Grid>
+      <Grid item xs={3}>
       <div className={classes.viewHeaderBar}>
         <TextField
           className={classes.viewHeaderBarItems}
@@ -181,38 +187,9 @@ function ManageProgramsPage(props) {
             ),
           }}
         />
-        {/* <div className={classes.viewHeaderBarItems}>
-          <Button
-            onClick={toggleAddFilters}
-            color="primary"
-            startIcon={<FilterListIcon />}
-          >
-            Add filters
-          </Button>
-          <Menu
-            id="fliters"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleCloseFilter}
-          >
-            {filterData.map((data, index) => (
-              <MenuItem key={data} onClick={(event) => addfilter(event, index)}>
-                {data}
-              </MenuItem>
-            ))}
-          </Menu>
-        </div>
-
-        {searchFilters.map((filter) => (
-          <Chip
-            color="default"
-            onDelete={() => handlefilterDelete(filter)}
-            label={filter}
-            className={classes.filterChip}
-          />
-        ))} */}
       </div>
+      </Grid>
+        </Grid>
       <DataTable
         loading={isLoading}
         data= {searchTerms.length < 1 ? data : searchTerms}
@@ -221,17 +198,52 @@ function ManageProgramsPage(props) {
       />
 
       {!isLoading && (
-        <div className={classes.exportWrapper}>
-          <Button
-            size="small"
-            color="primary"
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            Export programmes
-          </Button>
-          {isExporting && <CircularProgress size={24} />}
-        </div>
+        <Grid container spacing={1}>
+        <Grid item xs={9}>
+        {!isLoading && (
+          <div className={classes.exportWrapper}>
+            <Button
+              size="small"
+              color="primary"
+              onClick={handleExport}
+              disabled={isExporting}
+            >
+              Export programmes 
+            </Button>
+            {isExporting && <CircularProgress size={24} />}
+          </div>
+        )}
+        </Grid>
+        <Grid item xs={3}>
+        {!isLoading && (
+          <div className={classes.exportWrapper}>
+            <>
+              <div>
+                <input
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                  id="xlsx"
+                  type="file"
+                  style={{
+                    display: "none",
+                  }}
+                  onChange={onSelectFile}
+                />
+                <label htmlFor="xlsx">
+                  <Button
+                  color="primary"
+                  component="span"
+                  disabled={isImporting}
+                  >
+                    Import programmes 
+                    </Button>
+                    </label>
+                    </div>
+                    </>
+            {isImporting && <CircularProgress size={24} />}
+          </div>
+        )}
+        </Grid>
+        </Grid>
       )}
     </NavDrawer>
   );

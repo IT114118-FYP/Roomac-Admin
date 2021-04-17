@@ -9,23 +9,24 @@ import {
   Menu,
   MenuItem,
   Chip,
-  CircularProgress,
+  Select,
   Grid,
+  CircularProgress,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
-import FilterListIcon from "@material-ui/icons/FilterList";
+import NewPickerField, {
+  createNewPickerValue,
+} from "../../components/forms/new/NewPickerField";
 import download from "downloadjs";
 import { useHistory } from "react-router-dom";
 import * as axios from "axios";
 
-import NavDrawer from "../components/NavDrawer";
-import DataTable from "../components/DataTable";
-import { labels } from "../config/tables/dashboard";
-import { axiosInstance } from "../api/config";
-import routes,{ TAG }  from "../navigation/routes";
-import usePermission from "../navigation/usePermission";
-import CardView from "../components/CardView";
-
+import NavDrawer from "../../components/NavDrawer";
+import DataTable from "../../components/DataTable";
+import { labels } from "../../config/tables/dashboard";
+import { axiosInstance } from "../../api/config";
+import usePermission from "../../navigation/usePermission";
+import routes, { TAG } from "../../navigation/routes";
 import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
@@ -45,17 +46,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     marginBottom: theme.spacing(3),
   },
-  viewCount: {
-    marginTop: theme.spacing(3),
-    display: "flex",
-    flexDirection: "row",
-    marginBottom: theme.spacing(3),
-  },
-  right: {
-    marginRight: theme.spacing(3),
-    width: theme.spacing(20),
-    cursor: 'pointer',
-  },
   viewHeaderBarItems: {
     marginRight: theme.spacing(5),
   },
@@ -69,24 +59,46 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function HomePage(props) {
+function ManageBookingPage(props) {
   const classes = useStyles();
+  const [isExporting, setExporting] = useState(false);
   const [resourceData, setResourceData] = useState([]);
   const [userData, setUser] = useState([]);
   const [data, setBookings] = useState([]);
-  const [count, setCount] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const history = useHistory();
   const { permissionReady, permissions, getPermission } = usePermission();
   const [isAdmin, setAdmin] = useState(false);
   const [searchTerms, setSearchTerms] = useState([]);
+  const [timeData, setTimeData] = useState([]);
+  const [fetchBookingsDays, setFetchBookingsDays] = useState(0);
+  
+
+  useEffect(() => {
+    creatTimeData();
+  }, []);
 
   useEffect(() => {
     fetchAllData();
-    // fetchbookings();
-  }, []);
+  }, [fetchBookingsDays]);
 
-  // const fetchbookings = () => axiosInstance.get(`api/resources/1/bookings_admin?start=2021-04-13&end=2021-04-20`).then((data)=>console.log(data.data.bookings));
+  const startDate = moment().subtract(fetchBookingsDays, "days").format("YYYY-MM-DD");
+  const endDate = moment().add(fetchBookingsDays+1, "days").format("YYYY-MM-DD");
+
+  const creatTimeData = () =>{
+    const data = [{id:0,value:"Today"},{id:7,value:"Recent 7 days"},{id:30,value:"Recent 30 days"},{id:90,value:"Recent 90days"},{id:4320,value:"All bookings"}];
+    const list = data.map((item) => {
+      return createNewPickerValue(item.id, item.value);
+    });
+    setTimeData(list);
+  };
+
+  const changeDay = (value) => {
+    setLoading(true);
+    setFetchBookingsDays(value);
+  };
+
+  const fetchbookings = () => axiosInstance.get(`api/resourcebookings?start=${startDate}&end=${endDate}`);
   
   useEffect(() => {
     if (!permissionReady) return;
@@ -102,16 +114,15 @@ function HomePage(props) {
 
   const fetchResources = () => axiosInstance.get(`api/resources`);
 
-  const fetchDashboard = () => axiosInstance.get("api/dashboard");
-
   const fetchAllData = async (silence = true) => {
     if (!silence) setLoading(true);
     try {
       const [user_data, resource_data , dashboard_data] = await axios.all([
         fetchUser(),
         fetchResources(),
-        fetchDashboard(),
+        fetchbookings(),
       ]);
+      setBookings([]);
 
       var temp = [];
       user_data.data.forEach((data) => {
@@ -132,10 +143,7 @@ function HomePage(props) {
       });
       setResourceData(temp2);
 
-      setCount(dashboard_data.data.count);
-
-      // console.log(dashboard_data.data.active_bookings);
-      dashboard_data.data.active_bookings.forEach((data) => {
+      dashboard_data.data.forEach((data) => {
         setBookings((booking) => [
           ...booking,
           {
@@ -158,10 +166,6 @@ function HomePage(props) {
     }
   };
 
-  const handleClick = (event, itemID) => {
-    history.push(`/bookings/${itemID}`);
-  };
-
   const searchFunction = (value) =>{
     // console.log(value);
     if (value !== ""){
@@ -175,7 +179,33 @@ function HomePage(props) {
     }  else {
       setSearchTerms(value);
     }
-  }
+  };
+
+  const handleClick = (event, itemID) => {
+    history.push(`/bookings/${itemID}`);
+  };
+
+  const handleAddNew = () => {
+    alert("add new bookings");
+    // history.push(routes.branches.NEW);
+  };
+
+  const handleExport = () => {
+    setExporting(true);
+    axiosInstance
+      .get("/api/branches/export", {
+        headers: "Content-type: application/vnd.ms-excel",
+        responseType: "blob",
+      })
+      .then((response) => {
+        download(
+          new Blob([response.data]),
+          "branches.xlsx",
+          "application/vnd.ms-excel"
+        );
+        setExporting(false);
+      });
+  };
 
   return (
     <NavDrawer>
@@ -186,51 +216,55 @@ function HomePage(props) {
             color="textPrimary"
             className={classes.title}
           >
-            Dashboard
+            Bookings
           </Typography>
+          {permissionReady && (
+            <>
+              {getPermission(TAG.CRUD.CREATE + TAG.routes.bookings) && (
+                <Button color="primary" size="medium" onClick={handleAddNew}>
+                  Add new bookings
+                </Button>
+              )}
+            </>
+          )}
         </div>
-        {!isLoading &&
-        <div className={classes.viewCount}>
-          <div className={classes.right}>
-            <CardView
-              title="Total Bookings"
-              count={count.total_bookings}
-              click={()=>getPermission(TAG.CRUD.READ + TAG.routes.bookings) && history.push(`/bookings`)}
-            ></CardView>
-          </div>
-          <div className={classes.right}>
-            <CardView title="Total Branch" count={count.branch} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.branches) && history.push(`/branches`)} />
-          </div>
-          <div className={classes.right}>
-            <CardView  title="Total Category" count={count.category} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.categories) && history.push(`/categories`)} />
-          </div>
-          <div className={classes.right}>
-            <CardView title="Total Resource" count={count.resource} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.resources) && history.push(`/categories/1`)} />
-          </div>
-          <div className={classes.right}>
-            <CardView title="Totol User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) && history.push(`/users`)} />
-          </div>
-        </div>
-        }
+        <Typography variant="body1" color="textSecondary" gutterBottom>
+          View and manage bookings with customisations
+        </Typography>
       </div>
-
+      <Divider className={classes.divider} />
       <Grid container spacing={1}>
-      <Grid item xs={9}>
-      {!isLoading &&
+      <Grid item xs={2}>
       <Typography variant="h6" gutterBottom>
-        Check-in
+        View Bookings
       </Typography>
-      }
       </Grid>
+      <Grid item xs={7}>
+        <Select
+        disabled={isLoading}
+							id={timeData.id}
+							variant="outlined"
+							fullWidth
+							onChange={(event)=>{
+                changeDay(event.target.value);
+							}}
+							value={timeData.id}
+              style={{height:30, width:200}}
+						>
+							{timeData.map((item) => (
+								<MenuItem value={item.id} key={item.id}>
+									{item.value}
+								</MenuItem>
+							))}
+						</Select>
+            </Grid>
       <Grid item xs={3}>
-      {!isLoading &&
       <div className={classes.viewHeaderBar}>
         <TextField
           className={classes.viewHeaderBarItems}
           id="search-bar"
           placeholder="Search..."
           onChange={(event)=>searchFunction(event.target.value)}
-
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -240,16 +274,30 @@ function HomePage(props) {
           }}
         />
       </div>
-      }
-      </Grid></Grid>
+      </Grid>
+      </Grid>
       <DataTable
         loading={isLoading}
         data= {searchTerms.length < 1 ? data : searchTerms}
         labels={labels}
         onClick={handleClick}
       />
+
+      {!isLoading && (
+        <div className={classes.exportWrapper}>
+          <Button
+            size="small"
+            color="primary"
+            onClick={handleExport}
+            disabled={isExporting}
+          >
+            Export branches
+          </Button>
+          {isExporting && <CircularProgress size={24} />}
+        </div>
+      )}
     </NavDrawer>
   );
 }
 
-export default HomePage;
+export default ManageBookingPage;

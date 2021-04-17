@@ -10,6 +10,7 @@ import {
   MenuItem,
   Chip,
   CircularProgress,
+  Grid,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
 import FilterListIcon from "@material-ui/icons/FilterList";
@@ -166,9 +167,13 @@ function ManageTOSPage(props) {
         </Typography>
       </div>
       <Divider className={classes.divider} />
+      <Grid container spacing={1}>
+      <Grid item xs={9}>
       <Typography variant="h6" gutterBottom>
         View Terms And Conditions
       </Typography>
+      </Grid>
+        <Grid item xs={3}>
       <div className={classes.viewHeaderBar}>
         <TextField
           className={classes.viewHeaderBarItems}
@@ -215,6 +220,8 @@ function ManageTOSPage(props) {
           />
         ))} */}
       </div>
+      </Grid>
+      </Grid>
       <DataTable
         loading={isLoading}
         data= {searchTerms.length < 1 ? data : searchTerms}

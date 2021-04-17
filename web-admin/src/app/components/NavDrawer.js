@@ -16,25 +16,28 @@ import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
-import EventIcon from "@material-ui/icons/Event";
-import BarChartIcon from "@material-ui/icons/BarChart";
-import HistoryIcon from "@material-ui/icons/History";
 import BusinessIcon from "@material-ui/icons/Business";
 import PeopleIcon from "@material-ui/icons/People";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
-import CategoryIcon from "@material-ui/icons/Category";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import ArrowRightIcon from "@material-ui/icons/ArrowRight";
-import AddIcon from "@material-ui/icons/Add";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
+import categories_icon from "../resources/category.png";
+import branches_icon from "../resources/branch.png";
+import users_icon from "../resources/user.png";
+import bookings_icon from "../resources/bookings.png";
+import deshboard_icon from "../resources/deshboard.png";
+import logout_icon from "../resources/logout.png";
+import tos_icon from "../resources/tos.png";
+import programs_icon from "../resources/programs.png";
+
+import PersonIcon from '@material-ui/icons/Person';
+import ViewModuleIcon from '@material-ui/icons/ViewModule';
+import CategoryIcon from '@material-ui/icons/Category';
 
 import routes, { TAG } from "../navigation/routes";
 import usePermission from "../navigation/usePermission";
 import ConfirmDialog from "./ConfirmDialog";
 import Logo from "./Logo";
 import { axiosInstance } from "../api/config";
-import { Collapse } from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -124,34 +127,46 @@ function ResponsiveDrawer({ window, title, children }) {
           <List>
             <DrawerItem title="Dashboard" path={routes.HOME}>
               <HomeIcon />
+              {/* <img src={deshboard_icon} alt="" style={{height:25,width:25 }} /> */}
             </DrawerItem>
           </List>
           <Divider />
           <List>
+          {getPermission(TAG.CRUD.READ + TAG.routes.bookings) && (
+              <DrawerItem title="View Bookings" path={routes.bookings.MANAGE}>
+                <MenuBookIcon />
+                {/* <img src={bookings_icon} alt="" style={{height:25,width:25 }} /> */}
+              </DrawerItem>
+            )}
             {getPermission(TAG.CRUD.READ + TAG.routes.branches) && (
               <DrawerItem title="Branches" path={routes.branches.MANAGE}>
                 <BusinessIcon />
+                {/* <img src={branches_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.categories) && (
               <DrawerItem title="Categories" path={routes.categories.MANAGEC}>
-                <PeopleIcon />
+                <CategoryIcon />
+                {/* <img src={categories_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.users) && (
               <DrawerItem title="Users" path={routes.users.MANAGE}>
-                <PeopleIcon />
+                <PersonIcon />
+                {/* <img src={users_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
 
             {getPermission(TAG.CRUD.READ + TAG.routes.programs) && (
               <DrawerItem title="Programmes" path={routes.programs.MANAGE}>
-                <MenuBookIcon />
+                <ViewModuleIcon />
+                {/* <img src={programs_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.tos) && (
               <DrawerItem title="Terms and Conditions" path={routes.tos.MANAGE}>
                 <MenuBookIcon />
+                {/* <img src={tos_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
           </List>
@@ -166,6 +181,7 @@ function ResponsiveDrawer({ window, title, children }) {
         >
           <ListItemIcon>
             <ExitToAppIcon />
+            {/* <img src={logout_icon} alt="" style={{height:25,width:25 }} /> */}
           </ListItemIcon>
           <ListItemText primary="Log out" />
         </ListItem>
