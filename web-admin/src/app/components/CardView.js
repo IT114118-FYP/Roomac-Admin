@@ -93,7 +93,7 @@ function CardView({ title, count, click }) {
         ) : (
           <></>
         )}
-        {title == "Totol User" ? (
+        {title == "Total User" ? (
           <CardMedia
             component="img"
             alt=""

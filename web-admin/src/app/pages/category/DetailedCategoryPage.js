@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: theme.spacing(20),
     height: theme.spacing(20),
+    resizeMode: 'contain',
   },
 }));
 
@@ -409,18 +410,6 @@ function DetailedCategoryPage({ match }) {
             display="flex"
             flexDirection="row"
           >
-            {/* {isLoading ? (
-              <Skeleton variant="rect" width={200} height={150} />
-            ) : (
-              <img
-                src={resource.image_url}
-                alt="room"
-                style={{
-                  maxHeight: 150,
-                }}
-              />
-            )} */}
-
             <Badge
               overlap="circle"
               anchorOrigin={{
@@ -465,7 +454,7 @@ function DetailedCategoryPage({ match }) {
                 ) : resource.image_url == null ? (
                   resource.title_en.charAt(0)
                 ) : (
-                  <img src={resource.image_url} alt={resource.title_en} />
+                  <img src={resource.image_url} className={classes.avatar} alt={resource.title_en} />
                 )}
               </Avatar>
             </Badge>

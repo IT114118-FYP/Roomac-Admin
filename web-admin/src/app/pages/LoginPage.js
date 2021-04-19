@@ -28,23 +28,41 @@ function LoginPage() {
   const [canContinue, setContinue] = useState(false);
 
   useEffect(() => {
+    autoLogin();
+  }, []);
+
+  const autoLogin = async () =>{
     if (localStorage.getItem("authToken") == null) {
       setLoading(false);
       setContinue(false);
       return;
     }
 
-    axiosInstance
-      .get("/api/users/me")
-      .then((response) => {
-        setLoading(false);
-        setContinue(true);
-      })
-      .catch(() => {
-        setLoading(false);
-        setContinue(false);
-      });
-  }, []);
+    const isAdmin = await checkAdmin();
+
+    if(isAdmin==true){
+      setLoading(false);
+      setContinue(true);
+    } else {
+      setLoading(false);
+      setContinue(false);
+    }
+  };
+
+  const checkAdmin = async () =>{
+
+    const id = await axiosInstance.get("/api/users/me");
+
+    const admin = await axiosInstance.get(`/api/users/${id.data.id}/permissions`);
+
+    const status = (admin.data.find(({ name }) => name === 'login:admin'));
+
+    if (status.granted) {
+      return true;
+    } else {
+      return false;
+    };
+  }
 
   const handleSubmit = async ({ Email, Password }) => {
     setLoading(true);
@@ -56,8 +74,18 @@ function LoginPage() {
     }
     storeToken(authToken);
     localStorage.setItem("authToken", authToken);
-    setLoading(false);
-    history.push("/home");
+
+    const isAdmin = await checkAdmin();
+
+    if( isAdmin == true){
+      setLoading(false);
+      history.push("/home");
+    } else {
+      setLoading(false);
+      alert("No Permission");
+      localStorage.removeItem("authToken");
+      return;
+    }
   };
 
   if (canContinue) {

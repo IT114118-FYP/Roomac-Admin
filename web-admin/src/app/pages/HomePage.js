@@ -75,7 +75,7 @@ function HomePage(props) {
   const [userData, setUser] = useState([]);
   const [data, setBookings] = useState([]);
   const [count, setCount] = useState([]);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const history = useHistory();
   const { permissionReady, permissions, getPermission } = usePermission();
   const [isAdmin, setAdmin] = useState(false);
@@ -83,14 +83,12 @@ function HomePage(props) {
 
   useEffect(() => {
     fetchAllData();
-    // fetchbookings();
   }, []);
 
-  // const fetchbookings = () => axiosInstance.get(`api/resources/1/bookings_admin?start=2021-04-13&end=2021-04-20`).then((data)=>console.log(data.data.bookings));
-  
   useEffect(() => {
     if (!permissionReady) return;
     if (!getPermission("login:admin")) {
+      setLoading(true);
       alert("No Permission");
       localStorage.removeItem("authToken");
       history.push("/");
@@ -208,7 +206,7 @@ function HomePage(props) {
             <CardView title="Total Resource" count={count.resource} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.resources) && history.push(`/categories/1`)} />
           </div>
           <div className={classes.right}>
-            <CardView title="Totol User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) && history.push(`/users`)} />
+            <CardView title="Total User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) && history.push(`/users`)} />
           </div>
         </div>
         }

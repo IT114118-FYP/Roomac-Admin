@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: theme.spacing(20),
     height: theme.spacing(20),
+    resizeMode: 'contain',
   },
 }));
 
@@ -422,7 +423,7 @@ function ManageResourcesPage({ match }) {
                   ) : category.image_url == null ? (
                     category.title_en.charAt(0)
                   ) : (
-                    <img src={category.image_url} alt={category.title_en} />
+                    <img src={category.image_url} className={classes.avatar} alt={category.title_en} />
                   )}
                 </Avatar>
               </Badge>
@@ -433,16 +434,6 @@ function ManageResourcesPage({ match }) {
               >
                 {isLoading ? <Skeleton /> : category.title_en}
               </Typography>
-              {/* </Box> */}
-
-              {/* <Typography
-                variant="h3"
-                color="textPrimary"
-                alignItems="center"
-                className={classes.title}
-              >
-                {isLoading ? <Skeleton /> : category.title_en}
-              </Typography> */}
 
               {permissionReady &&
                 getPermission(TAG.CRUD.CREATE + TAG.routes.resources) && (

@@ -16,7 +16,7 @@ function usePermission() {
     axiosInstance
       .get(`api/users/${id}/permissions`)
       .then(({ data }) => {
-        // console.log(data);
+        console.log(data);
         setPermissions(data);
       })
       .catch((error) => console.log(error))
@@ -24,7 +24,9 @@ function usePermission() {
   };
 
   useEffect(() => {
-    fetchUser();
+    if (!permissionReady) {
+      fetchUser();
+    };
   }, []);
 
   const getPermission = (name) => {

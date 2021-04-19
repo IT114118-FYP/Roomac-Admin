@@ -126,8 +126,6 @@ function DetailedBookingPage({ match }) {
       axiosInstance
       .post(`api/resourcebookings/${match.params.id}/checkin`).then((data)=>{
         setCheckin(true);
-      // fetchAllData();
-      // window.location.reload();
       });
   }
 

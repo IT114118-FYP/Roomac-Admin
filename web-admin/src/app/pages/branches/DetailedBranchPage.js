@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     width: theme.spacing(20),
     height: theme.spacing(20),
+    resizeMode: 'contain',
   },
 }));
 
@@ -416,7 +417,7 @@ function DetailedBranchPage({ match }) {
                 ) : branch.image_url == null ? (
                   branch.title_en.charAt(0)
                 ) : (
-                  <img src={branch.image_url} alt={branch.title_en} />
+                  <img src={branch.image_url} className={classes.avatar} alt={branch.title_en} />
                 )}
               </Avatar>
             </Badge>

@@ -56,8 +56,9 @@ function TabPanel({ children, value, index, ...other }) {
 
 const useStyles = makeStyles((theme) => ({
   avatar: {
-    width: theme.spacing(10),
-    height: theme.spacing(10),
+    width: theme.spacing(15),
+    height: theme.spacing(15),
+    resizeMode: 'contain',
   },
   select: {
     marginLeft: theme.spacing(3),
@@ -112,7 +113,7 @@ function DetailedUserPage({ match }) {
 
   useEffect(() => {
     fetchAllData();
-  }, [banStatus]);
+  }, [banStatus,banTime]);
 
   const onSelectFile = (e) => {
     if (!e.target.files || e.target.files.length === 0) {
@@ -150,7 +151,7 @@ function DetailedUserPage({ match }) {
         fetchPrograms(),
         fetchBanTime(),
       ]);
-      console.log(ban.data.expire_time);
+      // console.log(ban.data.expire_time);
       setBanTimeData(ban.data.expire_time);
       setUser(userData.data);
       setPermissions(userPermissions.data);
@@ -220,6 +221,8 @@ function DetailedUserPage({ match }) {
   const updateUser = (name, value) => {
     setLoading(true);
 
+    console.log(name+"/"+value)
+
     // Update image
     if (name === "image") {
       let formData = new FormData();
@@ -259,6 +262,7 @@ function DetailedUserPage({ match }) {
               : value
             : user.program_id,
         image_url: name === "image_url" ? value : user.image_url,
+        password: name === "password" ? value : value,
       })
       .then(() => {
         fetchAllData();
@@ -288,7 +292,7 @@ function DetailedUserPage({ match }) {
   const unbanUser = () => {
     setLoading(true);
     axiosInstance
-    .delete(`api/userbans/${match.params.id}`).then((data)=>{console.log(data);
+    .delete(`api/users/${match.params.id}/unban`).then((data)=>{console.log(data);
       setBanStatus(!banStatus);
     })
   }
@@ -332,6 +336,15 @@ function DetailedUserPage({ match }) {
             name="CNA"
             value={user.name}
             onSave={(newValue) => updateUser("name", newValue)}
+            editable={
+              getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
+            }
+          />
+          <Divider />
+          <EditField
+            loading={isLoading}
+            name="Change Password"
+            onSave={(newValue) => updateUser("password", newValue)}
             editable={
               getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
             }
@@ -417,6 +430,7 @@ function DetailedUserPage({ match }) {
             </Grid>
             <Grid item xs={2}>
           <Button 
+            disabled={banTime.length<1?true:false}
             variant="outlined"
             color="secondary"
             onClick={() => banUser()}
@@ -565,13 +579,13 @@ function DetailedUserPage({ match }) {
                 )
               }
             >
-              <Avatar className={classes.avatar}>
+              <Avatar className={classes.avatar} sizes="200">
                 {isLoading ? (
                   <Skeleton />
                 ) : user.first_name == null ? (
                   user.last_name.charAt(0)
                 ) : (
-                  <img src={user.image_url} alt="new" />
+                  <img src={user.image_url} className={classes.avatar} alt="new" />
                 )}
               </Avatar>
             </Badge>
