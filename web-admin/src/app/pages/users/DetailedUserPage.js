@@ -151,7 +151,7 @@ function DetailedUserPage({ match }) {
         fetchPrograms(),
         fetchBanTime(),
       ]);
-      // console.log(ban.data.expire_time);
+      console.log(ban.data.expire_time);
       setBanTimeData(ban.data.expire_time);
       setUser(userData.data);
       setPermissions(userPermissions.data);
@@ -341,6 +341,7 @@ function DetailedUserPage({ match }) {
             }
           />
           <Divider />
+          {getPermission(TAG.CRUD.UPDATE + TAG.routes.users) &&
           <EditField
             loading={isLoading}
             name="Change Password"
@@ -349,7 +350,8 @@ function DetailedUserPage({ match }) {
               getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ? true : false
             }
           />
-          <Divider />
+          }
+        
         </EditForm>
         <EditForm title="Association Info">
           <EditPickerField
@@ -380,8 +382,8 @@ function DetailedUserPage({ match }) {
             }
           />
         </EditForm>
-        <Divider />
-        {isLoading ? <></> :
+        {getPermission(TAG.CRUD.UPDATE + TAG.routes.users) ?
+        isLoading ? <></> :
         banTimeData != null ? <EditForm title="Status" >
         <Grid container spacing={1}>     
         <Grid item xs={3}>
@@ -440,7 +442,7 @@ function DetailedUserPage({ match }) {
           </Grid>
           </Grid>
         </EditForm>
-  }
+  : <></>}
       </>
         
     );

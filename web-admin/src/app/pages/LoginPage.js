@@ -51,6 +51,13 @@ function LoginPage() {
 
   const checkAdmin = async () =>{
 
+    await axiosInstance.get("/api/users/me").catch((e)=>{
+      localStorage.removeItem("authToken");
+      setLoading(false);
+      setLoginFailed(true);
+      return;
+    })
+
     const id = await axiosInstance.get("/api/users/me");
 
     const admin = await axiosInstance.get(`/api/users/${id.data.id}/permissions`);

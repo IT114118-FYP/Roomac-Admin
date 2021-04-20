@@ -246,7 +246,7 @@ function DetailedBranchPage({ match }) {
               />
             </EditForm>
 
-            <Box marginBottom={2} marginTop={3} display="flex">
+            {/* <Box marginBottom={2} marginTop={3} display="flex">
               <Typography
                 variant="h6"
                 component="div"
@@ -269,7 +269,7 @@ function DetailedBranchPage({ match }) {
               data={settings}
               labels={labels}
               onClick={handleSettingClick}
-            />
+            /> */}
           </>
         )}
       </>
