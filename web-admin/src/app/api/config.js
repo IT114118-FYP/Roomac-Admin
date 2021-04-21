@@ -1,7 +1,7 @@
 import * as axios from "axios";
 
-const baseURL2 = "https://roomac.tatlead.com";
-const baseURL = "https://it114118-fyp.herokuapp.com";
+const baseURL = "https://roomac.tatlead.com";
+const baseURL1 = "https://it114118-fyp.herokuapp.com";
 
 const axiosInstance = axios.create({
 	baseURL: baseURL,
