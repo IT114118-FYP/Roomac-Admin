@@ -43,7 +43,8 @@ function DetailedBookingPage({ match }) {
   const [resourceData, setResourceData] = useState([]);
   const [userData, setUser] = useState([]);
   const [data, setBookings] = useState([]);
-  const [checin,setCheckin] = useState(false);
+  const [checkin,setCheckin] = useState(false);
+  const [cancheckin,setcanCheckin] = useState(false);
 
   useEffect(() => {
       fetchAllData();
@@ -51,7 +52,7 @@ function DetailedBookingPage({ match }) {
 
     useEffect(() => {
       fetchAllData();
-    }, [checin]);
+    }, [checkin]);
 
   const fetchUser = () => axiosInstance.get(`api/users`);
 
@@ -104,8 +105,16 @@ function DetailedBookingPage({ match }) {
         end_time: moment(booking_detail.end_time).format("HH:mm:ss"),
         checkin_time: booking_detail.checkin_time == null ? "-": moment(booking_detail.checkin_time).format("HH:mm"),
       });
-
+      
       var booking_data = temp3.find((data)=>data.id == match.params.id)
+
+      console.log(booking_data);
+      var time_checkin = moment().format("YYYY-MM-DDTHH:mm:ss");
+      var check_inTB = moment(booking_detail.start_time).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
+      var check_inTA = moment(booking_detail.start_time).add(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
+      const inTime = moment(time_checkin).isAfter(check_inTB)&&moment(time_checkin).isBefore(check_inTA);
+
+      setcanCheckin(inTime);
 
       // console.log(temp3);
       setBookings(booking_data);
@@ -295,7 +304,7 @@ function DetailedBookingPage({ match }) {
                     {isLoading ? <></> :
                     data.checkin_time == "-" ? 
                   <>
-                      <Button color="primary" variant="contained" size="medium" onClick={check_in}>
+                      <Button color="primary" disabled={!cancheckin} variant="contained" size="medium" onClick={check_in}>
                       Check-in
                       </Button>
                   </>

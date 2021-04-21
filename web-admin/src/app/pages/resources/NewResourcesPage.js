@@ -51,7 +51,7 @@ function NewResourcesPage({ match }) {
 
   const fetchBranches = () => axiosInstance.get(`api/branches`);
   const fetchCategories = () =>
-    axiosInstance.get(`api/categories/${match.params.id}`);
+    axiosInstance.get(`api/categories`);
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -60,17 +60,18 @@ function NewResourcesPage({ match }) {
         fetchBranches(),
         fetchCategories(),
       ]);
+      console.log(categories.data);
       const branchesPickerItem = branches.data.map((item) => {
         return createNewPickerValue(item.id, item.title_en);
       });
       branchesPickerItem.unshift(createNewPickerValue("none", "none"));
       setBranches(branchesPickerItem);
 
-      setCategory(categories.data);
-
-      // const CategoryPickerItem = categories.data.map((item) => {
-      //   return createNewPickerValue(item.id, item.title_en);
-      // });
+      const categoriesPickerItem = categories.data.map((item) => {
+        return createNewPickerValue(item.id, item.title_en);
+      });
+      categoriesPickerItem.unshift(createNewPickerValue("none", "none"));
+      setCategory(categoriesPickerItem);
 
       setLoading(false);
     } catch (error) {
@@ -113,6 +114,7 @@ function NewResourcesPage({ match }) {
     title_hk,
     title_cn,
     branch_id,
+    category_id,
     opening_time,
     closing_time,
     min_user,
@@ -123,7 +125,7 @@ function NewResourcesPage({ match }) {
     setLoading(true);
 
     let formData = new FormData();
-    formData.set("category_id", match.params.id);
+    formData.set("category_id", category_id);
     formData.set("number", number);
     formData.set("title_en", title_en);
     formData.set("title_en", title_en);
@@ -169,6 +171,7 @@ function NewResourcesPage({ match }) {
           title_hk: "",
           title_cn: "",
           branch_id: "",
+          category_id: "",
           opening_time: "",
           closing_time: "",
           min_user: "",
@@ -226,6 +229,12 @@ function NewResourcesPage({ match }) {
               name="branch_id"
               disabled={success || isLoading}
               pickerItem={branches}
+            />
+            <NewPickerField
+              title="Category"
+              name="category_id"
+              disabled={success || isLoading}
+              pickerItem={categories}
             />
           </Box>
           <Divider />

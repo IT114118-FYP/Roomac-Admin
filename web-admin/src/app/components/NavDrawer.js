@@ -145,7 +145,13 @@ function ResponsiveDrawer({ window, title, children }) {
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.categories) && (
-              <DrawerItem title="Categories" path={routes.categories.MANAGEC}>
+              <DrawerItem title="Categories" path={routes.categories.MANAGE}>
+                <CategoryIcon />
+                {/* <img src={categories_icon} alt="" style={{height:25,width:25 }} /> */}
+              </DrawerItem>
+            )}
+            {getPermission(TAG.CRUD.READ + TAG.routes.resources) && (
+              <DrawerItem title="Resources" path={routes.resources.MANAGE}>
                 <CategoryIcon />
                 {/* <img src={categories_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>

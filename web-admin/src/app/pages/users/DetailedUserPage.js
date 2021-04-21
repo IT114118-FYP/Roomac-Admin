@@ -581,11 +581,11 @@ function DetailedUserPage({ match }) {
                 )
               }
             >
-              <Avatar className={classes.avatar} sizes="200">
+              <Avatar className={classes.avatar}>
                 {isLoading ? (
                   <Skeleton />
-                ) : user.first_name == null ? (
-                  user.last_name.charAt(0)
+                ) : user.image_url == null ? (
+                    user.last_name.charAt(0)
                 ) : (
                   <img src={user.image_url} className={classes.avatar} alt="new" />
                 )}

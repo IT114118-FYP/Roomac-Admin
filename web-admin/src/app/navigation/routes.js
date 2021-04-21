@@ -1,11 +1,14 @@
 const routes = {
   HOME: "/home",
   categories: {
-    MANAGEC: "/categories",
-    MANAGE: "/categories/:id",
+    MANAGE: "/categories",
     NEW: "/categories/new",
-    DETAILED: "/categories/resource/:id",
-    NEWR: "/categories/:id/new",
+    DETAILED: "/categories/:id",
+  },
+  resources: {
+    MANAGE: "/resources",
+    NEW: "/resources/new",
+    DETAILED: "/resources/:id",
   },
   users: {
     MANAGE: "/users",

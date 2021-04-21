@@ -28,9 +28,7 @@ const DetailedBranchPage = lazy(() =>
   import("./app/pages/branches/DetailedBranchPage")
 );
 const NewBranchPage = lazy(() => import("./app/pages/branches/NewBranchPage"));
-const ManageResourcesPage = lazy(() =>
-  import("./app/pages/category/ManageResourcesPage")
-);
+
 const ManageCategoriesPage = lazy(() =>
   import("./app/pages/category/ManageCategoriesPage")
 );
@@ -40,8 +38,15 @@ const NewCategoryPage = lazy(() =>
 const DetailedCategoryPage = lazy(() =>
   import("./app/pages/category/DetailedCategoryPage")
 );
+
+const DetailedResourcesPage = lazy(() =>
+  import("./app/pages/resources/DetailedResourcesPage")
+);
+const ManageResourcesPage = lazy(() =>
+  import("./app/pages/resources/ManageResourcesPage")
+);
 const NewResourcesPage = lazy(() =>
-  import("./app/pages/category/NewResourcesPage")
+  import("./app/pages/resources/NewResourcesPage")
 );
 
 const ManageTOSPage = lazy(() => import("./app/pages/tos/ManageTOSPage"));
@@ -101,26 +106,35 @@ function App() {
             path={routes.programs.MANAGE}
             component={ManageProgramsPage}
           />
-          <ProtectedRoute
-            path={routes.categories.DETAILED}
-            component={DetailedCategoryPage}
-          />
+
           <ProtectedRoute
             path={routes.categories.NEW}
             component={NewCategoryPage}
           />
           <ProtectedRoute
-            path={routes.categories.NEWR}
-            component={NewResourcesPage}
+            path={routes.categories.DETAILED}
+            component={DetailedCategoryPage}
           />
           <ProtectedRoute
             path={routes.categories.MANAGE}
-            component={ManageResourcesPage}
-          />
-          <ProtectedRoute
-            path={routes.categories.MANAGEC}
             component={ManageCategoriesPage}
           />
+
+          <ProtectedRoute
+            path={routes.resources.NEW}
+            component={NewResourcesPage}
+          />
+          <ProtectedRoute
+            path={routes.resources.DETAILED}
+            component={DetailedResourcesPage}
+          />
+          <ProtectedRoute
+            path={routes.resources.MANAGE}
+            component={ManageResourcesPage}
+          />
+          
+
+          
 
           <ProtectedRoute path={routes.tos.NEW} component={NewTOSPage} />
           <ProtectedRoute

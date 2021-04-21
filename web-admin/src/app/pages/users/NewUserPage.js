@@ -338,7 +338,7 @@ function NewUserPage(props) {
           >
             <Box marginLeft={2}>
               <NewButton
-                title="Create Category"
+                title="Create User"
                 color="primary"
                 variant="contained"
                 disabled={success || isLoading}

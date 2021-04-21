@@ -52,7 +52,7 @@ function NewBookingPage(props,{match}) {
 			fetchUser();
 		}else{
 			alert("Please select the booking from the resource!")
-			history.push("/categories");
+			history.push("/resources");
 		}
 	  }, []);
 
@@ -229,7 +229,7 @@ function NewBookingPage(props,{match}) {
 								style={{marginLeft:"auto"}}
 								color="primary"
 								variant="contained"
-								disabled={isLoading||searchTerms.length!=1}
+								disabled={isLoading||searchTerms.length!=1||success}
 								onClick={()=>createBooking()}
 							>Create Booking</Button>
 						{isLoading && <CircularProgress size={30} />}
@@ -244,7 +244,7 @@ function NewBookingPage(props,{match}) {
 					<Button
 						color="inherit"
 						size="small"
-						onClick={() => history.push(`/categories/resource/${bookingData.resource_id}`)}
+						onClick={() => history.push(`/resources/${bookingData.resource_id}`)}
 					>
 						Go Back
 					</Button>

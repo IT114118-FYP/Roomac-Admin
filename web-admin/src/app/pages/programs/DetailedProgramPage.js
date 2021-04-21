@@ -85,9 +85,7 @@ function DetailedProgramPage({ match }) {
           name="programme code"
           value={program.id}
           onSave={(newValue) => updateProgram("id", newValue)}
-          editable={
-            getPermission(TAG.CRUD.UPDATE + TAG.routes.programs) ? true : false
-          }
+          editable={false}
         />
         <Divider />
         <EditField

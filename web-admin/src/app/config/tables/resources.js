@@ -4,6 +4,10 @@ const labels = [
     label: "Branch ID",
   },
   {
+    id: "category_id",
+    label: "Category",
+  },
+  {
     id: "number",
     label: "Room Number",
   },
