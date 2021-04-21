@@ -25,6 +25,7 @@ function LoginPage() {
 
   const [isLoading, setLoading] = useState(true);
   const [loginFailed, setLoginFailed] = useState(false);
+  const [adminLoginFailed, setAdminLoginFailed] = useState(false);
   const [canContinue, setContinue] = useState(false);
 
   useEffect(() => {
@@ -89,7 +90,7 @@ function LoginPage() {
       history.push("/home");
     } else {
       setLoading(false);
-      alert("No Permission");
+      setAdminLoginFailed(true);
       localStorage.removeItem("authToken");
       return;
     }
@@ -170,6 +171,12 @@ function LoginPage() {
           open={loginFailed}
           onClose={() => setLoginFailed(false)}
           alertText="Login Failed! Check if email or password is incorrect"
+        />
+
+        <SnackbarAlert
+          open={adminLoginFailed}
+          onClose={() => setAdminLoginFailed(false)}
+          alertText="No Permission!"
         />
       </div>
     );

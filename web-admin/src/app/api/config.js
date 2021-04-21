@@ -1,6 +1,6 @@
 import * as axios from "axios";
 
-const baseURL = "https://it114118-fyp.herokuapp.com";
+const baseURL = "https://roomac.tatlead.com";
 
 const axiosInstance = axios.create({
 	baseURL: baseURL,

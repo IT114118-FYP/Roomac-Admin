@@ -167,14 +167,16 @@ function ManageCategoriesPage(props) {
       </div>
       </Grid>
       </Grid>
-      <DataTable
-        loading={isLoading}
-        data= {searchTerms.length < 1 ? data : searchTerms}
-        labels={labels}
-        onClick={handleClick}
-      />
+      {permissionReady &&
+        <DataTable
+          loading={isLoading}
+          data= {searchTerms.length < 1 ? data : searchTerms}
+          labels={labels}
+          onClick={handleClick}
+        />
+      }
 
-      {!isLoading && (
+      {permissionReady && (
         <div className={classes.exportWrapper}>
           <Button
             size="small"

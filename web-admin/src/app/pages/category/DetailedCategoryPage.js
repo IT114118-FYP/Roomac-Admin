@@ -7,6 +7,9 @@ import {
   Button,
   makeStyles,
   Avatar,
+  Grid,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 import { Skeleton } from "@material-ui/lab";
 import React, { useState, useEffect, useReducer } from "react";
@@ -41,6 +44,10 @@ const useStyles = makeStyles((theme) => ({
     height: theme.spacing(20),
     resizeMode: 'contain',
   },
+  Gridheight:{
+    marginTop: 20,
+    height: 50,
+  },
 }));
 
 function TabPanel({ children, value, index, ...other }) {
@@ -55,7 +62,7 @@ function DetailedCategoryPage({ match }) {
   const [isLoading, setLoading] = useState(true);
   const [resource, setResource] = useState({});
   const [branches, setBranches] = useState([]);
-  const [bookings, setBookings] = useState([]);
+  
   const [userData, setUser] = useState([]);
   const [resourceBranch, setResourceBranch] = useState({});
   const [error, setError] = useState(false);
@@ -64,8 +71,13 @@ function DetailedCategoryPage({ match }) {
   const [imgMethod, setImgMethod] = useState("None");
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
+  const [tosList, setTosList] = useState([]);
+  const [resourceTos, setResourceTos] = useState({});
   const { permissionReady, permissions, getPermission } = usePermission();
-
+  const [selectedTosNumber, setselectedTosNumber] = useState([]);
+  const [selectTosData, setselectTosData] = useState([]);
+//   const [old_startDate, setstartDate] = useState([]);
+// const [bookings, setBookings] = useState([]);
   const classes = useStyles();
 
   const onSelectFile = (e) => {
@@ -119,6 +131,7 @@ function DetailedCategoryPage({ match }) {
         min_user: name === "opacity" ? value[0] : resource.min_user,
         max_user: name === "opacity" ? value[1] : resource.max_user,
         interval: name === "interval" ? value : resource.interval,
+        tos_id: name === "tos_id" ? value : resource.tos_id,
       })
       .then(() => {
         fetchAllData();
@@ -127,6 +140,11 @@ function DetailedCategoryPage({ match }) {
         console.log(error);
       });
   };
+
+  useEffect(() => {
+    fetchselectedTos();
+    console.log(resource);
+  }, [selectedTosNumber]);
 
   useEffect(() => {
     fetchAllData();
@@ -144,14 +162,26 @@ function DetailedCategoryPage({ match }) {
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
 
+
+  const fetchselectedTos = async () => {
+    const tos = await axiosInstance.get("api/tos");
+    const TosData = tos.data.find((data)=>data.id==selectedTosNumber);
+    // console.log(TosData);
+    setselectTosData(TosData);
+  };
+
   const fetchAllData = async (silence = true) => {
     if (!silence) setLoading(true);
     try {
-      const [resourceData, branches , user] = await axios.all([
+      const [resourceData, branches , user, tosData] = await axios.all([
         fetchResource(),
         fetchBranches(),
         fetchUser(),
+        fetchTos(),
       ]);
+
+      console.log(tosData);
+      setselectedTosNumber(resourceData.data.tos_id);
 
       var temp = [];
       user.data.forEach((data) => {
@@ -162,7 +192,6 @@ function DetailedCategoryPage({ match }) {
       });
       setUser(temp);
 
-      // console.log(resourceData.data);
       setResource(resourceData.data);
       setBranches(branches.data);
 
@@ -179,6 +208,19 @@ function DetailedCategoryPage({ match }) {
             )
       );
 
+      const tosPickerItem = tosData.data.map((item) => {
+        return createPickerValue(item.id, item.id);
+      });
+      setTosList(tosPickerItem);
+
+      setResourceTos(
+        resourceData.data.tos_id === null
+          ? createPickerValue("none", "none")
+          : tosData.data.find(
+              (tos) => tos.id === resourceData.data.tos_id
+            )
+      );
+
       setLoading(false);
     } catch (error) {
       console.log(error.message);
@@ -187,34 +229,15 @@ function DetailedCategoryPage({ match }) {
     }
   };
 
+  const fetchTos = () => 
+    axiosInstance.get("api/tos");
+
   const fetchResource = () =>
     axiosInstance.get(`api/resources/${match.params.id}`);
 
   const fetchBranches = () => axiosInstance.get(`api/branches`);
 
   const fetchUser = () => axiosInstance.get(`api/users`);
-
-
-  const fetchBookings = () => {
-
-    const startDate = moment().subtract(7, "days").format("YYYY-MM-DD");
-    const endDate = moment().add(7, "days").format("YYYY-MM-DD");
-
-    axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
-    console.log(data.data.bookings);
-    let events = [];
-    data.data.bookings.forEach((data) => {
-      events.push({
-        id: data.id,
-        title: data.number + "\n" + (userData.find((user)=> user.id === data.user_id).user_id),
-        start: data.start_time,
-        end: data.end_time,
-        color: `red`,
-      });
-    });
-    setBookings(events);
-  });
-  };
 
   const delteResource = () => {
     axiosInstance.delete(`api/resources/${match.params.id}`).then(() => {
@@ -335,13 +358,106 @@ function DetailedCategoryPage({ match }) {
             }
           />
         </EditForm>
+
+        <EditForm title="Terms and Conditions">
+          <div className={classes.Gridheight}>
+        <Grid container spacing={1}>     
+        <Grid item xs={3}>
+          <Typography variant="body1" color="textPrimary">
+              Select TOS Code
+            </Typography>
+            </Grid>
+            <Grid item xs={7}>
+        <Select
+              disabled={isLoading}
+							id={tosList.id}
+							variant="outlined"
+							fullWidth
+							onChange={(event)=>setselectedTosNumber(event.target.value)
+							}
+							value={selectedTosNumber}
+              style={{height:35}}
+						>
+							{tosList.map((item) => (
+								<MenuItem value={item.id} key={item.id}>
+									{item.value}
+								</MenuItem>
+							))}
+						</Select>
+            </Grid>
+            <Grid item xs={2}>
+          <Button 
+            disabled={isLoading}
+            variant="outlined"
+            color="secondary"
+            onClick={() => updateResource("tos_id", selectedTosNumber)}
+          >
+            Change Tos
+          </Button>
+          </Grid>
+          </Grid>
+          </div>
+          <Divider />
+          {selectTosData ? 
+          <EditField
+            loading={isLoading}
+            name="TOS_English"
+            value={selectTosData.tos_en}
+            editable={false
+            } 
+          />:<></>}
+        </EditForm>
       </>
     );
   }
 
   function ViewCalendar() {
+
+    const [old_startDate, setstartDate] = useState([]);
+    const [bookings, setBookings] = useState([]);
+    const [selectedBookings, setSelectedBookings] = useState([]);
+
+    const fetchBookings = (arg) => {
+
+      const startDate = moment(arg.view.activeStart).format("YYYY-MM-DD");
+      const endDate = moment(arg.view.activeEnd).add(1,"day").format("YYYY-MM-DD");
+  
+      if (startDate === old_startDate){
+        return;
+      }
+
+      // console.log(startDate+" "+endDate);
+  
+      setstartDate(startDate);
+  
+      axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
+        let events = [];
+        data.data.bookings.forEach((data) => {
+          events.push({
+            id: data.id,
+            title: data.number + `\n` + (userData.find((user)=> user.id === data.user_id).user_id),
+            start: data.start_time,
+            end: data.end_time,
+            color: `red`,
+          });
+        });
+
+        setBookings(events);
+      });
+      
+    };
     return (
-      <Box>
+      <Box flexDirection="column" display="flex" >
+          <Button 
+            style={{marginLeft:"auto"}}
+            disabled={selectedBookings.length<1?true:false}
+            variant="contained"
+            color="primary"
+            onClick={() => history.push({pathname:routes.bookings.NEW, data:selectedBookings})}
+          >
+            ADD Booking
+          </Button>
+          <Box style={{marginTop:10}} />
         {isLoading ? (
           <Skeleton />
         ) : (
@@ -354,7 +470,13 @@ function DetailedCategoryPage({ match }) {
             contentHeight="auto"
             slotMinTime={resource.opening_time}
             slotMaxTime={resource.closing_time}
-            events={bookings}
+            events={bookings && bookings}
+            eventConstraint = {{
+              start : '00:00',
+              end : '24:00'}}
+            select={(selectionInfo )=>{setSelectedBookings({date:moment(selectionInfo.startStr).format("YYYY-MM-DD"),start:moment(selectionInfo.startStr).format("HH:mm:ss"),end:moment(selectionInfo.endStr).format("HH:mm:ss"),resource_id:resource.id,resource:resource.number});
+            console.log(selectedBookings)}}
+            datesSet={(dateInfo)=>fetchBookings(dateInfo)}
             eventClick={function(arg){
               // alert(arg.event.id)
               history.push(`/bookings/${arg.event.id}`);
@@ -492,7 +614,7 @@ function DetailedCategoryPage({ match }) {
               style={{
                 outline: "none",
               }}
-              onClick={fetchBookings}
+              // onClick={()=>fetchBookings(0)}
             />
             <Tab
               label="Settings"

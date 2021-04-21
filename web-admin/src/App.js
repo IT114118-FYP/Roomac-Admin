@@ -49,8 +49,8 @@ const NewTOSPage = lazy(() => import("./app/pages/tos/NewTOSPage"));
 const DetailedTOSPage = lazy(() => import("./app/pages/tos/DetailedTOSPage"));
 
 const ManageBookingPage = lazy(() => import("./app/pages/bookings/ManageBookingPage"));
+const NewBookingPage =lazy(()=>import("./app/pages/bookings/NewBookingPage"));
 const DetailedBookingPage = lazy(() => import("./app/pages/bookings/DetailedBookingPage"));
-
 const NotFoundPage = lazy(() => import("./app/pages/NotFoundPage"));
 
 const permissionCheck = (Component) => (
@@ -129,11 +129,14 @@ function App() {
           />
           <ProtectedRoute path={routes.tos.MANAGE} component={ManageTOSPage} />
 
+          <ProtectedRoute path={routes.bookings.NEW} component={NewBookingPage} />
+          
           <ProtectedRoute
             path={routes.bookings.DETAILED}
             component={DetailedBookingPage}
           />
           <ProtectedRoute path={routes.bookings.MANAGE} component={ManageBookingPage} />
+
           <Route path="*" component={NotFoundPage} />
         </Switch>
       </Suspense>

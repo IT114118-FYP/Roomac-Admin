@@ -167,7 +167,6 @@ function ManageBookingPage(props) {
   };
 
   const searchFunction = (value) =>{
-    // console.log(value);
     if (value !== ""){
       const newList = data.filter((contact)=>{
         var key = Object.keys(contact).map(function(key) {
@@ -186,8 +185,8 @@ function ManageBookingPage(props) {
   };
 
   const handleAddNew = () => {
-    alert("add new bookings");
-    // history.push(routes.branches.NEW);
+    // alert("add new bookings");
+    // history.push(routes.bookings.NEW);
   };
 
   const handleExport = () => {

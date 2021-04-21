@@ -276,48 +276,48 @@ function DetailedBranchPage({ match }) {
     );
   }
 
-  function TermsAndConditions() {
-    const [data, setData] = useState([]);
-    const [isLoading, setLoading] = useState(true);
+  // function TermsAndConditions() {
+  //   const [data, setData] = useState([]);
+  //   const [isLoading, setLoading] = useState(true);
 
-    useEffect(() => {
-      fetchData();
-    }, []);
+  //   useEffect(() => {
+  //     fetchData();
+  //   }, []);
 
-    const fetchData = () => {
-      setLoading(true);
-      axiosInstance.get("api/tos").then(({ data }) => {
-        setData(data);
-        setLoading(false);
-      });
-    };
+  //   const fetchData = () => {
+  //     setLoading(true);
+  //     axiosInstance.get("api/tos").then(({ data }) => {
+  //       setData(data);
+  //       setLoading(false);
+  //     });
+  //   };
 
-    const handleClick = (event, itemID) => {
-      history.push(`/tos/${itemID}`);
-    };
+  //   const handleClick = (event, itemID) => {
+  //     history.push(`/tos/${itemID}`);
+  //   };
 
-    const handleAddNew = () => {
-      history.push(routes.tos.NEW);
-    };
+  //   const handleAddNew = () => {
+  //     history.push(routes.tos.NEW);
+  //   };
 
-    return (
-      <>
-        <Box>
-          <DataTable
-            loading={isLoading}
-            data={data}
-            labels={toss}
-            onClick={handleClick}
-          />
-        </Box>
-        <div style={{ float: "right" }}>
-          <Button color="primary" size="medium" onClick={handleAddNew}>
-            Add new Terms And Conditions
-          </Button>
-        </div>
-      </>
-    );
-  }
+  //   return (
+  //     <>
+  //       <Box>
+  //         <DataTable
+  //           loading={isLoading}
+  //           data={data}
+  //           labels={toss}
+  //           onClick={handleClick}
+  //         />
+  //       </Box>
+  //       <div style={{ float: "right" }}>
+  //         <Button color="primary" size="medium" onClick={handleAddNew}>
+  //           Add new Terms And Conditions
+  //         </Button>
+  //       </div>
+  //     </>
+  //   );
+  // }
 
   function SettingsTabPanel() {
     return (
@@ -448,12 +448,12 @@ function DetailedBranchPage({ match }) {
                     outline: "none",
                   }}
                 />
-                <Tab
+                {/* <Tab
                   label="Terms And Conditions"
                   style={{
                     outline: "none",
                   }}
-                />
+                /> */}
                 <Tab
                   label="Settings"
                   style={{
@@ -466,10 +466,10 @@ function DetailedBranchPage({ match }) {
           <TabPanel value={tabIndex} index={0}>
             <GeneralTabPanel />
           </TabPanel>
-          <TabPanel value={tabIndex} index={1}>
+          {/* <TabPanel value={tabIndex} index={1}>
             <TermsAndConditions />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={2}>
+          </TabPanel> */}
+          <TabPanel value={tabIndex} index={1}>
             <SettingsTabPanel onDeleteUser={() => setDeleteOpen(true)} />
           </TabPanel>
         </div>
