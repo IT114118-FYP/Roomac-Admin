@@ -149,7 +149,7 @@ import {
           fetchAllData();
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error.response);
         });
     };
   
@@ -451,6 +451,26 @@ import {
       const [old_startDate, setstartDate] = useState([]);
       const [bookings, setBookings] = useState([]);
       const [selectedBookings, setSelectedBookings] = useState([]);
+      const [lockData, setLockData] = useState([]);
+      const [alreadyBooked, setAlreadyBooked] = useState([]);
+      const [bookingReady, setBookingReady] = useState(false);
+
+      useEffect(() => {
+        if (bookings.length==0 || lockData.length==0){
+          return;
+        } else {
+          let temp = [];
+          bookings.forEach((data) => {
+            temp.push({data});
+          });
+          lockData.forEach((data) => {
+            temp.push({data});
+          });
+          console.log(temp);
+          setAlreadyBooked(temp);
+          setBookingReady(true);
+        }
+      }, [lockData,bookings]);
   
       const fetchBookings = (arg) => {
   
@@ -474,11 +494,41 @@ import {
               color: `red`,
             });
           });
-          // console.log(events);
           setBookings(events);
         });
-        
+
+        axiosInstance.get(`api/reservations`).then((data)=>{
+          let temp = [];
+          console.log(data.data);
+          data.data.forEach((data) => {
+            if (data.resource_id!=match.params.id){
+              return;
+            } else {
+              temp.push({
+                id: data.id,
+                title: data.resource_id,
+                start: data.start_time,
+                end: data.end_time,
+                color: `gray`,
+              });
+            }
+          });
+          setLockData(temp);
+        });
       };
+
+      const mixBookings = () => {
+        let temp = [];
+        bookings.forEach((data) => {
+          temp.push({data});
+        });
+        lockData.forEach((data) => {
+          temp.push({data});
+        });
+        console.log(temp);
+        setAlreadyBooked(temp);
+      }
+
       return (
         <Box flexDirection="column" display="flex" >
             <Button 
@@ -549,6 +599,7 @@ import {
       .then(() => {
         setRepeat(false);
         fetchLockStatus();
+        setLoading(false);
       })
       .catch((error) => {
         setRepeat(false);
@@ -561,7 +612,7 @@ import {
         axiosInstance.delete(`api/reservations/${removeLockID}`).then((data) => {
           setrRemoveLock(false);
           fetchLockStatus();
-          console.log(data)
+          // console.log(data)
         }).catch((e)=>console.log(e));
       }
   
@@ -575,26 +626,33 @@ import {
           setstartDate(startDate);
         } else {
           const startDate = moment().format("YYYY-MM-DD");
-          if (startDate === old_startDate){
-            return;
-          }
           setstartDate(startDate);
         }
 
         axiosInstance.get(`api/reservations`).then((data)=>{
           let temp = [];
-          // console.log(data.data);
+          console.log(data.data);
           data.data.forEach((data) => {
             if (data.resource_id!=match.params.id){
               return;
             } else {
-              temp.push({
-                id: data.id,
-                title: data.resource_id,
-                start: data.start_time,
-                end: data.end_time,
-                color: `gray`,
-              });
+              if (data.repeat==1){
+                temp.push({
+                  id: data.id,
+                  title: "Repeating Lock",
+                  start: data.start_time,
+                  end: data.end_time,
+                  color: `gray`,
+                });
+              } else {
+                temp.push({
+                  id: data.id,
+                  title: "One Time Lock",
+                  start: data.start_time,
+                  end: data.end_time,
+                  color: `red`,
+                });
+              }
             }
           });
           setLockData(temp);
@@ -610,7 +668,7 @@ import {
               color="secondary"
               onClick={()=>handleClickOpen()}
             >
-              Lock Resource
+              Lock
             </Button>
             <Box style={{marginTop:10}} />
           {isLoading ? (
@@ -668,7 +726,7 @@ import {
           open={removeLock}
           onClose={() => setrRemoveLock(false)}
           onConfirm={() => RemoveLockResource()}
-          title={`Reomve Lock`}
+          title={`Remove Lock`}
         >
           <div className={classes.confirmBox}>
           <Typography>

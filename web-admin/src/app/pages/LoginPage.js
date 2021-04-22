@@ -55,7 +55,7 @@ function LoginPage() {
     await axiosInstance.get("/api/users/me").catch((e)=>{
       localStorage.removeItem("authToken");
       setLoading(false);
-      setLoginFailed(true);
+      // setLoginFailed(true);
       return;
     })
 

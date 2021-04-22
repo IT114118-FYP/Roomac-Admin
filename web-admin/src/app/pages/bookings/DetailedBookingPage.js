@@ -251,7 +251,7 @@ function DetailedBookingPage({ match }) {
   function SettingsTabPanel() {
     return (
       <Box flexDirection="row" display="flex" marginTop={2}>
-        {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.bookings) && (
           <Box flexGrow={1}>
             <Typography variant="body1" color="textPrimary">
               Delete booking
@@ -261,7 +261,7 @@ function DetailedBookingPage({ match }) {
             </Typography>
           </Box>
         )}
-        {getPermission(TAG.CRUD.DELETE + TAG.routes.tos) && (
+        {getPermission(TAG.CRUD.DELETE + TAG.routes.bookings) && (
           <Button
             variant="outlined"
             color="secondary"
@@ -354,7 +354,7 @@ function DetailedBookingPage({ match }) {
         onConfirm={deleteBooking}
         title={`Cancel Bookings ${data.number}?`}
       >
-        <Typography>Upon deletion, the tos will not be recoverable.</Typography>
+        <Typography>Upon deletion, the booking will not be recoverable.</Typography>
       </ConfirmDialog>
     </NavDrawer>
   );
