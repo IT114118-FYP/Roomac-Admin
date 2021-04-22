@@ -97,7 +97,7 @@ function ManageCategoriesPage(props) {
       .then((response) => {
         download(
           new Blob([response.data]),
-          "programs.xlsx",
+          "categories.xlsx",
           "application/vnd.ms-excel"
         );
         setExporting(false);

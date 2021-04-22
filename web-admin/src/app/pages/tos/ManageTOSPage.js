@@ -229,7 +229,7 @@ function ManageTOSPage(props) {
         onClick={handleClick}
       />
 
-      {!isLoading && (
+      {/* {!isLoading && (
         <div className={classes.exportWrapper}>
           <Button
             size="small"
@@ -241,7 +241,7 @@ function ManageTOSPage(props) {
           </Button>
           {isExporting && <CircularProgress size={24} />}
         </div>
-      )}
+      )} */}
     </NavDrawer>
   );
 }
