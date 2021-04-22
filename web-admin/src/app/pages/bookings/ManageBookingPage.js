@@ -217,15 +217,6 @@ function ManageBookingPage(props) {
           >
             Bookings
           </Typography>
-          {permissionReady && (
-            <>
-              {getPermission(TAG.CRUD.CREATE + TAG.routes.bookings) && (
-                <Button color="primary" size="medium" onClick={handleAddNew}>
-                  Add new bookings
-                </Button>
-              )}
-            </>
-          )}
         </div>
         <Typography variant="body1" color="textSecondary" gutterBottom>
           View and manage bookings with customisations
