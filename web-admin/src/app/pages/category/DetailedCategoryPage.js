@@ -1,33 +1,23 @@
 import React, { useEffect, useState } from "react";
 import {
+  Breadcrumbs,
   Divider,
   makeStyles,
   Typography,
   Button,
-  TextField,
-  InputAdornment,
-  Menu,
-  MenuItem,
-  Chip,
-  CircularProgress,
+  Link,
   Box,
   Avatar,
   Tab,
   Tabs,
-  Grid,
 } from "@material-ui/core";
 import EditForm from "../../components/forms/edit/EditForm";
-import SearchIcon from "@material-ui/icons/Search";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import EditField from "../../components/forms/edit/EditField";
-import download from "downloadjs";
 import { useHistory } from "react-router-dom";
 import * as axios from "axios";
 
 import NavDrawer from "../../components/NavDrawer";
 import { axiosInstance } from "../../api/config";
-import DataTable from "../../components/DataTable";
-import { labels } from "../../config/tables/resources";
 import { Skeleton } from "@material-ui/lab";
 
 import Badge from "@material-ui/core/Badge";
@@ -78,7 +68,7 @@ function DetailedCategoryPage({ match }) {
   const [preview, setPreview] = useState();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
-  const { permissionReady, permissions, getPermission } = usePermission();
+  const { permissionReady, getPermission } = usePermission();
 
   useEffect(() => {
     fetchAllData();
@@ -105,7 +95,7 @@ function DetailedCategoryPage({ match }) {
     updateCategories("image", e.target.files[0]);
   };
 
-  const delteCategory = () => {
+  const deleteCategory = () => {
     axiosInstance
       .delete(`api/categories/${match.params.id}`)
       .then(() => history.push(`/categories`));
@@ -252,114 +242,130 @@ function DetailedCategoryPage({ match }) {
 
   return (
     <NavDrawer>
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link to={routes.categories.MANAGE}>categories</Link>
+        <Typography color="textPrimary">details</Typography>
+      </Breadcrumbs>
       {error ? (
         <Box
+          alignItems="center"
           justifyContent="center"
           display="flex"
           flexDirection="column"
         >
-          <Typography variant="h6">Something went wrong...</Typography>
+          <Typography variant="h6">Category Not Found...</Typography>
+          <Link to={routes.categories.MANAGE}>go back</Link>
         </Box>
       ) : (
-        <>
-          <div>
-            <div className={classes.titleDiv}>
-              <Badge
-                overlap="circle"
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                badgeContent={
-                  imgMethod === "Upload Image File" && (
-                    <>
-                      <div>
-                        <input
-                          accept="image/*"
-                          id="image"
-                          type="file"
-                          style={{
-                            display: "none",
-                          }}
-                          onChange={onSelectFile}
-                        />
-                        <label htmlFor="image">
-                          {getPermission(
-                            TAG.CRUD.UPDATE + TAG.routes.categories
-                          ) && (
-                            <Button
-                              // variant="contained"
-                              color="primary"
-                              component="span"
-                            >
-                              <SmallAvatar alt="Edit image" src={editpen} />
-                            </Button>
-                          )}
-                        </label>
-                      </div>
-                    </>
-                  )
-                }
-              >
-                <Avatar className={classes.avatar}>
-                  ;
-                  {isLoading ? (
-                    <Skeleton />
-                  ) : category.image_url == null ? (
-                    category.title_en.charAt(0)
-                  ) : (
-                    <img src={category.image_url} className={classes.avatar} alt={category.title_en} />
-                  )}
-                </Avatar>
-              </Badge>
-              <Typography
-                variant="h3"
-                color="textPrimary"
-                className={classes.title}
-              >
-                {isLoading ? <Skeleton /> : category.title_en}
-              </Typography>
-            </div>
-          </div>
-          <Tabs
-            value={tabIndex}
-            onChange={(event, newValue) => {
-              setTabIndex(newValue);
-            }}
+        <div>
+          <Box
+            display="flex"
+            alignItems="center"
+            marginBottom={2}
+            marginTop={3}
           >
-            <Tab
-              label="General"
-              style={{
-                outline: "none",
+            <Badge
+              overlap="circle"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
               }}
-            />
-            <Tab
-              label="Settings"
-              style={{
-                outline: "none",
-              }}
-            />
-          </Tabs>
+              badgeContent={
+                imgMethod === "Upload Image File" && (
+                  <>
+                    <div>
+                      <input
+                        accept="image/*"
+                        id="image"
+                        type="file"
+                        style={{
+                          display: "none",
+                        }}
+                        onChange={onSelectFile}
+                      />
+                      <label htmlFor="image">
+                        {getPermission(
+                          TAG.CRUD.UPDATE + TAG.routes.categories
+                        ) && (
+                          <Button
+                            // variant="contained"
+                            color="primary"
+                            component="span"
+                          >
+                            <SmallAvatar alt="Edit image" src={editpen} />
+                          </Button>
+                        )}
+                      </label>
+                    </div>
+                  </>
+                )
+              }
+            >
+              <Avatar className={classes.avatar}>
+                ;
+                {isLoading ? (
+                  <Skeleton />
+                ) : category.image_url == null ? (
+                  category.title_en.charAt(0)
+                ) : (
+                  <img src={category.image_url} className={classes.avatar} alt={category.title_en} />
+                )}
+              </Avatar>
+            </Badge>
 
+            <Box marginLeft={3} flexGrow={1}>
+              <Typography
+                variant="h5"
+                component="div"
+                style={{
+                  fontWeight: "bold",
+                }}
+              >
+                {isLoading ? <Skeleton /> : `${category.title_en}`}
+              </Typography>
+            </Box>
+          </Box>
+          {permissionReady && (
+            <>
+              <Tabs
+                value={tabIndex}
+                onChange={(event, newValue) => {
+                  setTabIndex(newValue);
+                }}
+              >
+                <Tab
+                  label="General"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+                <Tab
+                  label="Settings"
+                  style={{
+                    outline: "none",
+                  }}
+                />
+              </Tabs>
+            </>
+          )}
           <TabPanel value={tabIndex} index={0}>
             <GeneralTabPanel />
           </TabPanel>
           <TabPanel value={tabIndex} index={1}>
-            <SettingsTabPanel />
+            <SettingsTabPanel onDeleteUser={() => setDeleteOpen(true)} />
           </TabPanel>
-
-          <ConfirmDialog
-            open={deleteOpen}
-            onClose={() => setDeleteOpen(false)}
-            onConfirm={delteCategory}
-            // title={`Delete Category ${category.id}?`}
-          >
-            <Typography>
-              Upon deletion, the category will not be recoverable.
-            </Typography>
-          </ConfirmDialog>
-        </>
+        </div>
       )}
+      <ConfirmDialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={deleteCategory}
+        title={`Delete Category?`}
+      >
+        <Typography>
+          Upon deletion, the category will not be recoverable.
+        </Typography>
+      </ConfirmDialog>
     </NavDrawer>
   );
 }

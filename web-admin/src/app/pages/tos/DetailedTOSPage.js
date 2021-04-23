@@ -34,7 +34,7 @@ function DetailedTOSPage({ match }) {
   const [error, setError] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const { permissionReady, permissions, getPermission } = usePermission();
+  const { permissionReady, getPermission } = usePermission();
 
   useEffect(() => {
     fetchTos();
@@ -80,13 +80,6 @@ function DetailedTOSPage({ match }) {
   function GeneralTabPanel() {
     return (
       <EditForm title="TOS info">
-        {/* <EditField
-          loading={isLoading}
-          name="tos code"
-          value={tos.id}
-          // onSave={(newValue) => updateTos("id", newValue)}
-        />
-        <Divider /> */}
         <EditField
           loading={isLoading}
           name="English"

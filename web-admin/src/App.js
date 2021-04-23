@@ -133,9 +133,6 @@ function App() {
             component={ManageResourcesPage}
           />
           
-
-          
-
           <ProtectedRoute path={routes.tos.NEW} component={NewTOSPage} />
           <ProtectedRoute
             path={routes.tos.DETAILED}

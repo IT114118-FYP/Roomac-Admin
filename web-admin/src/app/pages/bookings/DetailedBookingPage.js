@@ -46,10 +46,6 @@ function DetailedBookingPage({ match }) {
   const [checkin,setCheckin] = useState(false);
   const [cancheckin,setcanCheckin] = useState(false);
 
-  useEffect(() => {
-      fetchAllData();
-    }, []);
-
     useEffect(() => {
       fetchAllData();
     }, [checkin]);
@@ -92,7 +88,7 @@ function DetailedBookingPage({ match }) {
       var temp3 = [];
       var booking_detail = dashboard_data.data;
 
-      console.log(booking_detail);
+      // console.log(booking_detail);
       temp3.push({
         id: booking_detail.id,
         branch_id:(temp2.find((resource)=> resource.id === booking_detail.resource_id).branch_id),
@@ -108,7 +104,7 @@ function DetailedBookingPage({ match }) {
       
       var booking_data = temp3.find((data)=>data.id == match.params.id)
 
-      console.log(booking_data);
+      // console.log(booking_data);
       var time_checkin = moment().format("YYYY-MM-DDTHH:mm:ss");
       var check_inTB = moment(booking_detail.start_time).subtract(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
       var check_inTA = moment(booking_detail.start_time).add(15, 'minutes').format("YYYY-MM-DDTHH:mm:ss");
@@ -277,7 +273,7 @@ function DetailedBookingPage({ match }) {
   return (
     <NavDrawer>
       <Breadcrumbs aria-label="breadcrumb">
-        <Link to={routes.HOME}>dashborad</Link>
+        <Link to={routes.bookings.MANAGE}>bookings</Link>
         <Typography color="textPrimary">details</Typography>
       </Breadcrumbs>
       {error ? (

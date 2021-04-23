@@ -78,13 +78,15 @@ function NewBookingPage(props,{match}) {
 
 	const fetchUser = async() => await axiosInstance.get(`api/users`).then((data)=>setUserData(data.data));
 
-	const searchFunction = (value) =>{
-		// console.log(value);
+	useEffect(()=>{
 		console.log(searchTerms);
 		if (searchTerms.length == 1){
 			console.log(searchTerms[0].id);
 			setBookingUser(searchTerms[0].id);
 		}
+	},[searchTerms]);
+
+	const searchFunction = (value) =>{
 		if (value !== ""){
 		  const newList = data.filter((contact)=>{
 			var key = Object.keys(contact).map(function(key) {

@@ -80,31 +80,13 @@ const useStyles = makeStyles((theme) => ({
 function ResponsiveDrawer({ window, title, children }) {
   const history = useHistory();
   const classes = useStyles();
-  const { permissionReady, permissions, getPermission } = usePermission(true);
+  const { permissionReady, getPermission } = usePermission(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [username, setUsername] = React.useState("");
-  const [isUsernameReady, setUsernameReady] = React.useState(false);
 
   const [openLogoutConfirm, setOpenLogoutConfirm] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
-  };
-
-  useEffect(() => {
-    fetchUser();
-  }, []);
-
-  const fetchUser = () => {
-    axiosInstance
-      .get("/api/users/me")
-      .then(({ data }) => {
-        setUsername(data.last_name);
-        setUsernameReady(true);
-      })
-      .catch((error) => {
-        setUsernameReady(false);
-      });
   };
 
   const drawer = (
@@ -213,7 +195,7 @@ function ResponsiveDrawer({ window, title, children }) {
             {title}
           </Typography>
           <div>
-            {isUsernameReady && <Typography>Welcome, {username}!</Typography>}
+            <Typography>Welcome{localStorage.getItem(`last_name`) ? `, `+localStorage.getItem("last_name")+` !` : `!`}</Typography>
           </div>
         </Toolbar>
       </AppBar>

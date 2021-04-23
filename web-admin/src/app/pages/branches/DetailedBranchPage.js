@@ -21,9 +21,6 @@ import { axiosInstance } from "../../api/config";
 import EditField from "../../components/forms/edit/EditField";
 import EditForm from "../../components/forms/edit/EditForm";
 import NavDrawer from "../../components/NavDrawer";
-import DataTable from "../../components/DataTable";
-import { labels } from "../../config/tables/rulesConfig";
-import { toss } from "../../config/tables/tos";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import editpen from "../../resources/edit.png";
 
@@ -153,8 +150,6 @@ function DetailedBranchPage({ match }) {
       });
   };
 
-  const handleSettingClick = () => {};
-
   const deleteBranch = () => {
     axiosInstance.delete(`api/branches/${match.params.id}`).then(() => {
       history.push(routes.branches.MANAGE);
@@ -245,79 +240,11 @@ function DetailedBranchPage({ match }) {
                 }
               />
             </EditForm>
-
-            {/* <Box marginBottom={2} marginTop={3} display="flex">
-              <Typography
-                variant="h6"
-                component="div"
-                style={{
-                  flexGrow: 1,
-                }}
-              >
-                Branch Settings / Rules Configuration
-              </Typography>
-              <Button
-                color="primary"
-                size="small"
-                // onClick={handleAddNew}
-              >
-                Add new rules configurations
-              </Button>
-            </Box>
-            <DataTable
-              loading={isLoading}
-              data={settings}
-              labels={labels}
-              onClick={handleSettingClick}
-            /> */}
           </>
         )}
       </>
     );
   }
-
-  // function TermsAndConditions() {
-  //   const [data, setData] = useState([]);
-  //   const [isLoading, setLoading] = useState(true);
-
-  //   useEffect(() => {
-  //     fetchData();
-  //   }, []);
-
-  //   const fetchData = () => {
-  //     setLoading(true);
-  //     axiosInstance.get("api/tos").then(({ data }) => {
-  //       setData(data);
-  //       setLoading(false);
-  //     });
-  //   };
-
-  //   const handleClick = (event, itemID) => {
-  //     history.push(`/tos/${itemID}`);
-  //   };
-
-  //   const handleAddNew = () => {
-  //     history.push(routes.tos.NEW);
-  //   };
-
-  //   return (
-  //     <>
-  //       <Box>
-  //         <DataTable
-  //           loading={isLoading}
-  //           data={data}
-  //           labels={toss}
-  //           onClick={handleClick}
-  //         />
-  //       </Box>
-  //       <div style={{ float: "right" }}>
-  //         <Button color="primary" size="medium" onClick={handleAddNew}>
-  //           Add new Terms And Conditions
-  //         </Button>
-  //       </div>
-  //     </>
-  //   );
-  // }
 
   function SettingsTabPanel() {
     return (
@@ -448,12 +375,6 @@ function DetailedBranchPage({ match }) {
                     outline: "none",
                   }}
                 />
-                {/* <Tab
-                  label="Terms And Conditions"
-                  style={{
-                    outline: "none",
-                  }}
-                /> */}
                 <Tab
                   label="Settings"
                   style={{
@@ -466,9 +387,6 @@ function DetailedBranchPage({ match }) {
           <TabPanel value={tabIndex} index={0}>
             <GeneralTabPanel />
           </TabPanel>
-          {/* <TabPanel value={tabIndex} index={1}>
-            <TermsAndConditions />
-          </TabPanel> */}
           <TabPanel value={tabIndex} index={1}>
             <SettingsTabPanel onDeleteUser={() => setDeleteOpen(true)} />
           </TabPanel>

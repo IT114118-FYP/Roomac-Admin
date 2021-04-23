@@ -95,7 +95,6 @@ function DetailedUserPage({ match }) {
   const [banStatus, setBanStatus] = useState(false);
 
   useEffect(() => {
-    fetchAllData();
     creatBanTimeList();
 
     setImgMethod("Upload Image File");
@@ -151,7 +150,7 @@ function DetailedUserPage({ match }) {
         fetchPrograms(),
         fetchBanTime(),
       ]);
-      console.log(ban.data.expire_time);
+      // console.log(ban.data.expire_time);
       setBanTimeData(ban.data.expire_time);
       setUser(userData.data);
       setPermissions(userPermissions.data);

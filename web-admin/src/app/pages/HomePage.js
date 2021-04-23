@@ -1,15 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-  Divider,
   makeStyles,
   Typography,
-  Button,
   TextField,
   InputAdornment,
-  Menu,
-  MenuItem,
-  Chip,
-  CircularProgress,
   Grid,
 } from "@material-ui/core";
 import SearchIcon from "@material-ui/icons/Search";
@@ -57,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer',
   },
   viewHeaderBarItems: {
-    marginRight: theme.spacing(5),
+    marginLeft: `auto`,
   },
   filterChip: {
     margin: theme.spacing(0.5),
@@ -77,27 +71,14 @@ function HomePage(props) {
   const [count, setCount] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const history = useHistory();
-  const { permissionReady, permissions, getPermission } = usePermission();
-  const [isAdmin, setAdmin] = useState(false);
+  const { permissionReady, getPermission } = usePermission();
   const [searchTerms, setSearchTerms] = useState([]);
-  const [isNeedFeatch, setNeedFetch] = useState(true);
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
-  // useEffect(() => {
-  //   if (!permissionReady) return;
-  //   if (!getPermission("login:admin")) {
-  //     setLoading(true);
-  //     alert("No Permission");
-  //     localStorage.clear();
-  //     history.push("/");
-  //   }
-  //   setAdmin(true);
-  // }, [permissionReady]);
-
-  const fetchUser1 = () => axiosInstance.get(`api/users`);
+  const fetchUser = () => axiosInstance.get(`api/users`);
 
   const fetchResources = () => axiosInstance.get(`api/resources`);
 
@@ -107,7 +88,7 @@ function HomePage(props) {
     if (!silence) setLoading(true);
     try {
       const [user_data, resource_data , dashboard_data] = await axios.all([
-        fetchUser1(),
+        fetchUser(),
         fetchResources(),
         fetchDashboard(),
       ]);
@@ -161,20 +142,23 @@ function HomePage(props) {
     history.push(`/bookings/${itemID}`);
   };
 
-  const searchFunction = (value) =>{
-    // console.log(value);
-    if (value !== ""){
-      const newList = data.filter((contact)=>{
-        var key = Object.keys(contact).map(function(key) {
-          return contact[key];
-      });
-        return key.join(" ").toLowerCase().includes(value.toLowerCase());
-      })
-      setSearchTerms(newList);
-    }  else {
-      setSearchTerms(value);
-    }
-  }
+  useEffect(()=>{
+		console.log(searchTerms);
+	},[searchTerms]);
+
+	const searchFunction = (value) =>{
+		if (value !== ""){
+		  const newList = data.filter((contact)=>{
+			var key = Object.keys(contact).map(function(key) {
+			  return contact[key];
+		  });
+			return key.join(" ").toLowerCase().includes(value.toLowerCase());
+		  })
+		  setSearchTerms(newList);
+		}  else {
+		  setSearchTerms(value);
+		}
+	};
 
   return (
     <NavDrawer>

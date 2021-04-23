@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   viewHeaderBarItems: {
-    marginRight: theme.spacing(5),
+    marginLeft: `auto`,
   },
   filterChip: {
     margin: theme.spacing(0.5),
@@ -113,20 +113,23 @@ function ManageResourcesPage(props) {
       });
   };
 
-  const searchFunction = (value) =>{
-    // console.log(value);
-    if (value !== ""){
-      const newList = data.filter((contact)=>{
-        var key = Object.keys(contact).map(function(key) {
-          return contact[key];
-      });
-        return key.join(" ").toLowerCase().includes(value.toLowerCase());
-      })
-      setSearchTerms(newList);
-    }  else {
-      setSearchTerms(value);
-    }
-  };
+  useEffect(()=>{
+		console.log(searchTerms);
+	},[searchTerms]);
+
+	const searchFunction = (value) =>{
+		if (value !== ""){
+		  const newList = data.filter((contact)=>{
+			var key = Object.keys(contact).map(function(key) {
+			  return contact[key];
+		  });
+			return key.join(" ").toLowerCase().includes(value.toLowerCase());
+		  })
+		  setSearchTerms(newList);
+		}  else {
+		  setSearchTerms(value);
+		}
+	  };
 
   return (
     <NavDrawer>

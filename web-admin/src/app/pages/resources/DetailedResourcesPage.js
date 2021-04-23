@@ -10,6 +10,8 @@ import {
     Grid,
     Select,
     MenuItem,
+    Breadcrumbs,
+    Link,
   } from "@material-ui/core";
   import { Skeleton } from "@material-ui/lab";
   import React, { useState, useEffect, useReducer } from "react";
@@ -66,6 +68,8 @@ import {
       </Box>
     );
   }
+
+  
   function DetailedResourcesPage({ match }) {
     const history = useHistory();
     const [isLoading, setLoading] = useState(true);
@@ -87,6 +91,7 @@ import {
     const { permissionReady, permissions, getPermission } = usePermission();
     const [selectedTosNumber, setselectedTosNumber] = useState([]);
     const [selectTosData, setselectTosData] = useState([]);
+    const [tos,setTos] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState([]);
 
     const classes = useStyles();
@@ -154,13 +159,18 @@ import {
     };
   
     useEffect(() => {
-      fetchselectedTos();
-      // console.log(resource);
-    }, [selectedTosNumber]);
-  
+      if(tos.length==0){
+        return
+      };
+      const TosData = tos.find((data)=>data.id==selectedTosNumber);
+      setselectTosData(TosData);
+    }, [selectedTosNumber,tos]);
+
     useEffect(() => {
       fetchAllData();
+    }, []);
   
+    useEffect(() => {
       setImgMethod("Upload Image File");
       if (!selectedFile) {
         setPreview(undefined);
@@ -173,14 +183,6 @@ import {
       // free memory when ever this component is unmounted
       return () => URL.revokeObjectURL(objectUrl);
     }, [selectedFile]);
-  
-  
-    const fetchselectedTos = async () => {
-      const tos = await axiosInstance.get("api/tos");
-      const TosData = tos.data.find((data)=>data.id==selectedTosNumber);
-      // console.log(TosData);
-      setselectTosData(TosData);
-    };
   
     const fetchAllData = async (silence = true) => {
       if (!silence) setLoading(true);
@@ -233,6 +235,7 @@ import {
               )
         );
   
+        setTos(tosData.data);
         const tosPickerItem = tosData.data.map((item) => {
           return createPickerValue(item.id, item.id);
         });
@@ -451,26 +454,6 @@ import {
       const [old_startDate, setstartDate] = useState([]);
       const [bookings, setBookings] = useState([]);
       const [selectedBookings, setSelectedBookings] = useState([]);
-      const [lockData, setLockData] = useState([]);
-      const [alreadyBooked, setAlreadyBooked] = useState([]);
-      const [bookingReady, setBookingReady] = useState(false);
-
-      useEffect(() => {
-        if (bookings.length==0 || lockData.length==0){
-          return;
-        } else {
-          let temp = [];
-          bookings.forEach((data) => {
-            temp.push({data});
-          });
-          lockData.forEach((data) => {
-            temp.push({data});
-          });
-          console.log(temp);
-          setAlreadyBooked(temp);
-          setBookingReady(true);
-        }
-      }, [lockData,bookings]);
   
       const fetchBookings = (arg) => {
   
@@ -485,6 +468,7 @@ import {
     
         axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
           let events = [];
+          console.log(data.data);
           data.data.bookings.forEach((data) => {
             events.push({
               id: data.id,
@@ -496,37 +480,6 @@ import {
           });
           setBookings(events);
         });
-
-        axiosInstance.get(`api/reservations`).then((data)=>{
-          let temp = [];
-          console.log(data.data);
-          data.data.forEach((data) => {
-            if (data.resource_id!=match.params.id){
-              return;
-            } else {
-              temp.push({
-                id: data.id,
-                title: data.resource_id,
-                start: data.start_time,
-                end: data.end_time,
-                color: `gray`,
-              });
-            }
-          });
-          setLockData(temp);
-        });
-      };
-
-      const mixBookings = () => {
-        let temp = [];
-        bookings.forEach((data) => {
-          temp.push({data});
-        });
-        lockData.forEach((data) => {
-          temp.push({data});
-        });
-        console.log(temp);
-        setAlreadyBooked(temp);
       }
 
       return (
@@ -618,24 +571,19 @@ import {
   
       const fetchLockStatus = (arg) => {
 
-        if (arg!=null){
-          const startDate = moment(arg.view.activeStart).format("YYYY-MM-DD");
-          if (startDate === old_startDate){
-            return;
-          }
-          setstartDate(startDate);
-        } else {
-          const startDate = moment().format("YYYY-MM-DD");
-          setstartDate(startDate);
+        const startDate = moment(arg.view.activeStart).format("YYYY-MM-DD");
+        const endDate = moment(arg.view.activeEnd).add(1,"day").format("YYYY-MM-DD");
+    
+        if (startDate === old_startDate){
+          return;
         }
+    
+        setstartDate(startDate);
 
-        axiosInstance.get(`api/reservations`).then((data)=>{
+        axiosInstance.get(`api/resources/${match.params.id}/reservations?start=${startDate}&end=${endDate}`).then((data)=>{
           let temp = [];
-          console.log(data.data);
+          // console.log(data.data);
           data.data.forEach((data) => {
-            if (data.resource_id!=match.params.id){
-              return;
-            } else {
               if (data.repeat==1){
                 temp.push({
                   id: data.id,
@@ -653,7 +601,6 @@ import {
                   color: `red`,
                 });
               }
-            }
           });
           setLockData(temp);
         });
@@ -822,6 +769,10 @@ import {
   
     return (
       <NavDrawer>
+        <Breadcrumbs aria-label="breadcrumb">
+          <Link to={routes.resources.MANAGE}>resource</Link>
+        <Typography color="textPrimary">details</Typography>
+      </Breadcrumbs>
         {error ? (
           <Box
             alignItems="center"

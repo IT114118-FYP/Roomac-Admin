@@ -55,11 +55,12 @@ function LoginPage() {
     await axiosInstance.get("/api/users/me").catch((e)=>{
       localStorage.removeItem("authToken");
       setLoading(false);
-      // setLoginFailed(true);
       return;
     })
 
     const id = await axiosInstance.get("/api/users/me");
+    localStorage.setItem('first_name', id.data.first_name);
+    localStorage.setItem('user_id', id.data.id);
 
     const admin = await axiosInstance.get(`/api/users/${id.data.id}/permissions`);
 

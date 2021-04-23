@@ -4,15 +4,17 @@ import { axiosInstance } from "../api/config";
 function usePermission(something) {
   const [permissionReady, setPermissionReady] = useState(false);
 
-  const fetchUser = () => {
-    axiosInstance.get("/api/users/me").then(({ data }) => {
-      fetchPermissions(data.id);
-    });
-  };
+  // const fetchUser = () => {
+  //   axiosInstance.get("/api/users/me").then(({ data }) => {
+  //     fetchPermissions(data.id);
+  //     localStorage.setItem('last_name', data.first_name);
+  //   });
+  // };
 
-  const fetchPermissions = (id) => {
+  const fetchPermissions = () => {
+    const user_id = localStorage.getItem("user_id");
     axiosInstance
-      .get(`api/users/${id}/permissions`)
+      .get(`api/users/${user_id}/permissions`)
       .then(({ data }) => {
         console.log(data);
         localStorage.setItem('permissions', JSON.stringify(data));
@@ -34,13 +36,13 @@ function usePermission(something) {
       return;
     }
     if (!permissionReady) {
-      fetchUser();
+      fetchPermissions();
     };
   }, []);
 
   const getPermission = (name) => {
     const data = localStorage.getItem("permissions") ? JSON.parse(localStorage.getItem("permissions")) : null;
-    const ready = localStorage.getItem("permissionReady") ? JSON.parse(localStorage.getItem("permissions")) : null;
+    const ready = localStorage.getItem("permissionReady") ? localStorage.getItem("permissionReady") : null;
     // console.log(data);
     if (!ready) return null;
     const currentPermission = data.find(

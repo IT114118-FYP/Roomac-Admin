@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(3),
   },
   viewHeaderBarItems: {
-    marginRight: theme.spacing(5),
+    marginLeft: `auto`,
   },
   filterChip: {
     margin: theme.spacing(0.5),
@@ -58,13 +58,10 @@ const useStyles = makeStyles((theme) => ({
 
 function ManageTOSPage(props) {
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [searchFilters, setSeacrhFilters] = React.useState([]);
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
-  const [isExporting, setExporting] = useState(false);
   const history = useHistory();
-  const { permissionReady, getPermission } = usePermission();
+  const {permissionReady , getPermission } = usePermission();
   const [searchTerms, setSearchTerms] = useState([]);
 
   useEffect(() => {
@@ -89,61 +86,23 @@ function ManageTOSPage(props) {
     history.push(`/tos/new`);
   };
 
-  const handleExport = () => {
-    setExporting(true);
-    axiosInstance
-      .get("/api/tos/export", {
-        headers: "Content-type: application/vnd.ms-excel",
-        responseType: "blob",
-      })
-      .then((response) => {
-        download(
-          new Blob([response.data]),
-          "tos.xlsx",
-          "application/vnd.ms-excel"
-        );
-        setExporting(false);
-      });
-  };
+  useEffect(()=>{
+		console.log(searchTerms);
+	},[searchTerms]);
 
-  const toggleAddFilters = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const addfilter = (event, index) => {
-    if (!searchFilters.includes(filterData[index])) {
-      setSeacrhFilters([...searchFilters, filterData[index]]);
-    }
-    handleCloseFilter();
-  };
-
-  const handlefilterDelete = (filterToDelete) => {
-    setSeacrhFilters((filters) =>
-      filters.filter((filter) => filter !== filterToDelete)
-    );
-  };
-
-  const handleCloseFilter = () => {
-    setAnchorEl(null);
-  };
-
-  const searchFunction = (value) =>{
-    // console.log(value);
-    if (value !== ""){
-      const newList = data.filter((contact)=>{
-
-        var key = Object.keys(contact).map(function(key) {
-          return contact[key];
-      });
-        return key.join(" ").toLowerCase().includes(value.toLowerCase());
-      })
-
-      setSearchTerms(newList);
-
-    }  else {
-      setSearchTerms(value);
-    }
-  };
+	const searchFunction = (value) =>{
+		if (value !== ""){
+		  const newList = data.filter((contact)=>{
+			var key = Object.keys(contact).map(function(key) {
+			  return contact[key];
+		  });
+			return key.join(" ").toLowerCase().includes(value.toLowerCase());
+		  })
+		  setSearchTerms(newList);
+		}  else {
+		  setSearchTerms(value);
+		}
+	  };
 
   return (
     <NavDrawer>
