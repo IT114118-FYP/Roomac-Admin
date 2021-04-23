@@ -80,19 +80,12 @@ const useStyles = makeStyles((theme) => ({
 function ResponsiveDrawer({ window, title, children }) {
   const history = useHistory();
   const classes = useStyles();
-  const { permissionReady, permissions, getPermission } = usePermission();
+  const { permissionReady, permissions, getPermission } = usePermission(true);
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [categories, setCategories] = React.useState([]);
   const [username, setUsername] = React.useState("");
   const [isUsernameReady, setUsernameReady] = React.useState(false);
 
   const [openLogoutConfirm, setOpenLogoutConfirm] = React.useState(false);
-
-  const fetchCategory = () => {
-    axiosInstance.get("api/categories").then(({ data }) => {
-      setCategories(data);
-    });
-  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -100,14 +93,12 @@ function ResponsiveDrawer({ window, title, children }) {
 
   useEffect(() => {
     fetchUser();
-    fetchCategory();
   }, []);
 
   const fetchUser = () => {
     axiosInstance
       .get("/api/users/me")
       .then(({ data }) => {
-        // setUsername(data)
         setUsername(data.last_name);
         setUsernameReady(true);
       })
@@ -265,7 +256,7 @@ function ResponsiveDrawer({ window, title, children }) {
         title="Log out"
         open={openLogoutConfirm}
         onConfirm={() => {
-          localStorage.removeItem("authToken");
+          localStorage.clear();
           history.push("/");
         }}
         onClose={() => setOpenLogoutConfirm(false)}

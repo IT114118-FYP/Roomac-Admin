@@ -2,6 +2,7 @@ import * as axios from "axios";
 
 const baseURL = "https://roomac.tatlead.com";
 const baseURL1 = "https://it114118-fyp.herokuapp.com";
+var counter = 0;
 
 const axiosInstance = axios.create({
 	baseURL: baseURL,
@@ -14,6 +15,8 @@ axiosInstance.interceptors.request.use(
 		config.headers = {
 			Authorization: "Bearer " + localStorage.getItem("authToken"),
 		};
+
+		console.log(`config run ${++counter} time`);
 		return config;
 	},
 	(error) => {

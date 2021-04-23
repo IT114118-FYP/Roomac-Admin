@@ -80,23 +80,24 @@ function HomePage(props) {
   const { permissionReady, permissions, getPermission } = usePermission();
   const [isAdmin, setAdmin] = useState(false);
   const [searchTerms, setSearchTerms] = useState([]);
+  const [isNeedFeatch, setNeedFetch] = useState(true);
 
   useEffect(() => {
     fetchAllData();
   }, []);
 
-  useEffect(() => {
-    if (!permissionReady) return;
-    if (!getPermission("login:admin")) {
-      setLoading(true);
-      alert("No Permission");
-      localStorage.removeItem("authToken");
-      history.push("/");
-    }
-    setAdmin(true);
-  }, [permissionReady]);
+  // useEffect(() => {
+  //   if (!permissionReady) return;
+  //   if (!getPermission("login:admin")) {
+  //     setLoading(true);
+  //     alert("No Permission");
+  //     localStorage.clear();
+  //     history.push("/");
+  //   }
+  //   setAdmin(true);
+  // }, [permissionReady]);
 
-  const fetchUser = () => axiosInstance.get(`api/users`);
+  const fetchUser1 = () => axiosInstance.get(`api/users`);
 
   const fetchResources = () => axiosInstance.get(`api/resources`);
 
@@ -106,7 +107,7 @@ function HomePage(props) {
     if (!silence) setLoading(true);
     try {
       const [user_data, resource_data , dashboard_data] = await axios.all([
-        fetchUser(),
+        fetchUser1(),
         fetchResources(),
         fetchDashboard(),
       ]);

@@ -67,8 +67,7 @@ function ManageBookingPage(props) {
   const [data, setBookings] = useState([]);
   const [isLoading, setLoading] = useState(true);
   const history = useHistory();
-  const { permissionReady, permissions, getPermission } = usePermission();
-  const [isAdmin, setAdmin] = useState(false);
+  const { permissionReady, getPermission } = usePermission();
   const [searchTerms, setSearchTerms] = useState([]);
   const [timeData, setTimeData] = useState([]);
   const [fetchBookingsDays, setFetchBookingsDays] = useState(0);
@@ -99,16 +98,6 @@ function ManageBookingPage(props) {
   };
 
   const fetchbookings = () => axiosInstance.get(`api/resourcebookings?start=${startDate}&end=${endDate}`);
-  
-  useEffect(() => {
-    if (!permissionReady) return;
-    if (!getPermission("login:admin")) {
-      alert("No Permission");
-      localStorage.removeItem("authToken");
-      history.push("/");
-    }
-    setAdmin(true);
-  }, [permissionReady]);
 
   const fetchUser = () => axiosInstance.get(`api/users`);
 

@@ -91,7 +91,7 @@ function LoginPage() {
     } else {
       setLoading(false);
       setAdminLoginFailed(true);
-      localStorage.removeItem("authToken");
+      localStorage.clear();
       return;
     }
   };
