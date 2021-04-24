@@ -59,6 +59,11 @@ import {
     confirmBoxText:{
       marginTop:theme.spacing(1),
     },
+    viewHeaderBar: {
+      display: "flex",
+      flexDirection: "row",
+      marginBottom: theme.spacing(3),
+    },
   }));
   
   function TabPanel({ children, value, index, ...other }) {
@@ -454,13 +459,25 @@ import {
       const [old_startDate, setstartDate] = useState([]);
       const [bookings, setBookings] = useState([]);
       const [selectedBookings, setSelectedBookings] = useState([]);
-  
+      const [open, setOpen] = useState(false);
+      const [isRepeat, setRepeat] = useState(false);
+      const [removeLock, setRemoveLock] = useState(false);
+      const [removeLockID, setRemoveLockID] = useState([]);
+      const [removeLockStatus, setRemoveLockStatus] = useState(false);
+      const [oldArg, setArgData] = useState([]);
+
+      useEffect(()=>{
+        console.log(removeLockStatus);
+      },[removeLockStatus]);
+
       const fetchBookings = (arg) => {
-  
+
+        setArgData(arg);
+
         const startDate = moment(arg.view.activeStart).format("YYYY-MM-DD");
         const endDate = moment(arg.view.activeEnd).add(1,"day").format("YYYY-MM-DD");
     
-        if (startDate === old_startDate){
+        if (startDate === old_startDate && removeLockStatus){
           return;
         }
     
@@ -468,67 +485,40 @@ import {
     
         axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
           let events = [];
-          console.log(data.data);
-          data.data.bookings.forEach((data) => {
-            events.push({
-              id: data.id,
-              title: data.number + `\n` + (userData.find((user)=> user.id === data.user_id).user_id),
-              start: data.start_time,
-              end: data.end_time,
-              color: `red`,
-            });
+          console.log(data.data.data);
+          data.data.data.forEach((data) => {
+            if (data.reservation_id==null){
+              events.push({
+                id: data.booking_id,
+                title: data.booking_id + "/" +data.number + `\n` + (userData.find((user)=> user.id === data.user_id).user_id),
+                // title: `Aleady Booked`,
+                start: data.start_time,
+                end: data.end_time,
+                color: `red`,
+              });
+            } else if (data.repeat==1){
+              events.push({
+                id: data.reservation_id,
+                title: "Repeating Lock",
+                start: data.start_time,
+                end: data.end_time,
+                color: `gray`,
+              });
+            } else {
+              events.push({
+                id: data.reservation_id,
+                title: "One Time Lock",
+                start: data.start_time,
+                end: data.end_time,
+                color: `gray`,
+              });
+            }
           });
+
           setBookings(events);
+          setRemoveLockStatus(false);
         });
       }
-
-      return (
-        <Box flexDirection="column" display="flex" >
-            <Button 
-              style={{marginLeft:"auto"}}
-              disabled={selectedBookings.length<1?true:false}
-              variant="contained"
-              color="primary"
-              onClick={() => history.push({pathname:routes.bookings.NEW, data:selectedBookings})}
-            >
-              ADD Booking
-            </Button>
-            <Box style={{marginTop:10}} />
-          {isLoading ? (
-            <Skeleton />
-          ) : (
-            <FullCalendar
-              plugins={[interactionPlugin, timeGridPlugin]}
-              initialView="timeGridWeek"
-              selectable={true}
-              allDaySlot={false}
-              nowIndicator={true}
-              contentHeight="auto"
-              slotMinTime={resource.opening_time}
-              slotMaxTime={resource.closing_time}
-              events={bookings}
-              select={(selectionInfo )=>{setSelectedBookings({date:moment(selectionInfo.startStr).format("YYYY-MM-DD"),start:moment(selectionInfo.startStr).format("HH:mm:ss"),end:moment(selectionInfo.endStr).format("HH:mm:ss"),resource_id:resource.id,resource:resource.number});
-              console.log(selectedBookings)}}
-              datesSet={(dateInfo)=>fetchBookings(dateInfo)}
-              eventClick={function(arg){
-                // alert(arg.event.id)
-                history.push(`/bookings/${arg.event.id}`);
-              }}
-            />
-          )}
-        </Box>
-      );
-    }
-
-    function LockResource() {
-  
-      const [old_startDate, setstartDate] = useState([]);
-      const [lockData, setLockData] = useState([]);
-      const [selectedBookings, setSelectedBookings] = useState([]);
-      const [open, setOpen] = useState(false);
-      const [isRepeat, setRepeat] = useState(false);
-      const [removeLock, setrRemoveLock] = useState(false);
-      const [removeLockID, setRemoveLockID] = useState([]);
 
       const handleClickOpen =()=> {
         setOpen(true);
@@ -551,64 +541,30 @@ import {
         })
       .then(() => {
         setRepeat(false);
-        fetchLockStatus();
+        fetchBookings(oldArg);
         setLoading(false);
       })
       .catch((error) => {
         setRepeat(false);
         setLoading(false);
-      });
-
+        console.log(error);
+        });
       };
 
-      const RemoveLockResource = () => {
+      const RemoveLockResource =  () => {
         axiosInstance.delete(`api/reservations/${removeLockID}`).then((data) => {
-          setrRemoveLock(false);
-          fetchLockStatus();
-          // console.log(data)
+          setRemoveLock(false);
+          setRemoveLockStatus(true);
+          fetchBookings(oldArg);
         }).catch((e)=>console.log(e));
       }
-  
-      const fetchLockStatus = (arg) => {
 
-        const startDate = moment(arg.view.activeStart).format("YYYY-MM-DD");
-        const endDate = moment(arg.view.activeEnd).add(1,"day").format("YYYY-MM-DD");
-    
-        if (startDate === old_startDate){
-          return;
-        }
-    
-        setstartDate(startDate);
-
-        axiosInstance.get(`api/resources/${match.params.id}/reservations?start=${startDate}&end=${endDate}`).then((data)=>{
-          let temp = [];
-          // console.log(data.data);
-          data.data.forEach((data) => {
-              if (data.repeat==1){
-                temp.push({
-                  id: data.id,
-                  title: "Repeating Lock",
-                  start: data.start_time,
-                  end: data.end_time,
-                  color: `gray`,
-                });
-              } else {
-                temp.push({
-                  id: data.id,
-                  title: "One Time Lock",
-                  start: data.start_time,
-                  end: data.end_time,
-                  color: `red`,
-                });
-              }
-          });
-          setLockData(temp);
-        });
-
-      };
       return (
         <Box flexDirection="column" display="flex" >
-            <Button 
+          <Grid container spacing={1}>     
+          <Grid item xs={10} >
+          <div className={classes.viewHeaderBar}>
+          <Button 
               style={{marginLeft:"auto"}}
               disabled={selectedBookings.length<1?true:false}
               variant="contained"
@@ -617,6 +573,23 @@ import {
             >
               Lock
             </Button>
+            </div>
+            </Grid>
+            <Grid item xs={2}>
+            <div className={classes.viewHeaderBar}>
+            
+            <Button 
+              style={{marginLeft:"auto"}}
+              disabled={selectedBookings.length<1?true:false}
+              variant="contained"
+              color="primary"
+              onClick={() => history.push({pathname:routes.bookings.NEW, data:selectedBookings})}
+            >
+              ADD Booking
+            </Button>
+            </div>
+            </Grid>
+            </Grid>
             <Box style={{marginTop:10}} />
           {isLoading ? (
             <Skeleton />
@@ -630,18 +603,21 @@ import {
               contentHeight="auto"
               slotMinTime={resource.opening_time}
               slotMaxTime={resource.closing_time}
-              events={lockData}
+              events={bookings}
               select={(selectionInfo)=>{setSelectedBookings({date:moment(selectionInfo.startStr).format("YYYY-MM-DD"),start:moment(selectionInfo.startStr).format("HH:mm:ss"),end:moment(selectionInfo.endStr).format("HH:mm:ss"),resource_id:resource.id,resource:resource.number});
-              }}
-              datesSet={(dateInfo)=>fetchLockStatus(dateInfo)}
-              eventClick={(arg)=>{
-                setRemoveLockID(arg.event.id);
-                setrRemoveLock(true);
+              console.log(selectedBookings)}}
+              datesSet={(dateInfo)=>fetchBookings(dateInfo)}
+              eventClick={function(arg){
+                if (arg.event.backgroundColor == `gray`){
+                  setRemoveLockID(arg.event.id);
+                  setRemoveLock(true);
+                }else{
+                history.push(`/bookings/${arg.event.id}`);}
               }}
             />
           )}
 
-          <ConfirmDialog
+        <ConfirmDialog
           open={open}
           onClose={() => handleClose(false)}
           onConfirm={() => LockResource()}
@@ -671,7 +647,7 @@ import {
 
         <ConfirmDialog
           open={removeLock}
-          onClose={() => setrRemoveLock(false)}
+          onClose={() => setRemoveLock(false)}
           onConfirm={() => RemoveLockResource()}
           title={`Remove Lock`}
         >
@@ -681,7 +657,6 @@ import {
           </Typography>
           </div>
         </ConfirmDialog>
-              
         </Box>
       );
     }
@@ -874,12 +849,6 @@ import {
                 // onClick={()=>fetchBookings(0)}
               />
               <Tab
-                label="LockResource"
-                style={{
-                  outline: "none",
-                }}
-              />
-              <Tab
                 label="Settings"
                 style={{
                   outline: "none",
@@ -896,12 +865,6 @@ import {
                           ) ? <ViewCalendar />:<NoPermission />}
             </TabPanel>
             <TabPanel value={tabIndex} index={2}>
-            {getPermission(
-                            TAG.CRUD.UPDATE + TAG.routes.resources
-                          ) ?
-                          <LockResource />:<NoPermission />}
-            </TabPanel>
-            <TabPanel value={tabIndex} index={3}>
               <SettingsTabPanel />
             </TabPanel>
           </div>
