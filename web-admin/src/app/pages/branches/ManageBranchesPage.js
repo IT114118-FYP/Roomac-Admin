@@ -130,7 +130,7 @@ function ManageBranchesPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -161,7 +161,7 @@ function ManageBranchesPage(props) {
           {permissionReady && (
             <>
               {getPermission(TAG.CRUD.CREATE + TAG.routes.branches) && (
-                <Button color="primary" size="medium" onClick={handleAddNew}>
+                <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
                   Add new branches
                 </Button>
               )}
@@ -203,54 +203,52 @@ function ManageBranchesPage(props) {
         labels={labels}
         onClick={handleClick}
       />
-{!isLoading && (
-<Grid container spacing={1}>
-      <Grid item xs={9}>
       {!isLoading && (
-        <div className={classes.exportWrapper}>
-          <Button
-            size="small"
-            color="primary"
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            Export branches
-          </Button>
-          {isExporting && <CircularProgress size={24} />}
-        </div>
+        <Grid container spacing={1} style={{display:"flex"}}>
+          <Grid item xs={9}>
+            <div className={classes.exportWrapper}>
+              <Button
+                size="small"
+                color="inherit"
+                variant="contained"
+                onClick={handleExport}
+                disabled={isExporting}
+              >
+                Export branches
+              </Button>
+              {isExporting && <CircularProgress size={24} />}
+            </div>
+          </Grid>
+          <Grid item xs={3} style={{display:"flex"}}>
+            <div className={classes.exportWrapper} style={{marginLeft:"auto"}}>
+              <>
+                <div>
+                  <input
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+                    id="xlsx"
+                    type="file"
+                    style={{
+                      display: "none",
+                    }}
+                    onChange={onSelectFile}
+                  />
+                  <label htmlFor="xlsx">
+                    <Button
+                    color="inherit"
+                    variant="contained"
+                    component="span"
+                    disabled={isImporting}
+                    >
+                      Import branches 
+                      </Button>
+                      </label>
+                      </div>
+                      </>
+              {isImporting && <CircularProgress size={24} />}
+            </div>
+          </Grid>
+        </Grid>
       )}
-      </Grid>
-      <Grid item xs={3}>
-      {!isLoading && (
-        <div className={classes.exportWrapper}>
-          <>
-            <div>
-              <input
-                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
-                id="xlsx"
-                type="file"
-                style={{
-                  display: "none",
-                }}
-                onChange={onSelectFile}
-              />
-              <label htmlFor="xlsx">
-                <Button
-                color="primary"
-                component="span"
-                disabled={isImporting}
-                >
-                  Import branches 
-                  </Button>
-                  </label>
-                  </div>
-                  </>
-          {isImporting && <CircularProgress size={24} />}
-        </div>
-      )}
-      </Grid>
-      </Grid>
-)}
     </NavDrawer>
   );
 }

@@ -105,7 +105,7 @@ function ManageCategoriesPage(props) {
   };
   
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -135,7 +135,7 @@ function ManageCategoriesPage(props) {
           </Typography>
           {permissionReady &&
             getPermission(TAG.CRUD.CREATE + TAG.routes.categories) && (
-              <Button color="primary" size="medium" onClick={handleAddNew}>
+              <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
                 Add new categories
               </Button>
             )}
@@ -178,11 +178,12 @@ function ManageCategoriesPage(props) {
         />
       }
 
-      {permissionReady && (
+      {permissionReady && !isLoading && (
         <div className={classes.exportWrapper}>
           <Button
             size="small"
-            color="primary"
+            color="inherit"
+            variant="contained"
             onClick={handleExport}
             disabled={isExporting}
           >

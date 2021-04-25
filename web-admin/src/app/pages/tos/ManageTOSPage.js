@@ -77,7 +77,7 @@ function ManageTOSPage(props) {
   };
 
   const handleClick = (event, itemID) => {
-    console.log("clicked");
+    // console.log("clicked");
     // history.push(routes.tos.NEW);
     history.push(`/tos/${itemID}`);
   };
@@ -87,7 +87,7 @@ function ManageTOSPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -116,7 +116,7 @@ function ManageTOSPage(props) {
             Terms And Conditions
           </Typography>
           {getPermission(TAG.CRUD.CREATE + TAG.routes.tos) && (
-            <Button color="primary" size="medium" onClick={handleAddNew}>
+            <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
               Add new Terms And Conditions
             </Button>
           )}

@@ -98,7 +98,7 @@ function ManageUsersPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -155,7 +155,7 @@ function ManageUsersPage(props) {
             Users
           </Typography>
           {getPermission(TAG.CRUD.CREATE + TAG.routes.users) && (
-            <Button color="primary" size="medium" onClick={handleAddNew}>
+            <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
               Add new users
             </Button>
           )}
@@ -195,25 +195,25 @@ function ManageUsersPage(props) {
         labels={labels}
         onClick={handleClick}
       />
-      <Grid container spacing={1}>
-      <Grid item xs={9}>
       {!isLoading && (
+      <Grid container spacing={1} style={{display:"flex"}}>
+      <Grid item xs={9}>
+      
         <div className={classes.exportWrapper}>
           <Button
             size="small"
-            color="primary"
+            color="inherit"
             onClick={handleExport}
             disabled={isExporting}
+            variant="contained"
           >
             Export users
           </Button>
           {isExporting && <CircularProgress size={24} />}
         </div>
-      )}
       </Grid>
-      <Grid item xs={3}>
-      {!isLoading && (
-        <div className={classes.exportWrapper}>
+      <Grid item xs={3} style={{display:"flex"}}>
+        <div className={classes.exportWrapper} style={{marginLeft:"auto"}}>
           <>
             <div>
               <input
@@ -227,8 +227,9 @@ function ManageUsersPage(props) {
               />
               <label htmlFor="xlsx">
                 <Button
-                color="primary"
+                color="inherit"
                 component="span"
+                variant="contained"
                 disabled={isImporting}
                 >
                   Import USERS 
@@ -238,9 +239,9 @@ function ManageUsersPage(props) {
                   </>
           {isImporting && <CircularProgress size={24} />}
         </div>
+      </Grid>
+      </Grid>
       )}
-      </Grid>
-      </Grid>
     </NavDrawer>
   );
 }

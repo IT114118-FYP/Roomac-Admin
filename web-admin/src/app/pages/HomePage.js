@@ -19,6 +19,7 @@ import { axiosInstance } from "../api/config";
 import routes,{ TAG }  from "../navigation/routes";
 import usePermission from "../navigation/usePermission";
 import CardView from "../components/CardView";
+import { Skeleton } from "@material-ui/lab";
 
 import moment from "moment";
 
@@ -114,7 +115,6 @@ function HomePage(props) {
 
       setCount(dashboard_data.data.count);
 
-      // console.log(dashboard_data.data.active_bookings);
       dashboard_data.data.active_bookings.forEach((data) => {
         setBookings((booking) => [
           ...booking,
@@ -143,7 +143,7 @@ function HomePage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -172,41 +172,38 @@ function HomePage(props) {
             Dashboard
           </Typography>
         </div>
-        {!isLoading &&
-        <div className={classes.viewCount}>
-          <div className={classes.right}>
+        {!isLoading &&  data.length > 0 &&
+          <Grid container spacing={1}>
+            <Grid item xs={2} style={{marginRight:10}}>
             <CardView
               title="Total Bookings"
               count={count.total_bookings}
               click={()=>getPermission(TAG.CRUD.READ + TAG.routes.bookings) && history.push(`/bookings`)}
             ></CardView>
-          </div>
-          <div className={classes.right}>
+            </Grid>
+            <Grid item xs={2} style={{marginRight:10}}>
             <CardView title="Total Branch" count={count.branch} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.branches) && history.push(`/branches`)} />
-          </div>
-          <div className={classes.right}>
+            </Grid>
+            <Grid item xs={2} style={{marginRight:10}}>
             <CardView  title="Total Category" count={count.category} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.categories) && history.push(`/categories`)} />
-          </div>
-          <div className={classes.right}>
+            </Grid><Grid item xs={2} style={{marginRight:10}}>
             <CardView title="Total Resource" count={count.resource} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.resources) && history.push(`/resources`)} />
-          </div>
-          <div className={classes.right}>
+            </Grid><Grid item xs={2} >
             <CardView title="Total User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) && history.push(`/users`)} />
-          </div>
-        </div>
+            </Grid>
+            </Grid>
         }
       </div>
-
-      <Grid container spacing={1}>
+      <Grid container spacing={1} style={{marginTop:20}}>
       <Grid item xs={9}>
-      {!isLoading &&
+      {!isLoading && data.length > 0 &&
       <Typography variant="h6" gutterBottom>
         Check-in
       </Typography>
       }
       </Grid>
       <Grid item xs={3}>
-      {!isLoading &&
+      {!isLoading && data.length > 0 &&
       <div className={classes.viewHeaderBar}>
         <TextField
           className={classes.viewHeaderBarItems}
@@ -225,12 +222,14 @@ function HomePage(props) {
       </div>
       }
       </Grid></Grid>
+      {!isLoading && data.length > 0 ?
       <DataTable
         loading={isLoading}
         data= {searchTerms.length < 1 ? data : searchTerms}
         labels={labels}
         onClick={handleClick}
-      />
+      /> : <Skeleton />
+      }
     </NavDrawer>
   );
 }

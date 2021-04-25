@@ -67,7 +67,7 @@ function ManageResourcesPage(props) {
   const fetchData = () => {
     setLoading(true);
     axiosInstance.get("api/resources").then(({ data }) => {
-      console.log(data)
+      // console.log(data)
 
       var temp3 = [];
 
@@ -114,7 +114,7 @@ function ManageResourcesPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -143,7 +143,7 @@ function ManageResourcesPage(props) {
             Resources
           </Typography>
           {getPermission(TAG.CRUD.CREATE + TAG.routes.resources) && (
-            <Button color="primary" size="medium" onClick={handleAddNew}>
+            <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
               Add new resources
             </Button>
           )}
@@ -187,11 +187,11 @@ function ManageResourcesPage(props) {
       {!isLoading && (
         <Grid container spacing={1}>
         <Grid item xs={9}>
-        {!isLoading && (
           <div className={classes.exportWrapper}>
             <Button
               size="small"
-              color="primary"
+              color="inherit"
+              variant="contained"
               onClick={handleExport}
               disabled={isExporting}
             >
@@ -199,7 +199,6 @@ function ManageResourcesPage(props) {
             </Button>
             {isExporting && <CircularProgress size={24} />}
           </div>
-        )}
         </Grid>
         </Grid>
       )}

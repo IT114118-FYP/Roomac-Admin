@@ -102,7 +102,7 @@ function ManageProgramsPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -159,7 +159,7 @@ function ManageProgramsPage(props) {
             Programmes
           </Typography>
           {getPermission(TAG.CRUD.CREATE + TAG.routes.programs) && (
-            <Button color="primary" size="medium" onClick={handleAddNew}>
+            <Button color="primary" style={{height:35}} variant="contained" size="medium" onClick={handleAddNew}>
               Add new programmes
             </Button>
           )}
@@ -201,13 +201,13 @@ function ManageProgramsPage(props) {
       />
 
       {!isLoading && (
-        <Grid container spacing={1}>
+        <Grid container spacing={1} style={{display:"flex"}}>
         <Grid item xs={9}>
-        {!isLoading && (
           <div className={classes.exportWrapper}>
             <Button
               size="small"
-              color="primary"
+              color="inherit"
+              variant="contained"
               onClick={handleExport}
               disabled={isExporting}
             >
@@ -215,11 +215,9 @@ function ManageProgramsPage(props) {
             </Button>
             {isExporting && <CircularProgress size={24} />}
           </div>
-        )}
         </Grid>
-        <Grid item xs={3}>
-        {!isLoading && (
-          <div className={classes.exportWrapper}>
+        <Grid item xs={3} style={{display:"flex"}}>
+          <div className={classes.exportWrapper} style={{marginLeft:"auto"}}>
             <>
               <div>
                 <input
@@ -233,7 +231,8 @@ function ManageProgramsPage(props) {
                 />
                 <label htmlFor="xlsx">
                   <Button
-                  color="primary"
+                  color="inherit"
+                  variant="contained"
                   component="span"
                   disabled={isImporting}
                   >
@@ -244,7 +243,6 @@ function ManageProgramsPage(props) {
                     </>
             {isImporting && <CircularProgress size={24} />}
           </div>
-        )}
         </Grid>
         </Grid>
       )}

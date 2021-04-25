@@ -16,7 +16,7 @@ axiosInstance.interceptors.request.use(
 			Authorization: "Bearer " + localStorage.getItem("authToken"),
 		};
 
-		console.log(`config run ${++counter} time`);
+		// console.log(`config run ${++counter} time`);
 		return config;
 	},
 	(error) => {

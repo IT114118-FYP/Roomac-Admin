@@ -70,6 +70,7 @@ function ManageBookingPage(props) {
   const { permissionReady, getPermission } = usePermission();
   const [searchTerms, setSearchTerms] = useState([]);
   const [timeData, setTimeData] = useState([]);
+  const [selectedTimeData, setSelectedTimeData] = useState([]);
   const [fetchBookingsDays, setFetchBookingsDays] = useState(0);
   
 
@@ -94,6 +95,7 @@ function ManageBookingPage(props) {
 
   const changeDay = (value) => {
     setLoading(true);
+    console.log(value);
     setFetchBookingsDays(value);
   };
 
@@ -156,7 +158,7 @@ function ManageBookingPage(props) {
   };
 
   useEffect(()=>{
-		console.log(searchTerms);
+		// console.log(searchTerms);
 	},[searchTerms]);
 
 	const searchFunction = (value) =>{
@@ -175,28 +177,6 @@ function ManageBookingPage(props) {
 
   const handleClick = (event, itemID) => {
     history.push(`/bookings/${itemID}`);
-  };
-
-  const handleAddNew = () => {
-    // alert("add new bookings");
-    // history.push(routes.bookings.NEW);
-  };
-
-  const handleExport = () => {
-    setExporting(true);
-    axiosInstance
-      .get("/api/branches/export", {
-        headers: "Content-type: application/vnd.ms-excel",
-        responseType: "blob",
-      })
-      .then((response) => {
-        download(
-          new Blob([response.data]),
-          "branches.xlsx",
-          "application/vnd.ms-excel"
-        );
-        setExporting(false);
-      });
   };
 
   return (
@@ -224,14 +204,15 @@ function ManageBookingPage(props) {
       </Grid>
       <Grid item xs={7}>
         <Select
-        disabled={isLoading}
+              disabled={isLoading}
 							id={timeData.id}
 							variant="outlined"
 							fullWidth
 							onChange={(event)=>{
                 changeDay(event.target.value);
+                setSelectedTimeData(event.target.value);
 							}}
-							value={timeData.id}
+							value={selectedTimeData.length==0 ? 0 : selectedTimeData}
               style={{height:30, width:200}}
 						>
 							{timeData.map((item) => (
@@ -265,20 +246,6 @@ function ManageBookingPage(props) {
         labels={labels}
         onClick={handleClick}
       />
-
-      {/* {!isLoading && (
-        <div className={classes.exportWrapper}>
-          <Button
-            size="small"
-            color="primary"
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            Export branches
-          </Button>
-          {isExporting && <CircularProgress size={24} />}
-        </div>
-      )} */}
     </NavDrawer>
   );
 }

@@ -195,7 +195,7 @@ function ResponsiveDrawer({ window, title, children }) {
             {title}
           </Typography>
           <div>
-            <Typography>Welcome{localStorage.getItem(`last_name`) ? `, `+localStorage.getItem("last_name")+` !` : `!`}</Typography>
+            <Typography>Welcome{localStorage.getItem(`first_name`) ? `, `+localStorage.getItem("first_name")+` !` : `!`}</Typography>
           </div>
         </Toolbar>
       </AppBar>

@@ -88,7 +88,7 @@ function DetailedUserPage({ match }) {
   const [selectedFile, setSelectedFile] = useState();
   const [preview, setPreview] = useState();
   const [banTimeList, setBanTimeList] = useState([]);
-  const [banTime, setBanTime] = useState([]);
+  const [banTime, setBanTime] = useState(15);
   const [banTimeData, setBanTimeData] = useState([]);
   const { permissionReady, getPermission } = usePermission();
   const [success, setSuccess] = useState(true);
@@ -111,6 +111,7 @@ function DetailedUserPage({ match }) {
   }, [selectedFile]);
 
   useEffect(() => {
+    // console.log(banTime)
     fetchAllData();
   }, [banStatus,banTime]);
 
@@ -201,12 +202,12 @@ function DetailedUserPage({ match }) {
     axiosInstance
       .put(`api/users/${match.params.id}/permissions`, data)
       .then(({ data }) => {
-        console.log("done");
+        // console.log("done");
       })
       .catch((error) => {
         console.log(error.response);
       })
-      .finally(() => console.log(permissions));
+      // .finally(() => console.log(permissions));
   };
 
   const fetchUser = () => axiosInstance.get(`api/users/${match.params.id}`);
@@ -220,7 +221,7 @@ function DetailedUserPage({ match }) {
   const updateUser = (name, value) => {
     setLoading(true);
 
-    console.log(name+"/"+value)
+    // console.log(name+"/"+value)
 
     // Update image
     if (name === "image") {
@@ -283,7 +284,8 @@ function DetailedUserPage({ match }) {
     .post(`api/userbans`, {
       user_id : match.params.id,
       ban_minutes : banTime,
-    }).then((data)=>{console.log(data);
+    }).then((data)=>{
+      // console.log(data);
       setBanStatus(!banStatus);
     })
   }
@@ -291,7 +293,8 @@ function DetailedUserPage({ match }) {
   const unbanUser = () => {
     setLoading(true);
     axiosInstance
-    .delete(`api/users/${match.params.id}/unban`).then((data)=>{console.log(data);
+    .delete(`api/users/${match.params.id}/unban`).then((data)=>{
+      // console.log(data);
       setBanStatus(!banStatus);
     })
   }
@@ -399,7 +402,7 @@ function DetailedUserPage({ match }) {
             color="secondary"
             onClick={() => unbanUser()}
           >
-            UnBan User
+            UnBan
           </Button>
           </Grid>
           </Grid>
@@ -419,7 +422,7 @@ function DetailedUserPage({ match }) {
 							fullWidth
 							onChange={(event)=>setBanTime(event.target.value)
 							}
-							value={banTime}
+							value={banTime.length==0?15:banTime}
               style={{height:35}}
 						>
 							{banTimeList.map((item) => (
@@ -431,12 +434,12 @@ function DetailedUserPage({ match }) {
             </Grid>
             <Grid item xs={2}>
           <Button 
-            disabled={banTime.length<1?true:false}
+            // disabled={banTime.length==0?true:false}
             variant="outlined"
             color="secondary"
             onClick={() => banUser()}
           >
-            Ban User
+            Ban
           </Button>
           </Grid>
           </Grid>

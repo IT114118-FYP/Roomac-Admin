@@ -33,7 +33,7 @@ const routes = {
   bookings: {
     MANAGE: "/bookings",
     DETAILED: "/bookings/:id",
-    NEW: "/bookings/new",
+    // NEW: "/bookings/new",
   },
 };
 

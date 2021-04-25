@@ -290,23 +290,23 @@ function DetailedBookingPage({ match }) {
         <div>
           <Box marginBottom={2} marginTop={3}>
               {/* <Box flexDirection="row" display="flex"> */}
-              <Grid container spacing={1}>
-              <Grid item xs={10}>
+              <Grid container spacing={1} style={{display:"flex"}}>
+              <Grid item xs={9}>
                   <Typography variant="h6" component="div" color="textSecondary">
                       {isLoading ? <Skeleton /> : `${data.number}`}
                   </Typography>
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={3} style={{display:"flex"}}>
                     {isLoading ? <></> :
                     data.checkin_time == "-" ? 
                   <>
-                      <Button color="primary" disabled={!cancheckin} variant="contained" size="medium" onClick={check_in}>
+                      <Button color="primary" disabled={!cancheckin} variant="contained" size="medium" onClick={check_in} style={{marginLeft:"auto"}}>
                       Check-in
                       </Button>
                   </>
                   :
                   <>
-                      <Button color="primary" variant="contained" disabled size="medium">
+                      <Button color="primary" variant="contained" disabled size="medium" style={{marginLeft:"auto"}}>
                       Checked-in
                       </Button>
                   </>

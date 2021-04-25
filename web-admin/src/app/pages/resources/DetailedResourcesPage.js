@@ -12,6 +12,7 @@ import {
     MenuItem,
     Breadcrumbs,
     Link,
+    TextField,
   } from "@material-ui/core";
   import { Skeleton } from "@material-ui/lab";
   import React, { useState, useEffect, useReducer } from "react";
@@ -41,6 +42,7 @@ import {
   import Badge from "@material-ui/core/Badge";
   import editpen from "../../resources/edit.png";
   import { withStyles } from "@material-ui/core/styles";
+  import SnackbarAlert from "../../components/SnackbarAlert";
   
   const useStyles = makeStyles((theme) => ({
     avatar: {
@@ -53,17 +55,32 @@ import {
       height: 50,
     },
     confirmBox:{
-      width: theme.spacing(30),
+      width: theme.spacing(35),
       height: theme.spacing(20),
     },
     confirmBoxText:{
       marginTop:theme.spacing(1),
+      display: `flex`,
     },
     viewHeaderBar: {
       display: "flex",
       flexDirection: "row",
       marginBottom: theme.spacing(3),
     },
+    inputDia : {
+      marginLeft: theme.spacing(1),
+      borderWidth:0,
+      width:theme.spacing(20),
+      backgroundImage: `linear-gradient(0deg, black 2px, rgba(0, 150, 136, 0) 0),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.26) 1px, transparent 0)`,
+    },
+    textlocation:{
+      width:theme.spacing(10),
+    },
+    searchbar:{
+      display:"flex",
+      marginTop: 10,
+    }
   }));
   
   function TabPanel({ children, value, index, ...other }) {
@@ -74,7 +91,6 @@ import {
     );
   }
 
-  
   function DetailedResourcesPage({ match }) {
     const history = useHistory();
     const [isLoading, setLoading] = useState(true);
@@ -85,6 +101,8 @@ import {
     const [userData, setUser] = useState([]);
     const [resourceBranch, setResourceBranch] = useState({});
     const [resourceCategory, setResourceCategory] = useState({});
+    const [success, setSuccess] = useState(false);
+	  const [successAlert, setSuccessAlert] = useState(false);
     const [error, setError] = useState(false);
     const [tabIndex, setTabIndex] = useState(0);
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -199,15 +217,16 @@ import {
           fetchTos(),
           fetchCategories(),
         ]);
-  
-        // console.log(resourceData);
+
         setselectedTosNumber(resourceData.data.tos_id);
   
         var temp = [];
+        // console.log(user.data);
         user.data.forEach((data) => {
           temp.push({
             id: data.id,
             user_id: data.name,
+            user_name: data.last_name + " " + data.first_name,
           });
         });
         setUser(temp);
@@ -281,6 +300,7 @@ import {
     };
   
     function GeneralTabPanel() {
+
       return (
         <>
           <EditForm title="Resource Basic info">
@@ -430,7 +450,7 @@ import {
               color="secondary"
               onClick={() => updateResource("tos_id", selectedTosNumber)}
             >
-              Change Tos
+              Change
             </Button>
             </Grid>
             </Grid>
@@ -459,15 +479,19 @@ import {
       const [old_startDate, setstartDate] = useState([]);
       const [bookings, setBookings] = useState([]);
       const [selectedBookings, setSelectedBookings] = useState([]);
-      const [open, setOpen] = useState(false);
+      
       const [isRepeat, setRepeat] = useState(false);
       const [removeLock, setRemoveLock] = useState(false);
       const [removeLockID, setRemoveLockID] = useState([]);
       const [removeLockStatus, setRemoveLockStatus] = useState(false);
       const [oldArg, setArgData] = useState([]);
-
+      const [bookingDialog, setBookingDialog] = useState(false);
+      const [lockDialog, setLockDialog] = useState(false);
+      const [bookingUser, setBookingUser] = useState([]);
+      const [searchTerms, setSearchTerms] = useState([]);
+      
       useEffect(()=>{
-        console.log(removeLockStatus);
+        // console.log(removeLockStatus);
       },[removeLockStatus]);
 
       const fetchBookings = (arg) => {
@@ -485,7 +509,7 @@ import {
     
         axiosInstance.get(`api/resources/${match.params.id}/bookings_admin?start=${startDate}&end=${endDate}`).then((data)=>{
           let events = [];
-          console.log(data.data.data);
+          // console.log(data.data.data);
           data.data.data.forEach((data) => {
             if (data.reservation_id==null){
               events.push({
@@ -520,16 +544,8 @@ import {
         });
       }
 
-      const handleClickOpen =()=> {
-        setOpen(true);
-      };
-
-      const handleClose = () => {
-        setOpen(false);
-      };
-
       const LockResource = () => {
-        console.log(selectedBookings.date,selectedBookings.start,selectedBookings.end,isRepeat,match.params.id);
+        // console.log(selectedBookings.date,selectedBookings.start,selectedBookings.end,isRepeat,match.params.id);
         setLoading(true);
         axiosInstance
         .post(`api/reservations`, {
@@ -541,23 +557,80 @@ import {
         })
       .then(() => {
         setRepeat(false);
-        fetchBookings(oldArg);
-        setLoading(false);
+        setSuccessAlert(true);
       })
       .catch((error) => {
         setRepeat(false);
-        setLoading(false);
+        setError(true);
         console.log(error);
         });
       };
 
       const RemoveLockResource =  () => {
+        setLoading(true);
         axiosInstance.delete(`api/reservations/${removeLockID}`).then((data) => {
           setRemoveLock(false);
+          setSuccessAlert(true);
           setRemoveLockStatus(true);
-          fetchBookings(oldArg);
-        }).catch((e)=>console.log(e));
+        }).catch((e)=>{
+          setError(true);
+          console.log(e)});
       }
+
+      const BookResource = () => {
+        setLoading(true);
+		    axiosInstance
+        .post(`api/resources/${match.params.id}/bookings`, {
+          user_id:bookingUser,
+          date:selectedBookings.date,
+          start:selectedBookings.start,
+          end:selectedBookings.end,
+        })
+        .then(() => {
+          setBookingDialog(false);
+          setSuccessAlert(true);
+        })
+        .catch(() => {
+          setBookingDialog(false);
+          setError(true);
+        });
+      }
+
+      useEffect(()=>{
+        // console.log(searchTerms);
+        if (searchTerms.length == 1){
+          // console.log(searchTerms[0].id);
+          setBookingUser(searchTerms[0].id);
+        } else {
+          setBookingUser(null);
+        }
+      },[searchTerms]);
+    
+      const searchFunction = (value) =>{
+        if (value !== ""){
+          const newList = userData.filter((contact)=>{
+          var key = Object.keys(contact).map(function(key) {
+            return contact[key];
+          });
+          return key.join(" ").toLowerCase().includes(value.toLowerCase());
+          })
+          setSearchTerms(newList);
+        }  else {
+          setSearchTerms(value);
+        }
+        };
+
+        const closeSnackbar= (type) => {
+          const timer = setTimeout(() => {
+            if (type == false){
+              setError(false);
+            } else {
+              setSuccessAlert(false);
+            }
+            setLoading(false);
+          }, 3000);
+          return () => clearTimeout(timer);
+        }
 
       return (
         <Box flexDirection="column" display="flex" >
@@ -569,7 +642,7 @@ import {
               disabled={selectedBookings.length<1?true:false}
               variant="contained"
               color="secondary"
-              onClick={()=>handleClickOpen()}
+              onClick={()=>setLockDialog(true)}
             >
               Lock
             </Button>
@@ -583,7 +656,7 @@ import {
               disabled={selectedBookings.length<1?true:false}
               variant="contained"
               color="primary"
-              onClick={() => history.push({pathname:routes.bookings.NEW, data:selectedBookings})}
+              onClick={() => setBookingDialog(true)}
             >
               ADD Booking
             </Button>
@@ -605,44 +678,78 @@ import {
               slotMaxTime={resource.closing_time}
               events={bookings}
               select={(selectionInfo)=>{setSelectedBookings({date:moment(selectionInfo.startStr).format("YYYY-MM-DD"),start:moment(selectionInfo.startStr).format("HH:mm:ss"),end:moment(selectionInfo.endStr).format("HH:mm:ss"),resource_id:resource.id,resource:resource.number});
-              console.log(selectedBookings)}}
+              // console.log(selectedBookings)}
+            }}
               datesSet={(dateInfo)=>fetchBookings(dateInfo)}
               eventClick={function(arg){
                 if (arg.event.backgroundColor == `gray`){
                   setRemoveLockID(arg.event.id);
                   setRemoveLock(true);
                 }else{
-                history.push(`/bookings/${arg.event.id}`);}
+                history.push(`/bookings/${arg.event.id}`);
+              }
               }}
             />
           )}
 
         <ConfirmDialog
-          open={open}
-          onClose={() => handleClose(false)}
-          onConfirm={() => LockResource()}
-          title={`Lock Detail`}
+          open={bookingDialog}
+          onClose={() => setBookingDialog(false)}
+          onConfirm={() => {if (bookingUser!=null) {BookResource()} else {alert(`Please select User!`)}
+          ;}}
+          title={`Booking Detail - ` + selectedBookings.resource}
         >
           <div className={classes.confirmBox}>
-          <Typography>
-          Resource: {selectedBookings.resource}
+            <div className={classes.searchbar}>
+          <div className={classes.textlocation}>CNA</div>:
+            <input
+            id="search-bar"
+            placeholder="Please input the CNA"
+            onChange={(event)=>searchFunction(event.target.value)}
+            className={classes.inputDia}
+						/>
+            </div>
+          <Typography className={classes.confirmBoxText}>
+          <div className={classes.textlocation}>User Name</div>: {searchTerms.length==1 ? searchTerms[0].user_name : "-"}
           </Typography>
           <Typography className={classes.confirmBoxText}>
-          Date: {selectedBookings.date}
+            <div className={classes.textlocation}>
+            Date
+            </div>: {selectedBookings.date}
           </Typography>
           <Typography className={classes.confirmBoxText}>
-          Start Time: {selectedBookings.start}
+          <div className={classes.textlocation}>Start Time</div>: {selectedBookings.start}
           </Typography>
           <Typography className={classes.confirmBoxText}>
-          End Time: {selectedBookings.end}
+          <div className={classes.textlocation}>End Time</div>: {selectedBookings.end}
           </Typography>
-            Repeat:
+          </div>
+        </ConfirmDialog>
+
+        <ConfirmDialog
+          open={lockDialog}
+          onClose={() => setLockDialog(false)}
+          onConfirm={() => LockResource()}
+          title={`Lock Detail - `+selectedBookings.resource}
+        >
+          <div className={classes.confirmBox}>
+          <Typography className={classes.confirmBoxText}>
+          <div className={classes.textlocation}>Date</div>: {selectedBookings.date}
+          </Typography>
+          <Typography className={classes.confirmBoxText}>
+          <div className={classes.textlocation}>Start Time</div>: {selectedBookings.start}
+          </Typography>
+          <Typography className={classes.confirmBoxText}>
+          <div className={classes.textlocation}>End Time</div>: {selectedBookings.end}
+          </Typography>
+          <div className={classes.searchbar}>
+          <div className={classes.textlocation}>Repeat</div>:
           <Switch
               checked={isRepeat}
               onChange={()=>setRepeat(!isRepeat)}
               color="secondary"
           />
-          </div>
+          </div></div>
         </ConfirmDialog>
 
         <ConfirmDialog
@@ -657,7 +764,21 @@ import {
           </Typography>
           </div>
         </ConfirmDialog>
-        </Box>
+
+        <SnackbarAlert
+          open={successAlert}
+          onClose={closeSnackbar(true)}
+          severity="success"
+          alertText="Successful"
+			  />
+			  <SnackbarAlert
+          open={error}
+          onClose={closeSnackbar(false)}
+          alertText="There is an error."
+        />
+
+      </Box>
+
       );
     }
   
@@ -740,7 +861,6 @@ import {
         <>No Permission</>
       );
     }
-
   
     return (
       <NavDrawer>
@@ -879,6 +999,7 @@ import {
             Upon deletion, the resource will not be recoverable.
           </Typography>
         </ConfirmDialog>
+
       </NavDrawer>
     );
   }

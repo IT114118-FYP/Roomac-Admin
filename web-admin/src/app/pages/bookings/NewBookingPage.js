@@ -47,13 +47,13 @@ function NewBookingPage(props,{match}) {
 	
 
 	useEffect(() => {
-		if (props.location.data!=null){
-			setbookingData(props.location.data);
+		// if (props.location.data!=null){
+			// setbookingData(props.location.data);
 			fetchUser();
-		}else{
-			alert("Please select the booking from the resource!")
-			history.push("/resources");
-		}
+		// }else{
+		// 	alert("Please select the booking from the resource!")
+		// 	history.push("/resources");
+		// }
 	  }, []);
 
 	const createBooking = () => {
@@ -114,14 +114,6 @@ function NewBookingPage(props,{match}) {
 						</Typography>
 					</Box>
 					<Box marginTop={3} marginBottom={3}>
-						{/* <Typography
-							variant="h6"
-							style={{
-								fontWeight: "bold",
-							}}
-						>
-							Booking Details
-						</Typography> */}
 						
 						<EditForm title="Booking Details">
 							<div style={{marginTop:10,}}></div>

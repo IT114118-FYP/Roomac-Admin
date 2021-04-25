@@ -4,19 +4,12 @@ import { axiosInstance } from "../api/config";
 function usePermission(something) {
   const [permissionReady, setPermissionReady] = useState(false);
 
-  // const fetchUser = () => {
-  //   axiosInstance.get("/api/users/me").then(({ data }) => {
-  //     fetchPermissions(data.id);
-  //     localStorage.setItem('last_name', data.first_name);
-  //   });
-  // };
-
   const fetchPermissions = () => {
     const user_id = localStorage.getItem("user_id");
     axiosInstance
       .get(`api/users/${user_id}/permissions`)
       .then(({ data }) => {
-        console.log(data);
+        // console.log(data);
         localStorage.setItem('permissions', JSON.stringify(data));
         localStorage.setItem('permissionReady', true);
       })
