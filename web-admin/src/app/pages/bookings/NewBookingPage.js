@@ -49,10 +49,10 @@ function NewBookingPage(props,{match}) {
 	useEffect(() => {
 		// if (props.location.data!=null){
 			// setbookingData(props.location.data);
-			fetchUser();
+			// fetchUser();
 		// }else{
-		// 	alert("Please select the booking from the resource!")
-		// 	history.push("/resources");
+			alert("Please select the booking from the resource!")
+			history.push("/resources");
 		// }
 	  }, []);
 
