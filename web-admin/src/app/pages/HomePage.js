@@ -174,22 +174,22 @@ function HomePage(props) {
         </div>
         {!isLoading &&  data.length > 0 &&
           <Grid container spacing={1}>
-            <Grid item xs={2} style={{marginRight:10}}>
+            <Grid item xs={2} style={{marginRight:10,cursor:"pointer"}}>
             <CardView
               title="Total Bookings"
               count={count.total_bookings}
-              click={()=>getPermission(TAG.CRUD.READ + TAG.routes.bookings) && history.push(`/bookings`)}
+              click={()=>getPermission(TAG.CRUD.READ + TAG.routes.bookings) ? history.push(`/bookings`) : alert(`No Permission!`)}
             ></CardView>
             </Grid>
-            <Grid item xs={2} style={{marginRight:10}}>
-            <CardView title="Total Branch" count={count.branch} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.branches) && history.push(`/branches`)} />
+            <Grid item xs={2} style={{marginRight:10,cursor:"pointer"}}>
+            <CardView title="Total Branch" count={count.branch} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.branches) ? history.push(`/branches`) : alert(`No Permission!`)} />
             </Grid>
-            <Grid item xs={2} style={{marginRight:10}}>
-            <CardView  title="Total Category" count={count.category} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.categories) && history.push(`/categories`)} />
-            </Grid><Grid item xs={2} style={{marginRight:10}}>
-            <CardView title="Total Resource" count={count.resource} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.resources) && history.push(`/resources`)} />
-            </Grid><Grid item xs={2} >
-            <CardView title="Total User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) && history.push(`/users`)} />
+            <Grid item xs={2} style={{marginRight:10,cursor:"pointer"}}>
+            <CardView  title="Total Category" count={count.category} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.categories) ? history.push(`/categories`) : alert(`No Permission!`) } />
+            </Grid><Grid item xs={2} style={{marginRight:10,cursor:"pointer"}}>
+            <CardView title="Total Resource" count={count.resource} click={()=> getPermission(TAG.CRUD.READ + TAG.routes.resources) ? history.push(`/resources`) : alert(`No Permission!`)} />
+            </Grid><Grid item xs={2} style={{cursor:"pointer"}}>
+            <CardView title="Total User" count={count.user} click={()=>getPermission(TAG.CRUD.READ + TAG.routes.users) ? history.push(`/users`) : alert(`No Permission!`)} />
             </Grid>
             </Grid>
         }

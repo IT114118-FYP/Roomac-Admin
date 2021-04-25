@@ -28,10 +28,12 @@ import deshboard_icon from "../resources/deshboard.png";
 import logout_icon from "../resources/logout.png";
 import tos_icon from "../resources/tos.png";
 import programs_icon from "../resources/programs.png";
+import LabelIcon from '@material-ui/icons/Label';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 import PersonIcon from '@material-ui/icons/Person';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
-import CategoryIcon from '@material-ui/icons/Category';
+import WidgetsIcon from '@material-ui/icons/Widgets';
 
 import routes, { TAG } from "../navigation/routes";
 import usePermission from "../navigation/usePermission";
@@ -119,13 +121,13 @@ function ResponsiveDrawer({ window, title, children }) {
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.categories) && (
               <DrawerItem title="Categories" path={routes.categories.MANAGE}>
-                <CategoryIcon />
+                <WidgetsIcon />
                 {/* <img src={categories_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.resources) && (
               <DrawerItem title="Resources" path={routes.resources.MANAGE}>
-                <CategoryIcon />
+                <LabelIcon />
                 {/* <img src={categories_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
@@ -144,7 +146,7 @@ function ResponsiveDrawer({ window, title, children }) {
             )}
             {getPermission(TAG.CRUD.READ + TAG.routes.tos) && (
               <DrawerItem title="Terms and Conditions" path={routes.tos.MANAGE}>
-                <MenuBookIcon />
+                <DescriptionIcon />
                 {/* <img src={tos_icon} alt="" style={{height:25,width:25 }} /> */}
               </DrawerItem>
             )}
