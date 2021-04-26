@@ -120,13 +120,13 @@ function HomePage(props) {
           ...booking,
           {
             id: data.id,
+            date: moment(data.start_time).format("YYYY-MM-DD"),
+            start_time: moment(data.start_time).format("HH:mm"),
+            end_time: moment(data.end_time).format("HH:mm"),
             branch_id:(temp2.find((resource)=> resource.id === data.resource_id).branch_id),
             resource_id: (temp2.find((resource)=> resource.id === data.resource_id).resource_title),
             user_id: (temp.find((user)=> user.id === data.user_id).user_id),
             number: data.number,
-            date: moment(data.start_time).format("YYYY-MM-DD"),
-            start_time: moment(data.start_time).format("HH:mm"),
-            end_time: moment(data.end_time).format("HH:mm"),
             checkin_time: (data.checkin_time ? moment(data.checkin_time).format("HH:mm") : "-"), 
            },
          ]);

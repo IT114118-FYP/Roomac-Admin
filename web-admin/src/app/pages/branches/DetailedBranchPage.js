@@ -338,7 +338,6 @@ function DetailedBranchPage({ match }) {
               }
             >
               <Avatar className={classes.avatar}>
-                ;
                 {isLoading ? (
                   <Skeleton />
                 ) : branch.image_url == null ? (

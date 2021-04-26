@@ -302,7 +302,6 @@ function DetailedCategoryPage({ match }) {
               }
             >
               <Avatar className={classes.avatar}>
-                ;
                 {isLoading ? (
                   <Skeleton />
                 ) : category.image_url == null ? (
