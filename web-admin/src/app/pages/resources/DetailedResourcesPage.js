@@ -946,6 +946,9 @@ import {
                 <Typography variant="h6" component="div" color="textSecondary">
                   {isLoading ? <Skeleton /> : `${resource.title_en}`}
                 </Typography>
+                {isLoading ? <></>:
+                <Button color="primary" onClick={()=>{window.open(`https://roomac.tatlead.com/checkin/${match.params.id}`)}}>Open Reception Page</Button>}
+
               </Box>
             </Box>
             {permissionReady &&(
