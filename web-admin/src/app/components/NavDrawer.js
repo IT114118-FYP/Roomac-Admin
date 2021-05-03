@@ -16,6 +16,7 @@ import { useHistory } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import BusinessIcon from "@material-ui/icons/Business";
 import PeopleIcon from "@material-ui/icons/People";
 import MenuBookIcon from "@material-ui/icons/MenuBook";
@@ -102,6 +103,10 @@ function ResponsiveDrawer({ window, title, children }) {
           <List>
             <DrawerItem title="Dashboard" path={routes.HOME}>
               <HomeIcon />
+              {/* <img src={deshboard_icon} alt="" style={{height:25,width:25 }} /> */}
+            </DrawerItem>
+            <DrawerItem title="Report" path={routes.REPORT}>
+              <AssessmentIcon />
               {/* <img src={deshboard_icon} alt="" style={{height:25,width:25 }} /> */}
             </DrawerItem>
           </List>

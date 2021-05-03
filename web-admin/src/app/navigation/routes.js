@@ -1,5 +1,6 @@
 const routes = {
   HOME: "/home",
+  REPORT: "/report",
   categories: {
     MANAGE: "/categories",
     NEW: "/categories/new",

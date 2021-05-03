@@ -6,6 +6,7 @@ import ProtectedRoute from "./app/navigation/ProtectedRoute";
 import { LinearProgress } from "@material-ui/core";
 
 const HomePage = lazy(() => import("./app/pages/HomePage"));
+const ReportPage = lazy(() => import("./app/pages/ReportPage"));
 const LoginPage = lazy(() => import("./app/pages/LoginPage"));
 const ManageUsersPage = lazy(() => import("./app/pages/users/ManageUsersPage"));
 const NewUserPage = lazy(() => import("./app/pages/users/NewUserPage"));
@@ -73,6 +74,8 @@ function App() {
           </Route>
 
           <ProtectedRoute path={routes.HOME} component={HomePage} />
+          <ProtectedRoute path={routes.REPORT} component={ReportPage} />
+
           <ProtectedRoute
             path={routes.branches.NEW}
             component={NewBranchPage}
