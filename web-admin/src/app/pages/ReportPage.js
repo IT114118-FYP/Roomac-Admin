@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   Box,
+  Button,
   CircularProgress,
   Divider,
   Typography,
@@ -24,9 +25,11 @@ import Paper from '@material-ui/core/Paper';
 import { Line, Doughnut, Pie } from 'react-chartjs-2';
 
 import moment from "moment";
+import download from "downloadjs";
 
 function ReportPage() {
   // Is Loading
+  const [exporting, setExporting] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Select Date Range
@@ -326,6 +329,23 @@ function ReportPage() {
     setSelectedDateTo(date);
   };
 
+  const handleExport = () => {
+    setExporting(true);
+    axiosInstance
+      .get(`/api/report/export?start=${moment(selectedDateFrom).format("YYYY-MM-DD")}&end=${moment(selectedDateTo).format("YYYY-MM-DD")}`, {
+        headers: "Content-type: application/vnd.ms-excel",
+        responseType: "blob",
+      })
+      .then((response) => {
+        download(
+          new Blob([response.data]),
+          "Report (" + moment(selectedDateFrom).format("YYYY-MM-DD") + " to " + moment(selectedDateTo).format("YYYY-MM-DD") + ").xlsx",
+          "application/vnd.ms-excel"
+        );
+        setExporting(false);
+      });
+  };
+
   // Total Bookings
   const options = {
     scales: {
@@ -509,7 +529,9 @@ function ReportPage() {
       <Typography variant="body1" color="textSecondary" gutterBottom>
         View the statistics with selected date range
       </Typography>
+
       <Divider style={{marginTop:25,height:1.5}}/>
+
       <Grid container style={{marginBottom:15}}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDatePicker
@@ -540,6 +562,9 @@ function ReportPage() {
             }}
           />
         </MuiPickersUtilsProvider>
+        <Button color="primary" variant="contained" size="medium" onClick={handleExport} style={{margin: 15, marginRight: 0, marginLeft:"auto"}} disabled={exporting || loading}>
+          Export Report {exporting && <CircularProgress size={20} style={{marginLeft: 15}} />}
+        </Button>
       </Grid>
 
       {body}
