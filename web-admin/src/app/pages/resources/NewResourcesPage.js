@@ -350,7 +350,7 @@ function NewResourcesPage({ match }) {
           >
             <Box marginLeft={2}>
               <NewButton
-                title="Create Category"
+                title="Create Resource"
                 color="primary"
                 variant="contained"
                 disabled={success || isLoading}
@@ -369,7 +369,7 @@ function NewResourcesPage({ match }) {
           <Button
             color="inherit"
             size="small"
-            onClick={() => history.push(`/categories/${match.params.id}`)}
+            onClick={() => history.push(`/resources`)}
           >
             Go Back
           </Button>
